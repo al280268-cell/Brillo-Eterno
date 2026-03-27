@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{ title or "Mi Tienda" }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='normalize.css') }}">
+
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="{{ url_for('index') }}">
+    <img src="{{ url_for('static', filename='imagenes/minifoto.png') }}" alt="flor" class="brand-logo">
+    Florería Brillo Eterno
+    </a>
+    <a class="cartlink" href="{{ url_for('carrito') }}"> Carrito</a>
+    {% if session.get('user') %}
+      <span class="cartlink">Hola {{ session.get('user')['username'] }}</span>
+      <a class="cartlink" href="{{ url_for('logout') }}">Cerrar sesión</a>
+    {% else %}
+      <a class="cartlink" href="{{ url_for('login') }}">Login</a>
+      <a class="cartlink" href="{{ url_for('registro') }}">Registro</a>
+    {% endif %}
+    <a class="cartlink" href="{{ url_for('admin_login') }}"> Admin</a>
+  </header>
+  <img src="{{ url_for('static', filename='imagenes/principal1.jpg') }}" alt="flor" class="principal">
+  <main class="container">
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="alerts">
+          {% for m in messages %}
+            <div class="alert">{{ m }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="footer">Hecho con Flask + SQLite</footer>
+</body>
+</html>

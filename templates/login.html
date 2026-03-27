@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="login-container">
+  <div class="login-card">
+    <h1 class="login-title">Iniciar sesión</h1>
+    <form method="post" class="login-form">
+      <div class="login-group">
+        <label for="username" class="login-label">Usuario</label>
+        <input type="text" id="username" name="username" class="login-input" required>
+      </div>
+      <div class="login-group">
+        <label for="password" class="login-label">Contraseña</label>
+        <input type="password" id="password" name="password" class="login-input" required>
+      </div>
+      <button type="submit" class="btn login-btn">Entrar</button>
+    </form>
+    <p class="login-footer">¿No tienes cuenta? <a href="{{ url_for('registro') }}" class="login-link">Regístrate</a></p>
+</div>
+</div>
+{% endblock %}

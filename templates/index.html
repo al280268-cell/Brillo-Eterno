@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="index_titulo">Catálogo</h1>
+<div class="grid">
+  {% for p in productos %}
+    <div class="card">
+      <a href="{{ url_for('producto', producto_id=p['id']) }}"><img src="{{ url_for('static', filename='imagenes/' + (p['imagen'] or 'default.jpg')) }}" alt="{{ p['nombre'] }}" class="card-img"></a>
+      <div class="card-info">
+        <h3 class="card-nombre">{{ p["nombre"] }}</h3>
+        <strong class="card-precio">${{ "%.2f"|format(p["precio"]) }}</strong>
+        <div class="row">
+          <form method="post" action="{{ url_for('carrito_agregar') }}">
+            <input type="hidden" name="producto_id" value="{{ p['id'] }}">
+            <input class="qty" type="number" name="cantidad" min="1" value="1">
+            <button class="btn primary" type="submit">Agregar</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}

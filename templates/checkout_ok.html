@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="confirmacion-container">
+  <div class="confirmacion-card">
+    <h1 class="confirmacion-title">Pedido confirmado</h1>
+    <p class="confirmacion-texto">Tu pedido se registró con ID <span class="confirmacion-id">#{{ pedido_id }}</span></p>
+    <a class="btn confirmacion-btn" href="{{ url_for('index') }}">Volver al catálogo</a>
+  </div>
+</div>
+{% endblock %}

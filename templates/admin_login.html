@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="admin-auth-wrapper">
+  <div class="admin-auth-card">
+    <h1 class="admin-auth-title">Panel de Control</h1>
+    <p class="admin-auth-subtitle">Acceso de Administración</p>
+
+    <form class="admin-auth-form" method="post">
+      <div class="admin-auth-field">
+        <label for="username" class="admin-auth-label">Usuario</label>
+        <input type="text" id="username" name="username" class="admin-auth-input" required placeholder="Ingresa tu usuario">
+      </div>
+
+      <div class="admin-auth-field">
+        <label for="password" class="admin-auth-label">Contraseña</label>
+        <input type="password" id="password" name="password" class="admin-auth-input" required placeholder="••••••••">
+      </div>
+
+      <button type="submit" class="admin-auth-btn">Entrar al Sistema</button>
+    </form>
+  </div>
+</div>
+{% endblock %}
