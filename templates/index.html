@@ -1,10 +1,23 @@
 {% extends "base.html" %}
 {% block content %}
+{% if avisos %}
+<div class="avisos-container">
+  {% for a in avisos %}
+  <div class="aviso-banner">
+    <strong>📢 {{ a.titulo }}</strong> — {{ a.mensaje }}
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
 <h1 class="index_titulo">Catálogo</h1>
 <div class="grid">
   {% for p in productos %}
     <div class="card">
-      <a href="{{ url_for('producto', producto_id=p['id']) }}"><img src="{{ url_for('static', filename='imagenes/' + (p['imagen'] or 'default.jpg')) }}" alt="{{ p['nombre'] }}" class="card-img"></a>
+      <a href="{{ url_for('producto', producto_id=p['id']) }}">
+        <img src="{{ url_for('static', filename='imagenes/' + (p['imagen'] or 'default.jpg')) }}"
+             alt="{{ p['nombre'] }}" class="card-img">
+      </a>
       <div class="card-info">
         <h3 class="card-nombre">{{ p["nombre"] }}</h3>
         <strong class="card-precio">${{ "%.2f"|format(p["precio"]) }}</strong>

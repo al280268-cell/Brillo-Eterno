@@ -672,7 +672,7 @@ body {
     text-decoration: underline;
 }
 
-/* PAGINA SOLO PARA EL ADMIN PORQUE AQUI AGREGA Y ELIMINA PRODUCTOS */
+/* PAGINA SOLO PARA EL ADMIN PORQUE AQUI AGREGA, EDITA Y ELIMINA PRODUCTOS */
 .admin-container {
     display: flex;
     justify-content: center;
@@ -893,6 +893,21 @@ body {
     font-weight: bold;
 }
 
+.admin-edit {
+    background: transparent;
+    border: 1px solid #e4bcbc;
+    color: var(--color-rojo);
+    border-radius: 999px;
+    padding: 0.4rem 1rem;
+    font-size: 0.85rem;
+    transition: 0.3s;
+    margin-right: 10px;
+}
+
+.admin-edit :hover {
+    background: #fff0f0;
+}
+
 .admin-delete {
     background: transparent;
     border: 1px solid #e4bcbc;
@@ -909,6 +924,149 @@ body {
 
 .admin-delete-form {
     display: inline;
+}
+
+/* ── Avisos banner por parte del admin. (index) ── */
+.avisos-container {
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+  align-items: center;
+}
+.aviso-banner {
+  background: #fdf0f2;
+  border-left: 4px solid #8B1A2E;
+  padding: .75rem 1rem;
+  border-radius: 6px;
+  font-size: .95rem;
+  color: #4a0d1a;
+}
+
+/* ── Stock badges en tabla admin ── */
+.stock-badge {
+  display: inline-block;
+  padding: .2rem .6rem;
+  border-radius: 99px;
+  font-weight: 700;
+  font-size: .85rem;
+}
+.badge-ok      { background: #e8f5e9; color: #2e7d32; }
+.badge-bajo    { background: #fff3e0; color: #e65100; }
+.badge-agotado { background: #fce4ec; color: #c62828; }
+
+.stock-agotado { background: #fff0f0; }
+.stock-bajo    { background: #fffbf0; }
+
+/* ── Form de stock rápido ── */
+.stock-form {
+  display: flex;
+  gap: .4rem;
+  align-items: center;
+}
+.stock-input {
+  width: 70px;
+  padding: .3rem .5rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: .9rem;
+  text-align: center;
+}
+.btn-stock {
+  padding: .3rem .7rem;
+  font-size: .82rem;
+  background: #8B1A2E;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: 600;
+  letter-spacing: .02em;
+  transition: background .15s, box-shadow .15s;
+  box-shadow: 0 2px 8px rgba(139,26,46,.25);
+}
+.btn-stock:hover {
+  background: #6e1424;
+  box-shadow: 0 4px 12px rgba(139,26,46,.35);
+}
+
+/* ── Botones de navegación admin ── */
+.admin-nav-btn {
+  background: #fdf0f2;
+  color: #8B1A2E;
+  border: 1.5px solid #e8c4cb;
+  padding: .4rem .9rem;
+  border-radius: 20px;
+  text-decoration: none;
+  font-size: .9rem;
+  font-weight: 500;
+  transition: background .15s, border-color .15s;
+}
+.admin-nav-btn:hover {
+  background: #f5d5db;
+  border-color: #8B1A2E;
+}
+
+/* ── Estado badges (pedidos) ── */
+.estado-badge {
+  display: inline-block;
+  padding: .2rem .7rem;
+  border-radius: 99px;
+  font-size: .8rem;
+  font-weight: 700;
+  text-transform: capitalize;
+  align-items: center;
+}
+.estado-pendiente { background: #fff3e0; color: #e65100; }
+.estado-entregado { background: #e8f5e9; color: #2e7d32; }
+
+/* Checkbox de pedido */
+.pedido-check {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: #8B1A2E;
+  text-align: center;
+}
+
+.pedido-productos {
+  font-size: .85rem;
+  color: #555;
+  max-width: 220px;
+}
+
+/* ── Reporte ── */
+.reporte-resumen {
+  display: flex;
+  gap: 1.5rem;
+  margin: 1.5rem 0;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.reporte-stat {
+  background: white;
+  border-radius: 10px;
+  padding: 1rem 2rem;
+  box-shadow: 0 2px 8px rgba(139,26,46,.1);
+  border: 1px solid #e8c4cb;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .3rem;
+  min-width: 140px;
+}
+.reporte-stat-label {
+  font-size: .82rem;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  align-items: center;
+}
+.reporte-stat-valor {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #8B1A2E;
+  align-items: center;
 }
 
 /* CARRITO Y LO DE CHECK  */
