@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="admin-list-container">
+  <h1 class="admin-list-title">Avisos para clientes</h1>
+  <div class="admin-list-actions">
+    <a href="{{ url_for('admin_productos') }}" class="btn admin-nav-btn">← Productos</a>
+    <a href="{{ url_for('admin_logout') }}" class="admin-logout">Cerrar sesión</a>
+  </div>
+
+  <!-- FORMULARIO DE AVISOS -->
+  <div class="admin-card admin-card-centered">
+    <h2 class="admin-title admin-title-sm">Publicar nuevo aviso</h2>
+    <form method="post" action="{{ url_for('admin_aviso_nuevo') }}" class="admin-form">
+      <div class="admin-group">
+        <label class="admin-label">Título</label>
+        <input type="text" name="titulo" class="admin-input" required placeholder="Ej: Cerrado el lunes festivo">
+      </div>
+      <div class="admin-group">
+        <label class="admin-label">Mensaje</label>
+        <textarea name="mensaje" class="admin-textarea" required
+          placeholder="Ej: Permaneceremos cerrados el próximo lunes 18 de noviembre. ¡Gracias por su comprensión!"></textarea>
+      </div>
+      <div class="admin-actions">
+        <button type="submit" class="btn admin-btn">Publicar aviso</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- LISTA DE AVISOS -->
+  {% if not avisos %}
+    <p class="carrito-vacio">No hay avisos publicados.</p>
+  {% else %}
+  <div class="admin-table-wrapper">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Título</th>
+          <th>Mensaje</th>
+          <th>Estado</th>
+          <th>Fecha</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in avisos %}
+        <tr class="admin-row">
+          <td>{{ a.id }}</td>
+          <td><strong>{{ a.titulo }}</strong></td>
+          <td>{{ a.mensaje }}</td>
+          <td>
+            <span class="estado-badge {% if a.activo %}estado-entregado{% else %}estado-pendiente{% endif %}">
+              {% if a.activo %}Visible{% else %}Oculto{% endif %}
+            </span>
+          </td>
+          <td>{{ a.creado_en }}</td>
+          <td class="admin-acciones">
+            <form method="post" action="{{ url_for('admin_aviso_toggle', aviso_id=a.id) }}">
+              <button type="submit" class="btn admin-edit">
+                {% if a.activo %}Ocultar{% else %}Mostrar{% endif %}
+              </button>
+            </form>
+            <form method="post" action="{{ url_for('admin_aviso_borrar', aviso_id=a.id) }}">
+              <button type="submit" class="btn admin-delete"
+                onclick="return confirm('¿Borrar este aviso?');">Borrar</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

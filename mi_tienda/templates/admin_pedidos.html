@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="admin-list-container">
+  <h1 class="admin-list-title">Pedidos</h1>
+
+  <div class="admin-list-actions">
+    <a href="{{ url_for('admin_productos') }}" class="btn admin-nav-btn">← Productos</a>
+    <a href="{{ url_for('admin_reporte') }}" class="btn admin-nav-btn">📊 Reporte del día</a>
+    <a href="{{ url_for('admin_logout') }}" class="admin-logout">Cerrar sesión</a>
+  </div>
+
+  {% if not pedidos %}
+    <p class="carrito-vacio">No hay pedidos registrados aún.</p>
+  {% else %}
+  <form method="post" action="{{ url_for('admin_pedidos_actualizar') }}">
+    <div class="admin-table-wrapper">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>✔ Entregado</th>
+            <th>ID</th>
+            <th>Cliente</th>
+            <th>Email</th>
+            <th>Productos</th>
+            <th>Total</th>
+            <th>Estado</th>
+            <th>Fecha</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in pedidos %}
+          <tr class="admin-row">
+            <td class="text-center">
+              <input type="checkbox" name="entregado" value="{{ p.id }}"
+                {% if p.estado == 'entregado' %}checked{% endif %}
+                class="pedido-check">
+            </td>
+            <td>#{{ p.id }}</td>
+            <td>{{ p.cliente_nombre }}</td>
+            <td>{{ p.cliente_email or '—' }}</td>
+            <td class="pedido-productos">{{ p.productos_nombres or '—' }}</td>
+            <td>${{ "%.2f"|format(p.total) }}</td>
+            <td>
+              <span class="estado-badge estado-{{ p.estado }}">{{ p.estado }}</span>
+            </td>
+            <td>{{ p.creado_en }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="admin-list-actions mt-3">
+      <button type="submit" class="btn admin-btn">💾 Guardar cambios</button>
+    </div>
+  </form>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,1589 @@
+@charset "UTF-8";
+/*
+ =======================================================================
+ HOJA DE ESTILOS SCSS 
+
+ ¿POR QUÉ USAMOS SCSS/SASS EN VEZ DE CSS NORMAL?
+ 1. USO DE VARIABLES ESTÁNDAR ($color-rojo, $font-title): En un CSS normal tendrías que 
+    buscar y reemplazar el código hexadecimal 50 veces. Con SCSS, solo cambias 
+    la variable $color-rojo aquí arriba, y Gulp reescribe TODO el código automáticamente.
+ =======================================================================
+*/
+/*
+==============================================
+ APARTADO 1: BARRA DE DESPLAZAMIENTO (SCROLL)
+==============================================
+Estos estilos personalizan la barra lateral derecha para que no sea la típica de Chrome, dándole un look más bonito y en tono con la tienda.
+*/
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: #fff0f5;
+  border-radius: 20px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #9a1e3f, #7b1832);
+  border-radius: 20px;
+  border: 2px solid #fff0f5;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #9a1e3f, #7b1832);
+}
+
+/* RESET MÍNIMO MUY IMPORTANTE */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #fcf9f8;
+  color: #2b2123;
+  font-family: "Lora", serif;
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Cormorant Garamond", serif;
+  margin-top: 0;
+}
+
+/*
+==============================================
+ APARTADO 2: ESTRUCTURA GLOBAL Y BARRA SUPERIOR
+==============================================
+Aquí están los estilos principales de la página (Navbars, contenedores, enlaces base).
+*/
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 28px;
+  background-color: rgba(250, 247, 245, 0.85); /* Semi-transparent warm bg */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid #e8dcdb;
+  font-size: 17px;
+  font-weight: 500;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+}
+
+.brand {
+  font-weight: 800;
+  text-decoration: none;
+  color: #9a1e3f; /* Now red text, not white $color-blanco */
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1.3rem;
+}
+
+.brand-logo {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 2px solid #9a1e3f;
+  object-fit: cover;
+  background-color: transparent;
+  box-shadow: 0 4px 10px rgba(166, 42, 75, 0.15);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.brand:hover .brand-logo {
+  transform: rotate(-10deg) scale(1.05);
+}
+
+.cartlink {
+  text-decoration: none;
+  color: #2b2123;
+  padding: 8px 16px;
+  border-radius: 999px;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.cartlink:hover {
+  background: white;
+  color: #9a1e3f;
+  box-shadow: 0 4px 10px rgba(166, 42, 75, 0.08);
+}
+
+body {
+  margin: 0;
+  background: #fcf9f8;
+  color: #2b2123;
+  font-family: "Lora", serif;
+}
+
+.principal {
+  width: calc(100% - 40px);
+  max-width: 1100px;
+  height: 450px;
+  object-fit: cover;
+  display: block;
+  margin: 30px auto;
+  border-radius: 30px;
+  box-shadow: 0 8px 30px rgba(166, 42, 75, 0.08);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.principal:hover {
+  box-shadow: 0 15px 40px rgba(166, 42, 75, 0.15);
+  transform: translateY(-4px);
+}
+
+.index_titulo {
+  color: #9a1e3f;
+  font-size: 2.5rem;
+  font-weight: 700;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin: 40px 0;
+}
+
+.index_titulo::before,
+.index_titulo::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, transparent, #e8dcdb, transparent);
+}
+
+.container {
+  max-width: 980px;
+  margin: 22px auto;
+  padding: 0 14px;
+  background-color: transparent;
+}
+
+.card {
+  background: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(166, 42, 75, 0.08);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+.card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 40px rgba(166, 42, 75, 0.15);
+}
+
+.card a {
+  overflow: hidden;
+  display: block;
+}
+
+.card-img {
+  width: 100%;
+  height: 280px;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.card:hover .card-img {
+  transform: scale(1.05);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+}
+
+.card-info {
+  padding: 15px;
+}
+
+.card-nombre {
+  font-size: 1rem;
+  font-weight: bold;
+  margin: 0 0 6px 0;
+  color: #2b2123;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-precio {
+  font-size: 1.15rem;
+  font-weight: bold;
+  color: #9a1e3f;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.muted {
+  color: #6b5a5d;
+}
+
+.pill {
+  background: #fff0f0;
+  color: #9a1e3f;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.btn {
+  border: 1px solid #e8dcdb;
+  background: #ffffff;
+  padding: 10px 20px;
+  border-radius: 999px; /* Fully rounded buttons */
+  cursor: pointer;
+  text-decoration: none;
+  color: #2b2123;
+  font-family: "Lora", serif;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.btn:hover {
+  background: #fcf9f8;
+  border-color: #6b5a5d;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.btn.primary {
+  border-color: transparent;
+  background: linear-gradient(135deg, #9a1e3f, #7b1832);
+  color: #ffffff;
+  box-shadow: 0 4px 15px rgba(166, 42, 75, 0.15);
+}
+
+.btn.primary:hover {
+  background: linear-gradient(135deg, #7b1832, #9a1e3f);
+  box-shadow: 0 8px 25px rgba(166, 42, 75, 0.25);
+  border-color: transparent;
+}
+
+.qty {
+  width: 70px;
+  padding: 9px;
+  border-radius: 10px;
+  border: 1px solid #e8dcdb;
+  font-family: "Lora", serif;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.table th, .table td {
+  padding: 12px;
+  border-bottom: 1px solid #f0f0f0;
+  text-align: left;
+}
+
+.table th {
+  background: #fdf6f6;
+  color: #9a1e3f;
+  font-weight: bold;
+}
+
+.checkout {
+  margin-top: 20px;
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.checkoutform {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.input {
+  padding: 11px 14px;
+  border: 1px solid #e8dcdb;
+  border-radius: 16px;
+  min-width: 220px;
+  font-family: "Lora", serif;
+  font-size: 1rem;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #9a1e3f;
+  box-shadow: 0 0 0 4px rgba(166, 42, 75, 0.15);
+}
+
+.alert {
+  background: #fff3cd;
+  border: 1px solid #ffe69c;
+  padding: 12px;
+  border-radius: 16px;
+  color: #664d03;
+}
+
+/*
+==============================================
+ APARTADO 3: TARJETAS DE PRODUCTO MODO EXPANSIÓN
+==============================================
+El diseño individual cuando abres una flor o arreglo específico.
+*/
+.producto-container {
+  margin-top: 3rem;
+  font-family: "Lora", serif;
+}
+
+.producto-card {
+  display: flex;
+  gap: 2.5rem;
+  align-items: center;
+  background: white;
+  padding: 2.5rem;
+  border-radius: 2rem;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.05);
+}
+
+.producto-img-box {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.producto-img {
+  max-width: 100%;
+  width: 320px;
+  border-radius: 1.5rem;
+  object-fit: cover;
+}
+
+.producto-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.producto-title {
+  font-size: 2rem;
+  color: #9a1e3f;
+}
+
+/* DESCRIPCIÓN */
+.producto-desc {
+  color: #6b5a5d;
+  line-height: 1.5;
+}
+
+.producto-precio {
+  font-size: 1.8rem;
+  color: #9a1e3f;
+  font-weight: bold;
+}
+
+.producto-stock {
+  font-size: 0.95rem;
+  color: #666;
+}
+
+.producto-stock span {
+  color: #9a1e3f;
+  font-weight: 500;
+}
+
+.producto-form {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.producto-qty {
+  width: 70px;
+  padding: 0.5rem;
+  border-radius: 999px;
+  border: 1px solid #ddd;
+  text-align: center;
+  font-family: "Lora", serif;
+}
+
+.producto-qty:focus {
+  outline: none;
+  border-color: #9a1e3f;
+}
+
+.producto-btn {
+  background: #9a1e3f;
+  color: white;
+  border-radius: 999px;
+  padding: 0.7rem 1.5rem;
+  transition: 0.3s;
+}
+
+.producto-btn:hover {
+  background: #7b1832;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(186, 47, 47, 0.25);
+}
+
+/*
+==============================================
+ APARTADO 4: PANEL DE CONTROL MAGISTRAL DEL ADMIN
+==============================================
+Aquí diseñamos todo el panel interno del administrador donde puede agregar, eliminar y ver inventario.
+*/
+.admin-auth-wrapper {
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle, #ffffff 0%, #fcf7f7 100%);
+  padding: 2rem;
+  box-sizing: border-box;
+}
+
+.admin-auth-card {
+  background: white;
+  padding: 3rem 2.5rem;
+  border-radius: 20px;
+  box-shadow: 0 10px 35px rgba(186, 47, 47, 0.05);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  position: relative;
+  border: 1px solid rgba(186, 47, 47, 0.1);
+}
+
+.admin-auth-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 6px;
+  background-color: #9a1e3f;
+  border-radius: 20px 20px 0 0;
+}
+
+.admin-auth-title {
+  color: #9a1e3f;
+  font-size: 2.2rem;
+  font-weight: bold;
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+.admin-auth-subtitle {
+  color: #6b5a5d;
+  font-size: 1rem;
+  margin-bottom: 2.5rem;
+  font-style: italic;
+}
+
+.admin-auth-field {
+  text-align: left;
+  margin-bottom: 1.5rem;
+}
+
+.admin-auth-label {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: bold;
+  color: #2b2123;
+  margin-bottom: 0.6rem;
+}
+
+.admin-auth-input {
+  width: 100%;
+  padding: 14px 16px;
+  background: #fcf9f8;
+  border: 1.5px solid #e8dcdb;
+  border-radius: 16px;
+  font-size: 1rem;
+  font-family: "Lora", serif;
+  color: #2b2123;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.admin-auth-input:focus {
+  outline: none;
+  border-color: #9a1e3f;
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(186, 47, 47, 0.1);
+}
+
+.admin-auth-btn {
+  width: 100%;
+  margin-top: 1rem;
+  padding: 15px;
+  background: #9a1e3f;
+  color: #ffffff;
+  border: none;
+  border-radius: 16px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  font-family: "Lora", serif;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 6px 15px rgba(186, 47, 47, 0.2);
+}
+
+.admin-auth-btn:hover {
+  background: #7b1832;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(186, 47, 47, 0.25);
+}
+
+.admin-auth-btn:active {
+  transform: translateY(1px);
+}
+
+/*
+==============================================
+ APARTADO 5: PANTALLA DE INICIO DE SESIÓN
+==============================================
+Aquí estilizamos las tarjetas blancas y los botones de Login de nuestra tienda, incluyendo nuestro Segmented Control (boton de toggle).
+*/
+.login-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 3rem;
+  font-family: "Lora", serif;
+}
+
+.login-card {
+  background: white;
+  padding: 2.5rem 2rem;
+  border-radius: 1.8rem;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.05);
+  text-align: center;
+  position: relative;
+}
+
+.login-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #9a1e3f, transparent);
+}
+
+.login-title {
+  font-size: 2.5rem;
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 600;
+  color: #9a1e3f;
+  margin-bottom: 0.2rem;
+}
+
+.login-subtitle {
+  color: #6b5a5d;
+  font-family: "Lora", serif;
+  margin-bottom: 1.5rem;
+  font-size: 1rem;
+}
+
+/* SEGMENTED CONTROL CLIENTE/ADMIN */
+.login-toggle {
+  display: flex;
+  background: #f4efed;
+  border-radius: 12px;
+  padding: 5px;
+  margin-bottom: 1.8rem;
+}
+
+.toggle-btn {
+  flex: 1;
+  text-align: center;
+  padding: 0.6rem 0;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  color: #6b5a5d;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  font-size: 0.95rem;
+}
+
+/* Control del resaltado de los botones sin usar javascript */
+#role-cliente:checked ~ .login-toggle label[for=role-cliente],
+#role-admin:checked ~ .login-toggle label[for=role-admin] {
+  background: #ffffff;
+  color: #2b2123;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+/* Ocultar ambos formularios por defecto */
+.login-form.form-cliente,
+.login-form.form-admin {
+  display: none;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+/* Mostrar únicamente el formulario del rol seleccionado */
+#role-cliente:checked ~ .login-form.form-cliente {
+  display: flex;
+}
+
+#role-admin:checked ~ .login-form.form-admin {
+  display: flex;
+}
+
+.login-group {
+  text-align: left;
+}
+
+.login-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.05rem;
+  color: #6b5a5d;
+  margin-bottom: 0.4rem;
+  display: block;
+  text-transform: uppercase;
+}
+
+.login-input {
+  width: 100%;
+  padding: 0.8rem 1.2rem;
+  border-radius: 12px;
+  border: 1.5px solid #eae5e1;
+  background-color: #faf7f5;
+  font-size: 0.95rem;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  font-family: "Lora", serif;
+  color: #2b2123;
+}
+
+.login-input:focus {
+  outline: none;
+  border-color: #9a1e3f;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 4px rgba(154, 30, 63, 0.08);
+}
+
+.login-btn {
+  margin-top: 1rem;
+  background: #9a1e3f;
+  color: #ffffff;
+  border-radius: 12px;
+  padding: 0.9rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: 0.03rem;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  border: none;
+  cursor: pointer;
+}
+
+.login-btn:hover {
+  background: #7b1832;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(154, 30, 63, 0.25);
+}
+
+.login-footer {
+  margin-top: 1.5rem;
+  font-size: 0.9rem;
+  color: #6b5a5d;
+}
+
+.login-link {
+  color: #9a1e3f;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.login-link:hover {
+  text-decoration: underline;
+}
+
+/* REGISTRO */
+.registro-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 3rem;
+  font-family: "Lora", serif;
+}
+
+.registro-card {
+  background: white;
+  padding: 2.5rem 2rem;
+  border-radius: 1.8rem;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.05);
+  text-align: center;
+  position: relative;
+}
+
+.registro-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #9a1e3f, transparent);
+}
+
+.registro-title {
+  font-size: 2.5rem;
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 600;
+  color: #9a1e3f;
+  margin-bottom: 1.5rem;
+}
+
+.registro-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.registro-group {
+  text-align: left;
+}
+
+.registro-label {
+  font-size: 0.9rem;
+  color: #6b5a5d;
+  margin-bottom: 0.3rem;
+  display: block;
+}
+
+.registro-input {
+  width: 100%;
+  padding: 0.7rem 1rem;
+  border-radius: 999px;
+  border: 1px solid #ddd;
+  font-size: 0.95rem;
+  transition: 0.3s;
+  font-family: "Lora", serif;
+}
+
+.registro-input:focus {
+  outline: none;
+  border-color: #9a1e3f;
+  box-shadow: 0 0 0 3px rgba(186, 47, 47, 0.1);
+}
+
+.registro-btn {
+  margin-top: 0.5rem;
+  background: #9a1e3f;
+  color: white;
+  border-radius: 999px;
+  padding: 0.7rem;
+  font-size: 1rem;
+  transition: 0.3s;
+}
+
+.registro-btn:hover {
+  background: #7b1832;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(186, 47, 47, 0.25);
+}
+
+.registro-footer {
+  margin-top: 1.5rem;
+  font-size: 0.9rem;
+  color: #6b5a5d;
+}
+
+.registro-link {
+  color: #9a1e3f;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.registro-link:hover {
+  text-decoration: underline;
+}
+
+/* PAGINA SOLO PARA EL ADMIN PORQUE AQUI AGREGA, EDITA Y ELIMINA PRODUCTOS */
+.admin-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 3rem;
+  font-family: "Lora", serif;
+}
+
+.admin-card {
+  background: white;
+  padding: 2.5rem;
+  border-radius: 1.8rem;
+  width: 100%;
+  max-width: 600px;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.05);
+  position: relative;
+}
+
+.admin-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #9a1e3f, transparent);
+}
+
+.admin-title {
+  text-align: center;
+  font-size: 2.5rem;
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 600;
+  color: #9a1e3f;
+  margin-bottom: 2rem;
+}
+
+.admin-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.3rem;
+}
+
+.admin-grid {
+  display: flex;
+  gap: 1rem;
+}
+
+.admin-group {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.admin-label {
+  font-size: 0.9rem;
+  color: #6b5a5d;
+  margin-bottom: 0.3rem;
+}
+
+.admin-input {
+  padding: 0.7rem 1rem;
+  border-radius: 999px;
+  border: 1px solid #ddd;
+  font-family: "Lora", serif;
+}
+
+.admin-input:focus {
+  outline: none;
+  border-color: #9a1e3f;
+  box-shadow: 0 0 0 3px rgba(186, 47, 47, 0.1);
+}
+
+.admin-textarea {
+  padding: 0.8rem 1rem;
+  border-radius: 1rem;
+  border: 1px solid #ddd;
+  min-height: 90px;
+  resize: none;
+  font-family: "Lora", serif;
+}
+
+.admin-file-hidden {
+  display: none;
+}
+
+.custom-file {
+  display: inline-block;
+  padding: 0.6rem 1.4rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ba2f2f, #d85c5c);
+  color: white;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: 0.3s;
+  text-align: center;
+  width: fit-content;
+}
+
+.custom-file:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(186, 47, 47, 0.25);
+}
+
+.admin-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.5rem;
+}
+
+.admin-btn {
+  background: #9a1e3f;
+  color: white;
+  border-radius: 999px;
+  padding: 0.7rem 1.5rem;
+  transition: 0.3s;
+}
+
+.admin-btn:hover {
+  background: #7b1832;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(186, 47, 47, 0.25);
+}
+
+.admin-link {
+  text-decoration: none;
+  color: #9a1e3f;
+  font-size: 0.9rem;
+}
+
+.admin-link:hover {
+  text-decoration: underline;
+}
+
+/* EL EDITABLE PARA EL ADMINISTRADOR  */
+.admin-list-container {
+  margin-top: 2.5rem;
+  font-family: "Lora", serif;
+}
+
+.admin-list-title {
+  text-align: center;
+  font-size: 2.6rem;
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 600;
+  color: #9a1e3f;
+  margin-bottom: 1.5rem;
+}
+
+.admin-list-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.admin-add {
+  background: #9a1e3f;
+  color: white;
+  padding: 0.6rem 1.3rem;
+  border-radius: 999px;
+  text-decoration: none;
+  transition: 0.3s;
+}
+
+.admin-add:hover {
+  background: #7b1832;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(186, 47, 47, 0.2);
+}
+
+/* LOGOUT */
+.admin-logout {
+  color: #9a1e3f;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.admin-logout:hover {
+  text-decoration: underline;
+}
+
+.admin-table-wrapper {
+  background: #ffffff;
+  border-radius: 1.5rem;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-table thead {
+  background: #9a1e3f;
+  color: white;
+}
+
+.admin-table th {
+  padding: 1rem;
+  font-weight: normal;
+  text-align: left;
+}
+
+.admin-table td {
+  padding: 1rem;
+  border-bottom: 1px solid #f2f2f2;
+}
+
+.admin-row:hover {
+  background: #fff7f7;
+}
+
+.admin-nombre {
+  font-weight: 500;
+}
+
+.admin-precio {
+  color: #9a1e3f;
+  font-weight: bold;
+}
+
+.admin-edit {
+  background: transparent;
+  border: 1px solid #e4bcbc;
+  color: #9a1e3f;
+  border-radius: 999px;
+  padding: 0.4rem 1rem;
+  font-size: 0.85rem;
+  transition: 0.3s;
+  margin-right: 10px;
+}
+
+.admin-edit :hover {
+  background: #fff0f0;
+}
+
+.admin-delete {
+  background: transparent;
+  border: 1px solid #e4bcbc;
+  color: #9a1e3f;
+  border-radius: 999px;
+  padding: 0.4rem 1rem;
+  font-size: 0.85rem;
+  transition: 0.3s;
+}
+
+.admin-delete:hover {
+  background: #fff0f0;
+}
+
+.admin-delete-form {
+  display: inline;
+}
+
+/* ── Avisos banner por parte del admin. (index) ── */
+.avisos-container {
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.aviso-banner {
+  background: #fdf0f2;
+  border-left: 4px solid #8B1A2E;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  color: #4a0d1a;
+}
+
+/* ── Stock badges en tabla admin ── */
+.stock-badge {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 99px;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.badge-ok {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.badge-bajo {
+  background: #fff3e0;
+  color: #e65100;
+}
+
+.badge-agotado {
+  background: #fce4ec;
+  color: #c62828;
+}
+
+.stock-agotado {
+  background: #fff0f0;
+}
+
+.stock-bajo {
+  background: #fffbf0;
+}
+
+/* ── Form de stock rápido ── */
+.stock-form {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.stock-input {
+  width: 70px;
+  padding: 0.3rem 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.btn-stock {
+  padding: 0.3rem 0.7rem;
+  font-size: 0.82rem;
+  background: #8B1A2E;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  transition: background 0.15s, box-shadow 0.15s;
+  box-shadow: 0 2px 8px rgba(139, 26, 46, 0.25);
+}
+
+.btn-stock:hover {
+  background: #6e1424;
+  box-shadow: 0 4px 12px rgba(139, 26, 46, 0.35);
+}
+
+/* ── Botones de navegación admin ── */
+.admin-nav-btn {
+  background: #fdf0f2;
+  color: #8B1A2E;
+  border: 1.5px solid #e8c4cb;
+  padding: 0.4rem 0.9rem;
+  border-radius: 20px;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.admin-nav-btn:hover {
+  background: #f5d5db;
+  border-color: #8B1A2E;
+}
+
+/* ── Estado badges (pedidos) ── */
+.estado-badge {
+  display: inline-block;
+  padding: 0.2rem 0.7rem;
+  border-radius: 99px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: capitalize;
+  align-items: center;
+}
+
+.estado-pendiente {
+  background: #fff3e0;
+  color: #e65100;
+}
+
+.estado-entregado {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+/* Checkbox de pedido */
+.pedido-check {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: #8B1A2E;
+  text-align: center;
+}
+
+.pedido-productos {
+  font-size: 0.85rem;
+  color: #555;
+  max-width: 220px;
+}
+
+/* ── Reporte ── */
+.reporte-resumen {
+  display: flex;
+  gap: 1.5rem;
+  margin: 1.5rem 0;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.reporte-stat {
+  background: white;
+  border-radius: 10px;
+  padding: 1rem 2rem;
+  box-shadow: 0 2px 8px rgba(139, 26, 46, 0.1);
+  border: 1px solid #e8c4cb;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  min-width: 140px;
+}
+
+.reporte-stat-label {
+  font-size: 0.82rem;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  align-items: center;
+}
+
+.reporte-stat-valor {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #8B1A2E;
+  align-items: center;
+}
+
+/* CARRITO Y LO DE CHECK  */
+.carrito-container,
+.carrito-table,
+.checkout,
+.input {
+  font-family: "Lora", serif;
+}
+
+.carrito-title {
+  color: #9a1e3f;
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 600;
+  font-size: 2.5rem;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin: 30px 0;
+}
+
+.carrito-title::before,
+.carrito-title::after {
+  content: "";
+  flex: 1;
+  height: 2px;
+  background-color: #9a1e3f;
+}
+
+.carrito-title::before {
+  left: 0;
+}
+
+.carrito-title::after {
+  right: 0;
+}
+
+.carrito-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: white;
+  border-radius: 1.5rem;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+}
+
+.carrito-table thead {
+  background: #9a1e3f;
+}
+
+.carrito-table th {
+  padding: 1.2rem;
+  color: white;
+  font-weight: normal;
+  font-size: 1rem;
+}
+
+.carrito-table td {
+  padding: 1.2rem;
+  border-bottom: 1px solid #f2f2f2;
+  font-size: 1rem;
+}
+
+.carrito-row:hover {
+  background: #fff7f7;
+}
+
+.carrito-producto {
+  font-size: 1.05rem;
+}
+
+.carrito-precio {
+  color: #777;
+}
+
+.carrito-subtotal {
+  color: #9a1e3f;
+  font-weight: bold;
+}
+
+.btn-remove {
+  background: transparent;
+  border: 1px solid #e4bcbc;
+  color: #9a1e3f;
+  border-radius: 999px;
+  padding: 0.4rem 1rem;
+  font-size: 0.85rem;
+  transition: 0.3s;
+}
+
+.btn-remove:hover {
+  background: #fff0f0;
+}
+
+.checkout {
+  margin-top: 2.5rem;
+  padding: 2rem;
+  background: white;
+  border-radius: 1.5rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+}
+
+.total {
+  font-size: 1.3rem;
+  margin-bottom: 1.5rem;
+}
+
+.total strong {
+  color: #9a1e3f;
+  font-size: 1.8rem;
+}
+
+.checkoutform {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.input {
+  flex: 1;
+  min-width: 220px;
+  padding: 0.7rem 1rem;
+  border-radius: 999px;
+  border: 1px solid #ddd;
+  background: white;
+  font-size: 0.95rem;
+}
+
+.input:focus {
+  border-color: #9a1e3f;
+  outline: none;
+}
+
+/* CKECK_OK */
+.confirmacion-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 3rem;
+  font-family: "Lora", serif;
+}
+
+.confirmacion-card {
+  background: white;
+  padding: 3rem 2.5rem;
+  border-radius: 2rem;
+  text-align: center;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.06);
+  position: relative;
+}
+
+.confirmacion-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, #9a1e3f, transparent);
+  border-radius: 10px;
+}
+
+.brand {
+  font-weight: 700;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1.6rem;
+  color: #9a1e3f;
+  text-decoration: none;
+  letter-spacing: 0.02rem;
+}
+
+.confirmacion-title {
+  font-size: 2.2rem;
+  color: #9a1e3f;
+  margin-bottom: 1rem;
+  letter-spacing: 0.04rem;
+  font-family: "Cormorant Garamond", serif;
+}
+
+/*
+==============================================
+ REGLAS DE IMPRESIÓN (ADMIN REPORTE)
+==============================================
+Oculta elementos innecesarios al presionar Imprimir.
+*/
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  .topbar, .footer {
+    display: none !important;
+  }
+  body {
+    background: white;
+  }
+  .admin-table {
+    font-size: 12px;
+  }
+}
+.confirmacion-texto {
+  font-size: 1.1rem;
+  color: #6b5a5d;
+  margin-bottom: 2rem;
+}
+
+.confirmacion-id {
+  color: #9a1e3f;
+  font-weight: bold;
+  font-size: 1.3rem;
+}
+
+.confirmacion-btn {
+  display: inline-block;
+  text-decoration: none;
+  background: #9a1e3f;
+  color: white;
+  padding: 0.7rem 1.6rem;
+  border-radius: 999px;
+  font-size: 0.95rem;
+  transition: 0.3s;
+}
+
+.confirmacion-btn:hover {
+  background: #7b1832;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(186, 47, 47, 0.25);
+}
+
+/*
+==============================================
+ APARTADO EXTENSO: CLASES DE UTILIDAD (UTILITIES)
+==============================================
+Utilidades para no usar estilos inline en el HTML.
+*/
+.text-right {
+  text-align: right;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.fw-bold {
+  font-weight: 700;
+}
+
+.mt-3 {
+  margin-top: 1rem;
+}
+
+.admin-card-centered {
+  margin: 0 auto 2rem auto;
+}
+
+.admin-title-sm {
+  font-size: 1.1rem;
+}
+
+.admin-table-img {
+  height: 50px;
+  width: auto;
+  border-radius: 6px;
+}
+
+/* PIE DE PAGINA (PREMIUM) */
+.footer {
+  background-color: #9a1e3f;
+  color: #ffffff;
+  padding: 3rem 1.5rem 1.5rem;
+  margin-top: 4rem;
+  text-align: center;
+}
+
+.footer-content {
+  max-width: 900px;
+  margin: 0 auto 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+.footer-brand {
+  font-family: "Great Vibes", cursive;
+  font-size: 2.5rem;
+  color: rgba(255, 255, 255, 0.9);
+  letter-spacing: 0.05rem;
+}
+
+.footer-motto {
+  font-size: 0.95rem;
+  max-width: 500px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.footer-links {
+  display: flex;
+  gap: 2rem;
+  margin-top: 0.5rem;
+}
+
+.footer-links a {
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+  font-size: 0.85rem;
+  letter-spacing: 0.05rem;
+  text-transform: uppercase;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.footer-links a:hover {
+  color: #ffffff;
+}
+
+.footer-bottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  padding-top: 1.5rem;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.7);
+}

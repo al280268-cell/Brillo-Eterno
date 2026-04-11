@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="login-container">
+  <div class="login-card">
+    <h1 class="login-title">Bienvenido de vuelta</h1>
+    <p class="login-subtitle">Accede a tu cuenta para continuar</p>
+    <!-- Radio ocultos sin JS -->
+    <input type="radio" id="role-cliente" name="role_view" checked style="display:none;">
+    <input type="radio" id="role-admin" name="role_view" style="display:none;">
+
+    <!-- Segmented Control estético -->
+    <div class="login-toggle">
+        <label for="role-cliente" class="toggle-btn">Cliente</label>
+        <label for="role-admin" class="toggle-btn">Administrador</label>
+    </div>
+
+    <!-- 1. FORMULARIO CLIENTE -->
+    <form method="post" class="login-form form-cliente">
+      <div class="login-group">
+        <label for="username_c" class="login-label">USUARIO</label>
+        <input type="text" id="username_c" name="username" class="login-input" placeholder="tu_usuario" required>
+      </div>
+      <div class="login-group">
+        <label for="password_c" class="login-label">CONTRASEÑA</label>
+        <input type="password" id="password_c" name="password" class="login-input" placeholder="........" required>
+      </div>
+      <button type="submit" class="btn login-btn">Entrar como Cliente</button>
+    </form>
+
+    <!-- 2. FORMULARIO ADMIN -->
+    <form method="post" class="login-form form-admin">
+      <div class="login-group">
+        <label for="username_a" class="login-label">USUARIO</label>
+        <input type="text" id="username_a" name="username" class="login-input" value="admin" readonly>
+      </div>
+      <div class="login-group">
+        <label for="password_a" class="login-label">CONTRASEÑA</label>
+        <input type="password" id="password_a" name="password" class="login-input" placeholder="........" required>
+      </div>
+      <button type="submit" class="btn login-btn">Entrar al Panel Admin</button>
+    </form>
+    
+    <p class="login-footer">¿No tienes cuenta? <a href="{{ url_for('registro') }}" class="login-link">Regístrate</a></p>
+  </div>
+</div>
+{% endblock %}

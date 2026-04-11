@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="registro-container">
+  <div class="registro-card">
+    <h1 class="registro-title">Crear cuenta</h1>
+    <form method="post" class="registro-form">
+      <div class="registro-group">
+        <label for="username" class="registro-label">Usuario</label>
+        <input type="text" id="username" name="username" class="registro-input" required>
+      </div>
+      <div class="registro-group">
+        <label for="password" class="registro-label">Contraseña</label>
+        <input type="password" id="password" name="password" class="registro-input" required>
+      </div>
+      <button type="submit" class="btn registro-btn">Registrar</button>
+    </form>
+    <p class="registro-footer">¿Ya tienes cuenta? <a href="{{ url_for('login') }}" class="registro-link">Inicia sesión</a></p>
+</div>
+</div>
+{% endblock %}

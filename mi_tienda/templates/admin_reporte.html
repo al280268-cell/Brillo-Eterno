@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="admin-list-container">
+  <div class="reporte-header">
+    <h1 class="admin-list-title">Reporte de ventas — {{ hoy }}</h1>
+    <div class="admin-list-actions no-print">
+      <a href="{{ url_for('admin_pedidos') }}" class="btn admin-nav-btn">← Pedidos</a>
+      <button onclick="window.print()" class="btn admin-btn">Imprimir reporte</button>
+      <a href="{{ url_for('admin_logout') }}" class="admin-logout">Cerrar sesión</a>
+    </div>
+  </div>
+
+  <div class="reporte-resumen">
+    <div class="reporte-stat">
+      <span class="reporte-stat-label">Pedidos hoy</span>
+      <span class="reporte-stat-valor">{{ pedidos|length }}</span>
+    </div>
+    <div class="reporte-stat">
+      <span class="reporte-stat-label">Total del día</span>
+      <span class="reporte-stat-valor">${{ "%.2f"|format(total_dia) }}</span>
+    </div>
+  </div>
+
+  {% if not pedidos %}
+    <p class="carrito-vacio">No hay ventas registradas hoy.</p>
+  {% else %}
+  <div class="admin-table-wrapper">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Cliente</th>
+          <th>Email</th>
+          <th>Productos</th>
+          <th>Total</th>
+          <th>Estado</th>
+          <th>Hora</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in pedidos %}
+        <tr class="admin-row">
+          <td>#{{ p.id }}</td>
+          <td>{{ p.cliente_nombre }}</td>
+          <td>{{ p.cliente_email or '—' }}</td>
+          <td>{{ p.detalle or '—' }}</td>
+          <td>${{ "%.2f"|format(p.total) }}</td>
+          <td>
+            <span class="estado-badge estado-{{ p.estado }}">{{ p.estado }}</span>
+          </td>
+          <td>{{ p.creado_en }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="4" class="text-right fw-bold">Total del día:</td>
+          <td colspan="3" class="fw-bold">${{ "%.2f"|format(total_dia) }}</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+  {% endif %}
+</div>
+
+
+{% endblock %}

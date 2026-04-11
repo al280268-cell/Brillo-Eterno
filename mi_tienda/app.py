@@ -1,0 +1,437 @@
+# app.py
+import os
+from flask import Flask, render_template, request, redirect, url_for, session, flash
+from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
+from tienda_db import BaseDatosTienda
+from functools import wraps
+
+app = Flask(__name__)
+app.secret_key = "cambia-esto-por-algo-seguro"
+
+UPLOAD_FOLDER = os.path.join(app.root_path, 'static', 'imagenes')
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+# ─── Helpers y configuración ───────────────────────────────────────
+# Aquí definimos tipos permitidos.
+ALLOWED_IMAGE_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp'}
+
+def allowed_image_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_IMAGE_EXTENSIONS
+# Verifica si una imagen subida tiene un formato permitido.
+# Si se rompe (ej. suben archivos no permitidos), verifica que el "filename" no venga vacío.
+# Para cambiarlo: Agrega más formatos al SET ALLOWED_IMAGE_EXTENSIONS arriba.
+
+
+db = BaseDatosTienda(ruta="./", bd="tienda.sqlite3")
+db.semilla_productos()
+
+
+# ─── Helpers de sesión ────────────────────────────────────────────────────────
+def is_admin():
+    return session.get("admin", False)
+    # Retorna True si en la sesión actual existe la llave "admin".
+    # Para arreglar: Si siempre da falso, asegúrate que en login admin se declare session["admin"] = True
+
+def requires_admin(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        if not is_admin():
+            flash("Ingresa con tu cuenta de administrador para continuar.")
+            return redirect(url_for("login"))
+        return f(*args, **kwargs)
+    return wrapper
+    # Decorador que protege cualquier ruta si no eres administrador.
+    # Si se rompe (bloquea todo): Verifica que el decorador siempre retorne f(*args, **kwargs).
+
+def current_user():
+    return session.get("user")
+    #Función útil para saber en cualquier momento QUIÉN está conectado actualmente leyendo la Session temporal de Flask.
+
+def login_required(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        if not current_user():
+            flash("Inicia sesión para acceder a esta página.")
+            return redirect(url_for("login"))
+        return f(*args, **kwargs)
+    return wrapper
+
+def carrito_session():
+    if "carrito" not in session:
+        session["carrito"] = {}
+    return session["carrito"]
+
+
+# ─── Catálogo (público) ───────────────────────────────────────────────────────
+@app.route("/")
+def index():
+    productos = db.listar_productos()
+    avisos = db.listar_avisos(solo_activos=True)
+    return render_template("index.html", productos=productos, carrito=carrito_session(), avisos=avisos)
+    # Carga el catálogo de productos consultando la BD.
+    # Para paginación (ej. ver de 10 en 10), modificar db.listar_productos(limite=10)
+
+@app.route("/producto/<int:producto_id>")
+def producto(producto_id):
+    p = db.obtener_producto(producto_id)
+    if not p:
+        return "Producto no encontrado", 404
+    return render_template("producto.html", p=p, carrito=carrito_session())
+    # Carga la página de detalles de un solo producto.
+    # Si arroja 404 por error, asegurarnos de que producto_id proviene como INT (entero) desde la base de datos.
+
+
+# ─── Carrito ──────────────────────────────────────────────────────────────────
+@app.route("/carrito")
+@login_required
+def carrito():
+    cart = carrito_session()
+    items = []
+    total = 0.0
+    for pid_str, qty in cart.items():
+        p = db.obtener_producto(int(pid_str))
+        if not p:
+            continue
+        subtotal = float(p["precio"]) * int(qty)
+        total += subtotal
+        items.append({"p": p, "qty": int(qty), "subtotal": subtotal})
+    return render_template("carrito.html", items=items, total=total)
+    # Muestra los productos guardados en memoria (sesión).
+    # Para cambiar: Si queremos que el carrito no se borre al cerrar navegador, debes guardarlo en la Base de Datos.
+    # Si se rompe (no carga nada): Verificar que carrito_session() retorne un dict válido.
+
+@app.route("/carrito/agregar", methods=["POST"])
+@login_required
+def carrito_agregar():
+    # Añade un ID de producto y su cantidad al Diccionario del carrito en Session Flask.
+    pid = request.form.get("producto_id", type=int)
+    qty = request.form.get("cantidad", type=int, default=1)
+    p = db.obtener_producto(pid)
+    if not p:
+        flash("Producto no existe.")
+        return redirect(url_for("index"))
+    cart = carrito_session()
+    current_qty = int(cart.get(str(pid), 0))
+    requested_qty = max(qty, 1)
+
+    if current_qty + requested_qty > p["stock"]:
+        flash(f"No hay suficiente stock. Solamente quedan {p['stock']} disponibles de este producto.")
+        return redirect(request.referrer or url_for("index"))
+
+    cart[str(pid)] = current_qty + requested_qty
+    session["carrito"] = cart
+    flash("Agregado al carrito.")
+    return redirect(request.referrer or url_for("index"))
+
+@app.route("/carrito/quitar", methods=["POST"])
+@login_required
+def carrito_quitar():
+    # Quita un elemento de la memoria del dict 'carrito'.
+    pid = request.form.get("producto_id", type=int)
+    cart = carrito_session()
+    cart.pop(str(pid), None)
+    session["carrito"] = cart
+    return redirect(url_for("carrito"))
+
+
+# ─── Auth usuarios ────────────────────────────────────────────────────────────
+@app.route("/registro", methods=["GET", "POST"])
+def registro():
+    if request.method == "POST":
+        username = request.form.get("username", "").strip()
+        password = request.form.get("password", "").strip()
+        if not username or not password:
+            flash("Proporciona usuario y contraseña.")
+            return redirect(url_for("registro"))
+        password_hash = generate_password_hash(password)
+        user_id = db.crear_usuario(username, password_hash)
+        if not user_id:
+            flash("Usuario ya existe o datos inválidos.")
+            return redirect(url_for("registro"))
+        session["user"] = {"id": user_id, "username": username}
+        flash("Registro exitoso. Estás logueado.")
+        return redirect(url_for("index"))
+    return render_template("registro.html")
+    # Crea un nuevo cliente.
+    # Si se rompe (dice que el usuario ya existe pero no es así): Comprobar si password_hash recibe un dato válido.
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        username = request.form.get("username", "").strip()
+        password = request.form.get("password", "").strip()
+        if not username or not password:
+            flash("Proporciona usuario y contraseña.")
+            return redirect(url_for("login"))
+            
+        # Lógica FUSIONADA: Si es admin, lo manda al panel de control de inmediato. Si no, sigue con el proceso normal de login.
+        if username == "admin" and password == "BrilloEterno123":
+            session["admin"] = True
+            flash("Bienvenido al panel de control, Administrador.")
+            return redirect(url_for("admin_productos"))
+            
+        user = db.obtener_usuario_por_username(username)
+        if not user or not check_password_hash(user["password_hash"], password):
+            flash("Usuario o contraseña inválidos.")
+            return redirect(url_for("login"))
+        session["user"] = {"id": user["id"], "username": user["username"]}
+        flash("Has iniciado sesión.")
+        return redirect(url_for("index"))
+    return render_template("login.html")
+
+@app.route("/logout")
+def logout():
+    # Borra la key 'user' de la sesión del navegador.
+    session.pop("user", None)
+    flash("Sesión cerrada.")
+    return redirect(url_for("index"))
+
+
+# ─── Checkout ─────────────────────────────────────────────────────────────────
+@app.route("/checkout", methods=["POST"])
+@login_required
+def checkout():
+    nombre = request.form.get("nombre", "").strip()
+    email  = request.form.get("email", "").strip() or None
+    if not nombre:
+        flash("Escribe tu nombre para continuar.")
+        return redirect(url_for("carrito"))
+    cart = carrito_session()
+    if not cart:
+        flash("Tu carrito está vacío.")
+        return redirect(url_for("index"))
+    items = [{"producto_id": int(pid), "cantidad": int(qty)} for pid, qty in cart.items()]
+    pedido_id = db.crear_pedido(nombre, email, items)
+    if not pedido_id:
+        flash("No se pudo procesar el pedido (¿stock insuficiente?).")
+        return redirect(url_for("carrito"))
+    session["carrito"] = {}
+    return render_template("checkout_ok.html", pedido_id=pedido_id)
+    # Ruta maestra que baja los productos del carrito a la base de datos como una Compra definitiva.
+    # Aquí se ejecuta db.crear_pedido() que desencadena la baja de stock.
+    # Si se rompe (no resta stock): Revisar que el form del html se envíe correctamente vía POST.
+
+
+# ─── Admin: logout ────────────────────────────────────────────────────────────
+@app.route("/admin/logout")
+def admin_logout():
+    session["admin"] = False
+    flash("Panel de administrador cerrado.")
+    return redirect(url_for("index"))
+
+
+# ─── Admin: productos ─────────────────────────────────────────────────────────
+@app.route("/admin/productos")
+@requires_admin
+def admin_productos():
+    productos = db.listar_productos()
+    return render_template("admin_productos.html", productos=productos)
+    # RUTA PRIVADA DE INVENTARIO (/admin/productos): Protegida por el decorador `@requires_admin`. Muestra el catálogo al Administrador en forma de tabla plana de listado.
+
+@app.route("/admin/producto/nuevo", methods=["GET", "POST"])
+@requires_admin
+def admin_producto_nuevo():
+    # RUTA PRIVADA CREAR (/admin/producto/nuevo): Renderiza un formulario HTML vacío y espera a que el Administrador presione "Guardar".
+    if request.method == "POST":
+        # 1. OBTIENE LOS DATOS: Lee cada campo de texto del HTML. `type=float` convierte el texto del precio a números decimales de Python.
+        nombre      = request.form.get("nombre", "").strip()
+        descripcion = request.form.get("descripcion", "").strip()
+        precio      = request.form.get("precio", type=float)
+        stock       = request.form.get("stock", type=int)
+        
+        # 2. VALIDACIÓN: Obliga a que nombre, precio y stock existan.
+        if not nombre or precio is None or stock is None:
+            flash("Completa todos los campos")
+            return redirect(url_for("admin_producto_nuevo"))
+            
+        # 3. MANEJO DE IMÁGENES: Por defecto le asigna 'default.jpg' por si el usuario no mandó foto.
+        imagen = "default.jpg"
+        imagen_file = request.files.get("imagen")
+        
+        if imagen_file and imagen_file.filename:
+            # Verifica si la extensión es válida (ej: .jpg o .png)
+            if allowed_image_file(imagen_file.filename):
+                # secure_filename limpia caracteres raros o hackers del nombre del archivo (ejemplo: ../archivo.jpg)
+                filename = secure_filename(imagen_file.filename)
+                nombre_archivo, extension = os.path.splitext(filename)
+                destino = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                # BUCLE ANTICHOQUES: Si ya existe una flor llamada 'rosa.jpg', le suma un número para guardarla como 'rosa_1.jpg' y no sobrescribir la antigua.
+                contador = 0
+                while os.path.exists(destino):
+                    contador += 1
+                    filename = f"{nombre_archivo}_{contador}{extension}"
+                    destino = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                # Descarga la foto y la guarda permanentemente en la carpeta estática.
+                imagen_file.save(destino)
+                imagen = filename
+            else:
+                flash("Formato de imagen no soportado. Se usará imagen por defecto.")
+        # 4. GUARDA EN BASE DE DATOS: Le envía todos los datos listos y el nombre de la foto a SQLite3.
+        producto_id = db.crear_producto(nombre, descripcion, precio, stock, imagen)
+        if producto_id:
+            flash("Producto creado")
+            return redirect(url_for("admin_productos"))
+            
+        flash("Error creando producto")
+        return redirect(url_for("admin_producto_nuevo"))
+        
+    return render_template("admin_producto_nuevo.html")
+
+@app.route("/admin/producto/<int:producto_id>/editar", methods=["GET", "POST"])
+@requires_admin
+def admin_producto_editar(producto_id):
+    # RUTA PRIVADA EDITAR (/admin/producto/editar): Es un espejo casi gemelo de "crear", pero aquí ya sabemos el ID del producto a modificar.
+    # Busca la flor específica para llenar los campos originalmente.
+    p = db.obtener_producto(producto_id)
+    if not p:
+        flash("Producto no encontrado.")
+        return redirect(url_for("admin_productos"))
+        
+    if request.method == "POST":
+        nombre      = request.form.get("nombre", "").strip()
+        descripcion = request.form.get("descripcion", "").strip()
+        precio      = request.form.get("precio", type=float)
+        stock       = request.form.get("stock", type=int)
+        
+        if not nombre or precio is None or stock is None:
+            flash("Completa todos los campos.")
+            return redirect(url_for("admin_producto_editar", producto_id=producto_id))
+            
+        # Si NO mandan una foto nueva, nueva_imagen se queda en 'None'. Esto le dirá a SQLite3 que ni toque la foto original que ya tenía.
+        nueva_imagen = None
+        imagen_file = request.files.get("imagen")
+        
+        # Si el usuario SÍ seleccionó un nuevo JPG/PNG...
+        if imagen_file and imagen_file.filename:
+            if allowed_image_file(imagen_file.filename):
+                filename = secure_filename(imagen_file.filename)
+                nombre_archivo, extension = os.path.splitext(filename)
+                destino = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                
+                # Bucle anticollisions para no borrar una foto de otra flor
+                contador = 0
+                while os.path.exists(destino):
+                    contador += 1
+                    filename = f"{nombre_archivo}_{contador}{extension}"
+                    destino = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                    
+                imagen_file.save(destino)
+                nueva_imagen = filename
+            else:
+                flash("Formato de imagen no soportado. Se conservará la imagen actual.")
+                
+        # Función 'actualizar_producto' la cual internamente decide: ¿Hubo foto? Modifica el campo imagen. ¿No hubo foto? Se brinca ese campo de SQL.
+        success = db.actualizar_producto(producto_id, nombre, descripcion, precio, stock, nueva_imagen)
+        if success:
+            flash("Producto actualizado correctamente.")
+            return redirect(url_for("admin_productos"))
+            
+        flash("Error al actualizar el producto.")
+        return redirect(url_for("admin_producto_editar", producto_id=producto_id))
+        
+    return render_template("admin_producto_editar.html", p=p)
+
+@app.route("/admin/producto/<int:producto_id>/borrar", methods=["POST"])
+@requires_admin
+def admin_producto_borrar(producto_id):
+    # RUTA PRIVADA ELIMINAR: Protegida. Permite que el Administrador presione el botón rojo y ejecute la instrucción de borrado (DELETE FROM) en la Base de Datos mediante la función `borrar_producto()`.
+    success = db.borrar_producto(producto_id)
+    flash("Producto eliminado" if success else "No se pudo eliminar el producto")
+    return redirect(url_for("admin_productos"))
+
+@app.route("/admin/producto/<int:producto_id>/stock", methods=["POST"])
+@requires_admin
+def admin_producto_stock(producto_id):
+    """Actualizar stock de un producto directamente desde el panel."""
+    nuevo_stock = request.form.get("stock", type=int)
+    if nuevo_stock is None or nuevo_stock < 0:
+        flash("Stock inválido.")
+        return redirect(url_for("admin_productos"))
+    success = db.actualizar_stock(producto_id, nuevo_stock)
+    flash("Stock actualizado." if success else "Error actualizando stock.")
+    return redirect(url_for("admin_productos"))
+
+
+# ─── Admin: pedidos ───────────────────────────────────────────────────────────
+@app.route("/admin/pedidos")
+@requires_admin
+def admin_pedidos():
+    pedidos = db.listar_pedidos()
+    return render_template("admin_pedidos.html", pedidos=pedidos)
+
+@app.route("/admin/pedidos/actualizar", methods=["POST"])
+@requires_admin
+def admin_pedidos_actualizar():
+    """Actualiza los estados de múltiples pedidos via checkboxes."""
+    # IDs que el admin marcó como 'entregado'
+    ids_entregados = set(request.form.getlist("entregado"))
+    todos_los_pedidos = db.listar_pedidos()
+    for pedido in todos_los_pedidos:
+        nuevo_estado = "entregado" if str(pedido["id"]) in ids_entregados else "pendiente"
+        db.actualizar_estado_pedido(pedido["id"], nuevo_estado)
+    flash("Pedidos actualizados.")
+    return redirect(url_for("admin_pedidos"))
+
+
+# ─── Admin: avisos ────────────────────────────────────────────────────────────
+@app.route("/admin/avisos")
+@requires_admin
+def admin_avisos():
+    # RUTA PRIVADA AVISOS (/admin/avisos): Pantalla central del Administrador donde puede ver todos los mensajitos creados.
+    # Solicita a SQLite3 (listar_avisos) que devuelva la tabla completa, incluso aquellos que estén "apagados".
+    avisos = db.listar_avisos()
+    return render_template("admin_avisos.html", avisos=avisos)
+
+@app.route("/admin/aviso/nuevo", methods=["POST"])
+@requires_admin
+def admin_aviso_nuevo():
+    # RUTA CREAR AVISO: Recibe las palabras del formulario (Título y Mensaje).
+    titulo  = request.form.get("titulo", "").strip()
+    mensaje = request.form.get("mensaje", "").strip()
+    
+    # 1. Validación de seguridad básica: si dejaron un espacio en blanco, aborta la subida.
+    if not titulo or not mensaje:
+        flash("Completa título y mensaje.")
+        return redirect(url_for("admin_avisos"))
+    
+    # 2. Si todo está correcto, empuja el texto hacia SQLite3 llamando al comando interno (INSERT INTO).
+    db.crear_aviso(titulo, mensaje)
+    flash("Aviso publicado.")
+    return redirect(url_for("admin_avisos"))
+
+@app.route("/admin/aviso/<int:aviso_id>/toggle", methods=["POST"])
+@requires_admin
+def admin_aviso_toggle(aviso_id):
+    # Si un aviso dice 'activo=True', esta función entra a la Base de Datos y lo cambia a 'False' (para ocultarlo del público).
+    # Si dice 'False', lo vuelve 'True'. Es un simple interruptor de encendido/apagado para mostrar u ocultar el aviso sin borrarlo.
+    db.togglear_aviso(aviso_id)
+    return redirect(url_for("admin_avisos"))
+
+@app.route("/admin/aviso/<int:aviso_id>/borrar", methods=["POST"])
+@requires_admin
+def admin_aviso_borrar(aviso_id):
+    # RUTA DE ELIMINACIÓN PERMANENTE: Ejecuta una instrucción destructiva de borrado (DELETE FROM avisos).
+    db.borrar_aviso(aviso_id)
+    flash("Aviso eliminado.")
+    return redirect(url_for("admin_avisos"))
+
+
+# ─── Admin: reporte de ventas ─────────────────────────────────────────────────
+@app.route("/admin/reporte")
+@requires_admin
+def admin_reporte():
+    # RUTA DE REPORTE DIARIO (/admin/reporte): Descarga la suma total económica generada por SQLite con los ingresos totales del día actual y se la pasa a un archivo estático de gráfica.
+    pedidos, total_dia = db.reporte_ventas_hoy()
+    from datetime import date
+    hoy = date.today().strftime("%d/%m/%Y")
+    return render_template("admin_reporte.html", pedidos=pedidos, total_dia=total_dia, hoy=hoy)
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
+    # Instrucciones de ejecución:
+    # pip install flask
+    # py app.py
+    # Abrir: http://127.0.0.1:5000/
