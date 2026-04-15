@@ -13,40 +13,42 @@
 <body>
   <!-- 
  =======================================================================
- EXPLICACIÓN DE JINJA (Cosas que no son HTML 100% básico)
- 
- Los bloques que ves como llaves dobles { variables } o '{ block content }' 
- son de Jinja2. Jinja2 es el motor lógico de plantillas de Flask.
- Básicamente sirve para enviar datos desde el archivo de Python directo 
- al HTML sin tener que programar engorrosas llamadas en Javascript.
- 
- El tag '{ block content }' en la línea 53 actúa como un "molde hueco". 
- Como todas las pantallas de la tienda comparten el encabezado superior y
- la barra rojas, en lugar de copiar y pegar el Navbar 10 veces, todos 
- los demás archivos simplemente "heredan" de base.html y rellenan el hueco. 
- =======================================================================
+ EXPLICACIÓN DE JINJA: Los bloques que ves como llaves dobles { variables } o '{ block content }' son de Jinja2. Jinja2 es el motor lógico de plantillas de Flask. Básicamente sirve para enviar datos desde el archivo de Python directo  al HTML.
+ El tag '{ block content }' en la línea 53 actúa como un "molde hueco".  Como todas las pantallas de la tienda comparten el encabezado superior y la barra rojas, en lugar de copiar y pegar el Navbar 10 veces, todos los demás archivos simplemente "heredan" de base.html y lo rellenan.
+=======================================================================
 -->
 
-  <!-- ESTILO BASE: Este archivo sirve como plantilla base. Todos los demás .html heredan de aquí con { % extends 'base.html' % }.Para arreglar algo de la Navbar o el pie de página global, es aquí mismo.-->
+  <!-- ESTILO BASE: Este archivo sirve como plantilla base. Todos los demás .html heredan de aquí con { % extends 'base.html' % }. PARA EDITAR ALGO DEL: Navbar o el pie de página global, es aquí.-->
 
   <header class="topbar">
     <a class="brand" href="{{ url_for('index') }}">
     <img src="{{ url_for('static', filename='imagenes/minifoto.png') }}" alt="flor" class="brand-logo">
     Florería Brillo Eterno
     </a>
-    <a class="cartlink" href="{{ url_for('carrito') }}"> Carrito</a>
+    <a class="cartlink {% if request.endpoint == 'carrito' %}active{% endif %}" href="{{ url_for('carrito') }}">Carrito</a>
     {% if session.get('admin') %}
-      <a class="cartlink" href="{{ url_for('admin_productos') }}">Panel Admin</a>
+      <a class="cartlink {% if request.endpoint == 'admin_productos' %}active{% endif %}" href="{{ url_for('admin_productos') }}">Panel Admin</a>
       <a class="cartlink" href="{{ url_for('admin_logout') }}">Cerrar sesión</a>
     {% elif session.get('user') %}
       <span class="cartlink">Hola {{ session.get('user')['username'] }}</span>
       <a class="cartlink" href="{{ url_for('logout') }}">Cerrar sesión</a>
     {% else %}
-      <a class="cartlink" href="{{ url_for('login') }}">Inicia sesión</a>
-      <a class="cartlink" href="{{ url_for('registro') }}">Regístrate</a>
+      <a class="cartlink {% if request.endpoint == 'login' %}active{% endif %}" href="{{ url_for('login') }}">Inicia sesión</a>
+      <a class="cartlink {% if request.endpoint == 'registro' %}active{% endif %}" href="{{ url_for('registro') }}">Regístrate</a>
     {% endif %}
   </header>
+  {% if request.endpoint in ['index', 'login', 'registro'] %}
   <img src="{{ url_for('static', filename='imagenes/principal1.jpg') }}" alt="flor" class="principal">
+  {% elif request.endpoint not in ['producto'] %}
+  <div class="page-title-banner no-print">
+    <div class="bloom-wrapper">
+      <img src="{{ url_for('static', filename='imagenes/minifoto.png') }}" class="page-title-flower-3d" alt="Flor Naciendo">
+    </div>
+    <div class="page-title-ornament">Panel de Control</div>
+    <h2 class="page-title-text">{{ request.endpoint | replace('_', ' ') | title }}</h2>
+    <div class="page-title-line"></div>
+  </div>
+  {% endif %}
   <main class="container">
     {% with messages = get_flashed_messages() %}
       {% if messages %}
@@ -64,9 +66,16 @@
   <footer class="footer">
     <div class="footer-content">
       <div class="footer-brand">Brillo Eterno</div>
-      <div class="footer-motto">Símbolos de amor eterno, arreglos florales envueltos con el corazón y diseñados para perdurar toda la vida.</div>
+      <div class="footer-motto">
+        Símbolos de amor eterno, arreglos florales envueltos con el corazón y diseñados para perdurar toda la vida.
+        <br><br>
+        <strong>📍 Aguascalientes, Ags. &nbsp;|&nbsp; 📞 4495849972</strong>
+      </div>
       <div class="footer-links">
         <a href="{{ url_for('index') }}">Catálogo Floral</a>
+        <a href="https://www.instagram.com/floreria_brillo_eterno/" target="_blank">Instagram</a>
+        <a href="https://www.facebook.com/profile.php?id=61557392647096" target="_blank">Facebook</a>
+        <a href="https://www.tiktok.com/@florera.brillo.et" target="_blank">TikTok</a>
       </div>
     </div>
     <div class="footer-bottom">

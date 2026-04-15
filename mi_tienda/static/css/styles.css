@@ -2,19 +2,41 @@
 /*
  =======================================================================
  HOJA DE ESTILOS SCSS 
+ 1. USO DE VARIABLES ESTÁNDAR (var(--color-rojo), var(--font-title))
+ 2. Con SCSS, solo cambias la variable var(--color-rojo) aquí arriba, y Gulp reescribe TODO el código automáticamente.
+ 3. Nunca editar el archivo styles.css directamente. Nosotros debemos editar siempre el SCSS (Sass).
+EXPLICACIÓN:
+    ° ¿Dónde edito mis estilos? Abrir el archivo que se encuentra en esta ruta: mi_tienda/static/scss/styles.scss. Ahí encontrarás todo el código ordenado con variables de colores en la parte superior (ej. --color-rojo). Haz allí cualquier cambio de colores, márgenes o fuentes que necesites. Cuando guardes el archivo, aún no verás los cambios en la tienda. Tienes que compilarlo.
 
- ¿POR QUÉ USAMOS SCSS/SASS EN VEZ DE CSS NORMAL?
- 1. USO DE VARIABLES ESTÁNDAR ($color-rojo, $font-title): En un CSS normal tendrías que 
-    buscar y reemplazar el código hexadecimal 50 veces. Con SCSS, solo cambias 
-    la variable $color-rojo aquí arriba, y Gulp reescribe TODO el código automáticamente.
+    ° ¿Cómo compilar el SCSS a CSS? (Correr Sass) Utilizar Gulp para tomar el código .scss y compilarlo en el .css tradicional que entienden los navegadores.Para compilarlo, abre la Terminal (Consola) asegurándote de estar dentro de la carpeta mi_tienda y corre uno de estos dos comandos:
+    Opción A (Compilar una sola vez): Si solo hiciste un cambio y quieres compilarlo rápidamente, escribe esto y dale Enter: npx gulp styles (PERO SI ESCRIBANLO EN LA TERMINA CTRL + Ñ) (Gulp tomará el archivo scss, lo procesará y sobreescribirá tu styles.css).
+    Opción B: Si queremos que se compile solito cada vez que guardas (Ctrl + S), arranca Gulp de esta manera: npx gulp watch (Cuando termines de editar, simplemente presiona Ctrl + C en terminal para apagar el observador).
+
+    ° Refresca tu Navegador: Después de que la consola te diga que se compiló exitosamente, simplemente recarga la pestaña de tu navegador (puedes usar Ctrl + F5 o Shift + F5)
  =======================================================================
 */
+:root {
+  --font-primary: 'Lora', serif;
+  --font-title: 'Cormorant Garamond', serif;
+  --font-handwritten: 'Great Vibes', cursive;
+  --color-rojo: #9a1e3f;
+  --color-rojo-hover: #7b1832;
+  --color-rojo-dark: #4f0f18;
+  --color-blanco: #ffffff;
+  --color-fondo-warm: #fcf9f8;
+  --color-texto-oscuro: #2b2123;
+  --color-texto-suave: #6b5a5d;
+  --color-borde: #e8dcdb;
+  --shadow-soft: 0 8px 30px rgba(166, 42, 75, 0.08);
+  --shadow-hover: 0 15px 40px rgba(166, 42, 75, 0.15);
+  --transition-smooth: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
 /*
 ==============================================
  APARTADO 1: BARRA DE DESPLAZAMIENTO (SCROLL)
 ==============================================
-Estos estilos personalizan la barra lateral derecha para que no sea la típica de Chrome, dándole un look más bonito y en tono con la tienda.
-*/
+Estos estilos personalizan la barra lateral derecha*/
 ::-webkit-scrollbar {
   width: 12px;
 }
@@ -25,13 +47,13 @@ Estos estilos personalizan la barra lateral derecha para que no sea la típica d
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #9a1e3f, #7b1832);
+  background: linear-gradient(180deg, var(--color-rojo), var(--color-rojo-hover));
   border-radius: 20px;
   border: 2px solid #fff0f5;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #9a1e3f, #7b1832);
+  background: linear-gradient(180deg, var(--color-rojo), var(--color-rojo-hover));
 }
 
 /* RESET MÍNIMO MUY IMPORTANTE */
@@ -42,14 +64,14 @@ Estos estilos personalizan la barra lateral derecha para que no sea la típica d
 body {
   margin: 0;
   padding: 0;
-  background-color: #fcf9f8;
-  color: #2b2123;
-  font-family: "Lora", serif;
+  background-color: var(--color-fondo-warm);
+  color: var(--color-texto-oscuro);
+  font-family: var(--font-primary);
   line-height: 1.6;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: "Cormorant Garamond", serif;
+  font-family: var(--font-title);
   margin-top: 0;
 }
 
@@ -57,8 +79,7 @@ h1, h2, h3, h4, h5, h6 {
 ==============================================
  APARTADO 2: ESTRUCTURA GLOBAL Y BARRA SUPERIOR
 ==============================================
-Aquí están los estilos principales de la página (Navbars, contenedores, enlaces base).
-*/
+Aquí están los estilos principales de la página (Navbars, contenedores, enlaces base).*/
 .topbar {
   display: flex;
   justify-content: space-between;
@@ -67,7 +88,7 @@ Aquí están los estilos principales de la página (Navbars, contenedores, enlac
   background-color: rgba(250, 247, 245, 0.85); /* Semi-transparent warm bg */
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid #e8dcdb;
+  border-bottom: 1px solid var(--color-borde);
   font-size: 17px;
   font-weight: 500;
   position: sticky;
@@ -79,7 +100,7 @@ Aquí están los estilos principales de la página (Navbars, contenedores, enlac
 .brand {
   font-weight: 800;
   text-decoration: none;
-  color: #9a1e3f; /* Now red text, not white $color-blanco */
+  color: var(--color-rojo); /* Now red text, not white var(--color-blanco) */
   display: flex;
   align-items: center;
   gap: 12px;
@@ -90,11 +111,11 @@ Aquí están los estilos principales de la página (Navbars, contenedores, enlac
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  border: 2px solid #9a1e3f;
+  border: 2px solid var(--color-rojo);
   object-fit: cover;
   background-color: transparent;
   box-shadow: 0 4px 10px rgba(166, 42, 75, 0.15);
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transition: var(--transition-smooth);
 }
 
 .brand:hover .brand-logo {
@@ -103,23 +124,31 @@ Aquí están los estilos principales de la página (Navbars, contenedores, enlac
 
 .cartlink {
   text-decoration: none;
-  color: #2b2123;
+  color: var(--color-texto-oscuro);
   padding: 8px 16px;
   border-radius: 999px;
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transition: var(--transition-smooth);
+}
+.cartlink.active {
+  text-decoration: underline;
+  text-decoration-color: var(--color-rojo);
+  text-underline-offset: 4px;
+  text-decoration-thickness: 2px;
+  font-weight: 700;
+  color: var(--color-rojo);
 }
 
 .cartlink:hover {
-  background: white;
-  color: #9a1e3f;
+  background: #fff0f5;
+  color: var(--color-rojo);
   box-shadow: 0 4px 10px rgba(166, 42, 75, 0.08);
 }
 
 body {
   margin: 0;
-  background: #fcf9f8;
-  color: #2b2123;
-  font-family: "Lora", serif;
+  background: var(--color-fondo-warm);
+  color: var(--color-texto-oscuro);
+  font-family: var(--font-primary);
 }
 
 .principal {
@@ -130,17 +159,17 @@ body {
   display: block;
   margin: 30px auto;
   border-radius: 30px;
-  box-shadow: 0 8px 30px rgba(166, 42, 75, 0.08);
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: var(--shadow-soft);
+  transition: var(--transition-smooth);
 }
 
 .principal:hover {
-  box-shadow: 0 15px 40px rgba(166, 42, 75, 0.15);
+  box-shadow: var(--shadow-hover);
   transform: translateY(-4px);
 }
 
 .index_titulo {
-  color: #9a1e3f;
+  color: var(--color-rojo);
   font-size: 2.5rem;
   font-weight: 700;
   text-align: center;
@@ -155,7 +184,7 @@ body {
   content: "";
   flex: 1;
   height: 1px;
-  background: linear-gradient(to right, transparent, #e8dcdb, transparent);
+  background: linear-gradient(to right, transparent, var(--color-borde), transparent);
 }
 
 .container {
@@ -166,19 +195,20 @@ body {
 }
 
 .card {
-  background: #ffffff;
+  background: var(--color-blanco);
   border: 1px solid rgba(255, 255, 255, 0.4);
   border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 8px 30px rgba(166, 42, 75, 0.08);
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: var(--shadow-soft);
+  transition: var(--transition-smooth);
   display: flex;
   flex-direction: column;
+  scroll-margin-top: 110px; /* Evita que la navbar tape la imagen */
 }
 
 .card:hover {
   transform: translateY(-8px);
-  box-shadow: 0 15px 40px rgba(166, 42, 75, 0.15);
+  box-shadow: var(--shadow-hover);
 }
 
 .card a {
@@ -194,7 +224,7 @@ body {
   transition: transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
-.card:hover .card-img {
+.card a:hover .card-img {
   transform: scale(1.05);
 }
 
@@ -212,7 +242,7 @@ body {
   font-size: 1rem;
   font-weight: bold;
   margin: 0 0 6px 0;
-  color: #2b2123;
+  color: var(--color-texto-oscuro);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -221,7 +251,7 @@ body {
 .card-precio {
   font-size: 1.15rem;
   font-weight: bold;
-  color: #9a1e3f;
+  color: var(--color-rojo);
 }
 
 .row {
@@ -233,12 +263,12 @@ body {
 }
 
 .muted {
-  color: #6b5a5d;
+  color: var(--color-texto-suave);
 }
 
 .pill {
   background: #fff0f0;
-  color: #9a1e3f;
+  color: var(--color-rojo);
   padding: 4px 10px;
   border-radius: 999px;
   font-size: 12px;
@@ -246,35 +276,35 @@ body {
 }
 
 .btn {
-  border: 1px solid #e8dcdb;
-  background: #ffffff;
+  border: 1px solid var(--color-borde);
+  background: var(--color-blanco);
   padding: 10px 20px;
   border-radius: 999px; /* Fully rounded buttons */
   cursor: pointer;
   text-decoration: none;
-  color: #2b2123;
-  font-family: "Lora", serif;
+  color: var(--color-texto-oscuro);
+  font-family: var(--font-primary);
   font-size: 0.95rem;
   font-weight: 500;
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transition: var(--transition-smooth);
 }
 
 .btn:hover {
-  background: #fcf9f8;
-  border-color: #6b5a5d;
+  background: var(--color-fondo-warm);
+  border-color: var(--color-texto-suave);
   transform: translateY(-2px);
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
 }
 
 .btn.primary {
   border-color: transparent;
-  background: linear-gradient(135deg, #9a1e3f, #7b1832);
-  color: #ffffff;
+  background: linear-gradient(135deg, var(--color-rojo), var(--color-rojo-hover));
+  color: var(--color-blanco);
   box-shadow: 0 4px 15px rgba(166, 42, 75, 0.15);
 }
 
 .btn.primary:hover {
-  background: linear-gradient(135deg, #7b1832, #9a1e3f);
+  background: linear-gradient(135deg, var(--color-rojo-hover), var(--color-rojo));
   box-shadow: 0 8px 25px rgba(166, 42, 75, 0.25);
   border-color: transparent;
 }
@@ -283,8 +313,8 @@ body {
   width: 70px;
   padding: 9px;
   border-radius: 10px;
-  border: 1px solid #e8dcdb;
-  font-family: "Lora", serif;
+  border: 1px solid var(--color-borde);
+  font-family: var(--font-primary);
 }
 
 .table {
@@ -304,7 +334,7 @@ body {
 
 .table th {
   background: #fdf6f6;
-  color: #9a1e3f;
+  color: var(--color-rojo);
   font-weight: bold;
 }
 
@@ -324,16 +354,16 @@ body {
 
 .input {
   padding: 11px 14px;
-  border: 1px solid #e8dcdb;
+  border: 1px solid var(--color-borde);
   border-radius: 16px;
   min-width: 220px;
-  font-family: "Lora", serif;
+  font-family: var(--font-primary);
   font-size: 1rem;
 }
 
 .input:focus {
   outline: none;
-  border-color: #9a1e3f;
+  border-color: var(--color-rojo);
   box-shadow: 0 0 0 4px rgba(166, 42, 75, 0.15);
 }
 
@@ -349,11 +379,11 @@ body {
 ==============================================
  APARTADO 3: TARJETAS DE PRODUCTO MODO EXPANSIÓN
 ==============================================
-El diseño individual cuando abres una flor o arreglo específico.
-*/
+El diseño individual cuando abres una flor o arreglo específico.*/
 .producto-container {
   margin-top: 3rem;
-  font-family: "Lora", serif;
+  font-family: var(--font-primary);
+  scroll-margin-top: 110px;
 }
 
 .producto-card {
@@ -388,18 +418,18 @@ El diseño individual cuando abres una flor o arreglo específico.
 
 .producto-title {
   font-size: 2rem;
-  color: #9a1e3f;
+  color: var(--color-rojo);
 }
 
 /* DESCRIPCIÓN */
 .producto-desc {
-  color: #6b5a5d;
+  color: var(--color-texto-suave);
   line-height: 1.5;
 }
 
 .producto-precio {
   font-size: 1.8rem;
-  color: #9a1e3f;
+  color: var(--color-rojo);
   font-weight: bold;
 }
 
@@ -409,7 +439,7 @@ El diseño individual cuando abres una flor o arreglo específico.
 }
 
 .producto-stock span {
-  color: #9a1e3f;
+  color: var(--color-rojo);
   font-weight: 500;
 }
 
@@ -426,16 +456,16 @@ El diseño individual cuando abres una flor o arreglo específico.
   border-radius: 999px;
   border: 1px solid #ddd;
   text-align: center;
-  font-family: "Lora", serif;
+  font-family: var(--font-primary);
 }
 
 .producto-qty:focus {
   outline: none;
-  border-color: #9a1e3f;
+  border-color: var(--color-rojo);
 }
 
 .producto-btn {
-  background: #9a1e3f;
+  background: var(--color-rojo);
   color: white;
   border-radius: 999px;
   padding: 0.7rem 1.5rem;
@@ -443,7 +473,7 @@ El diseño individual cuando abres una flor o arreglo específico.
 }
 
 .producto-btn:hover {
-  background: #7b1832;
+  background: var(--color-rojo-hover);
   transform: translateY(-2px);
   box-shadow: 0 8px 20px rgba(186, 47, 47, 0.25);
 }
@@ -452,8 +482,7 @@ El diseño individual cuando abres una flor o arreglo específico.
 ==============================================
  APARTADO 4: PANEL DE CONTROL MAGISTRAL DEL ADMIN
 ==============================================
-Aquí diseñamos todo el panel interno del administrador donde puede agregar, eliminar y ver inventario.
-*/
+Panel interno del administrador donde puede agregar, eliminar y ver inventario. */
 .admin-auth-wrapper {
   min-height: 80vh;
   display: flex;
@@ -483,12 +512,12 @@ Aquí diseñamos todo el panel interno del administrador donde puede agregar, el
   left: 0;
   width: 100%;
   height: 6px;
-  background-color: #9a1e3f;
+  background-color: var(--color-rojo);
   border-radius: 20px 20px 0 0;
 }
 
 .admin-auth-title {
-  color: #9a1e3f;
+  color: var(--color-rojo);
   font-size: 2.2rem;
   font-weight: bold;
   margin-top: 0;
@@ -496,7 +525,7 @@ Aquí diseñamos todo el panel interno del administrador donde puede agregar, el
 }
 
 .admin-auth-subtitle {
-  color: #6b5a5d;
+  color: var(--color-texto-suave);
   font-size: 1rem;
   margin-bottom: 2.5rem;
   font-style: italic;
@@ -511,27 +540,27 @@ Aquí diseñamos todo el panel interno del administrador donde puede agregar, el
   display: block;
   font-size: 0.95rem;
   font-weight: bold;
-  color: #2b2123;
+  color: var(--color-texto-oscuro);
   margin-bottom: 0.6rem;
 }
 
 .admin-auth-input {
   width: 100%;
   padding: 14px 16px;
-  background: #fcf9f8;
-  border: 1.5px solid #e8dcdb;
+  background: var(--color-fondo-warm);
+  border: 1.5px solid var(--color-borde);
   border-radius: 16px;
   font-size: 1rem;
-  font-family: "Lora", serif;
-  color: #2b2123;
+  font-family: var(--font-primary);
+  color: var(--color-texto-oscuro);
   transition: all 0.3s ease;
   box-sizing: border-box;
 }
 
 .admin-auth-input:focus {
   outline: none;
-  border-color: #9a1e3f;
-  background: #ffffff;
+  border-color: var(--color-rojo);
+  background: var(--color-blanco);
   box-shadow: 0 0 0 4px rgba(186, 47, 47, 0.1);
 }
 
@@ -539,20 +568,20 @@ Aquí diseñamos todo el panel interno del administrador donde puede agregar, el
   width: 100%;
   margin-top: 1rem;
   padding: 15px;
-  background: #9a1e3f;
-  color: #ffffff;
+  background: var(--color-rojo);
+  color: var(--color-blanco);
   border: none;
   border-radius: 16px;
   font-size: 1.1rem;
   font-weight: bold;
-  font-family: "Lora", serif;
+  font-family: var(--font-primary);
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 6px 15px rgba(186, 47, 47, 0.2);
 }
 
 .admin-auth-btn:hover {
-  background: #7b1832;
+  background: var(--color-rojo-hover);
   transform: translateY(-2px);
   box-shadow: 0 10px 20px rgba(186, 47, 47, 0.25);
 }
@@ -565,13 +594,12 @@ Aquí diseñamos todo el panel interno del administrador donde puede agregar, el
 ==============================================
  APARTADO 5: PANTALLA DE INICIO DE SESIÓN
 ==============================================
-Aquí estilizamos las tarjetas blancas y los botones de Login de nuestra tienda, incluyendo nuestro Segmented Control (boton de toggle).
-*/
+Tarjetas blancas y los botones de Login de la tienda, incluyendo nuestro Segmented Control (boton de toggle).*/
 .login-container {
   display: flex;
   justify-content: center;
   margin-top: 3rem;
-  font-family: "Lora", serif;
+  font-family: var(--font-primary);
 }
 
 .login-card {
@@ -593,20 +621,20 @@ Aquí estilizamos las tarjetas blancas y los botones de Login de nuestra tienda,
   transform: translateX(-50%);
   width: 60%;
   height: 3px;
-  background: linear-gradient(90deg, transparent, #9a1e3f, transparent);
+  background: linear-gradient(90deg, transparent, var(--color-rojo), transparent);
 }
 
 .login-title {
   font-size: 2.5rem;
-  font-family: "Cormorant Garamond", serif;
+  font-family: var(--font-title);
   font-weight: 600;
-  color: #9a1e3f;
+  color: var(--color-rojo);
   margin-bottom: 0.2rem;
 }
 
 .login-subtitle {
-  color: #6b5a5d;
-  font-family: "Lora", serif;
+  color: var(--color-texto-suave);
+  font-family: var(--font-primary);
   margin-bottom: 1.5rem;
   font-size: 1rem;
 }
@@ -627,16 +655,16 @@ Aquí estilizamos las tarjetas blancas y los botones de Login de nuestra tienda,
   border-radius: 8px;
   cursor: pointer;
   font-weight: 600;
-  color: #6b5a5d;
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  color: var(--color-texto-suave);
+  transition: var(--transition-smooth);
   font-size: 0.95rem;
 }
 
-/* Control del resaltado de los botones sin usar javascript */
+/* Control del resaltado de los botones */
 #role-cliente:checked ~ .login-toggle label[for=role-cliente],
 #role-admin:checked ~ .login-toggle label[for=role-admin] {
-  background: #ffffff;
-  color: #2b2123;
+  background: var(--color-blanco);
+  color: var(--color-texto-oscuro);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
@@ -665,7 +693,7 @@ Aquí estilizamos las tarjetas blancas y los botones de Login de nuestra tienda,
   font-size: 0.8rem;
   font-weight: 700;
   letter-spacing: 0.05rem;
-  color: #6b5a5d;
+  color: var(--color-texto-suave);
   margin-bottom: 0.4rem;
   display: block;
   text-transform: uppercase;
@@ -678,34 +706,34 @@ Aquí estilizamos las tarjetas blancas y los botones de Login de nuestra tienda,
   border: 1.5px solid #eae5e1;
   background-color: #faf7f5;
   font-size: 0.95rem;
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  font-family: "Lora", serif;
-  color: #2b2123;
+  transition: var(--transition-smooth);
+  font-family: var(--font-primary);
+  color: var(--color-texto-oscuro);
 }
 
 .login-input:focus {
   outline: none;
-  border-color: #9a1e3f;
-  background-color: #ffffff;
+  border-color: var(--color-rojo);
+  background-color: var(--color-blanco);
   box-shadow: 0 0 0 4px rgba(154, 30, 63, 0.08);
 }
 
 .login-btn {
   margin-top: 1rem;
-  background: #9a1e3f;
-  color: #ffffff;
+  background: var(--color-rojo);
+  color: var(--color-blanco);
   border-radius: 12px;
   padding: 0.9rem;
   font-size: 1.05rem;
   font-weight: 600;
   letter-spacing: 0.03rem;
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transition: var(--transition-smooth);
   border: none;
   cursor: pointer;
 }
 
 .login-btn:hover {
-  background: #7b1832;
+  background: var(--color-rojo-hover);
   transform: translateY(-2px);
   box-shadow: 0 8px 20px rgba(154, 30, 63, 0.25);
 }
@@ -713,11 +741,11 @@ Aquí estilizamos las tarjetas blancas y los botones de Login de nuestra tienda,
 .login-footer {
   margin-top: 1.5rem;
   font-size: 0.9rem;
-  color: #6b5a5d;
+  color: var(--color-texto-suave);
 }
 
 .login-link {
-  color: #9a1e3f;
+  color: var(--color-rojo);
   text-decoration: none;
   font-weight: 500;
 }
@@ -731,7 +759,7 @@ Aquí estilizamos las tarjetas blancas y los botones de Login de nuestra tienda,
   display: flex;
   justify-content: center;
   margin-top: 3rem;
-  font-family: "Lora", serif;
+  font-family: var(--font-primary);
 }
 
 .registro-card {
@@ -753,14 +781,14 @@ Aquí estilizamos las tarjetas blancas y los botones de Login de nuestra tienda,
   transform: translateX(-50%);
   width: 60%;
   height: 3px;
-  background: linear-gradient(90deg, transparent, #9a1e3f, transparent);
+  background: linear-gradient(90deg, transparent, var(--color-rojo), transparent);
 }
 
 .registro-title {
   font-size: 2.5rem;
-  font-family: "Cormorant Garamond", serif;
+  font-family: var(--font-title);
   font-weight: 600;
-  color: #9a1e3f;
+  color: var(--color-rojo);
   margin-bottom: 1.5rem;
 }
 
@@ -776,7 +804,7 @@ Aquí estilizamos las tarjetas blancas y los botones de Login de nuestra tienda,
 
 .registro-label {
   font-size: 0.9rem;
-  color: #6b5a5d;
+  color: var(--color-texto-suave);
   margin-bottom: 0.3rem;
   display: block;
 }
@@ -788,18 +816,18 @@ Aquí estilizamos las tarjetas blancas y los botones de Login de nuestra tienda,
   border: 1px solid #ddd;
   font-size: 0.95rem;
   transition: 0.3s;
-  font-family: "Lora", serif;
+  font-family: var(--font-primary);
 }
 
 .registro-input:focus {
   outline: none;
-  border-color: #9a1e3f;
+  border-color: var(--color-rojo);
   box-shadow: 0 0 0 3px rgba(186, 47, 47, 0.1);
 }
 
 .registro-btn {
   margin-top: 0.5rem;
-  background: #9a1e3f;
+  background: var(--color-rojo);
   color: white;
   border-radius: 999px;
   padding: 0.7rem;
@@ -808,7 +836,7 @@ Aquí estilizamos las tarjetas blancas y los botones de Login de nuestra tienda,
 }
 
 .registro-btn:hover {
-  background: #7b1832;
+  background: var(--color-rojo-hover);
   transform: translateY(-2px);
   box-shadow: 0 8px 20px rgba(186, 47, 47, 0.25);
 }
@@ -816,11 +844,11 @@ Aquí estilizamos las tarjetas blancas y los botones de Login de nuestra tienda,
 .registro-footer {
   margin-top: 1.5rem;
   font-size: 0.9rem;
-  color: #6b5a5d;
+  color: var(--color-texto-suave);
 }
 
 .registro-link {
-  color: #9a1e3f;
+  color: var(--color-rojo);
   text-decoration: none;
   font-weight: 500;
 }
@@ -834,7 +862,7 @@ Aquí estilizamos las tarjetas blancas y los botones de Login de nuestra tienda,
   display: flex;
   justify-content: center;
   margin-top: 3rem;
-  font-family: "Lora", serif;
+  font-family: var(--font-primary);
 }
 
 .admin-card {
@@ -855,15 +883,15 @@ Aquí estilizamos las tarjetas blancas y los botones de Login de nuestra tienda,
   transform: translateX(-50%);
   width: 60%;
   height: 3px;
-  background: linear-gradient(90deg, transparent, #9a1e3f, transparent);
+  background: linear-gradient(90deg, transparent, var(--color-rojo), transparent);
 }
 
 .admin-title {
   text-align: center;
   font-size: 2.5rem;
-  font-family: "Cormorant Garamond", serif;
+  font-family: var(--font-title);
   font-weight: 600;
-  color: #9a1e3f;
+  color: var(--color-rojo);
   margin-bottom: 2rem;
 }
 
@@ -886,7 +914,7 @@ Aquí estilizamos las tarjetas blancas y los botones de Login de nuestra tienda,
 
 .admin-label {
   font-size: 0.9rem;
-  color: #6b5a5d;
+  color: var(--color-texto-suave);
   margin-bottom: 0.3rem;
 }
 
@@ -894,12 +922,12 @@ Aquí estilizamos las tarjetas blancas y los botones de Login de nuestra tienda,
   padding: 0.7rem 1rem;
   border-radius: 999px;
   border: 1px solid #ddd;
-  font-family: "Lora", serif;
+  font-family: var(--font-primary);
 }
 
 .admin-input:focus {
   outline: none;
-  border-color: #9a1e3f;
+  border-color: var(--color-rojo);
   box-shadow: 0 0 0 3px rgba(186, 47, 47, 0.1);
 }
 
@@ -909,7 +937,7 @@ Aquí estilizamos las tarjetas blancas y los botones de Login de nuestra tienda,
   border: 1px solid #ddd;
   min-height: 90px;
   resize: none;
-  font-family: "Lora", serif;
+  font-family: var(--font-primary);
 }
 
 .admin-file-hidden {
@@ -942,7 +970,7 @@ Aquí estilizamos las tarjetas blancas y los botones de Login de nuestra tienda,
 }
 
 .admin-btn {
-  background: #9a1e3f;
+  background: var(--color-rojo);
   color: white;
   border-radius: 999px;
   padding: 0.7rem 1.5rem;
@@ -950,14 +978,14 @@ Aquí estilizamos las tarjetas blancas y los botones de Login de nuestra tienda,
 }
 
 .admin-btn:hover {
-  background: #7b1832;
+  background: var(--color-rojo-hover);
   transform: translateY(-2px);
   box-shadow: 0 8px 20px rgba(186, 47, 47, 0.25);
 }
 
 .admin-link {
   text-decoration: none;
-  color: #9a1e3f;
+  color: var(--color-rojo);
   font-size: 0.9rem;
 }
 
@@ -968,15 +996,15 @@ Aquí estilizamos las tarjetas blancas y los botones de Login de nuestra tienda,
 /* EL EDITABLE PARA EL ADMINISTRADOR  */
 .admin-list-container {
   margin-top: 2.5rem;
-  font-family: "Lora", serif;
+  font-family: var(--font-primary);
 }
 
 .admin-list-title {
   text-align: center;
   font-size: 2.6rem;
-  font-family: "Cormorant Garamond", serif;
+  font-family: var(--font-title);
   font-weight: 600;
-  color: #9a1e3f;
+  color: var(--color-rojo);
   margin-bottom: 1.5rem;
 }
 
@@ -988,7 +1016,7 @@ Aquí estilizamos las tarjetas blancas y los botones de Login de nuestra tienda,
 }
 
 .admin-add {
-  background: #9a1e3f;
+  background: var(--color-rojo);
   color: white;
   padding: 0.6rem 1.3rem;
   border-radius: 999px;
@@ -997,14 +1025,14 @@ Aquí estilizamos las tarjetas blancas y los botones de Login de nuestra tienda,
 }
 
 .admin-add:hover {
-  background: #7b1832;
+  background: var(--color-rojo-hover);
   transform: translateY(-2px);
   box-shadow: 0 6px 15px rgba(186, 47, 47, 0.2);
 }
 
 /* LOGOUT */
 .admin-logout {
-  color: #9a1e3f;
+  color: var(--color-rojo);
   text-decoration: none;
   font-size: 0.9rem;
 }
@@ -1014,7 +1042,7 @@ Aquí estilizamos las tarjetas blancas y los botones de Login de nuestra tienda,
 }
 
 .admin-table-wrapper {
-  background: #ffffff;
+  background: var(--color-blanco);
   border-radius: 1.5rem;
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.05);
   overflow: hidden;
@@ -1026,7 +1054,7 @@ Aquí estilizamos las tarjetas blancas y los botones de Login de nuestra tienda,
 }
 
 .admin-table thead {
-  background: #9a1e3f;
+  background: var(--color-rojo);
   color: white;
 }
 
@@ -1050,14 +1078,14 @@ Aquí estilizamos las tarjetas blancas y los botones de Login de nuestra tienda,
 }
 
 .admin-precio {
-  color: #9a1e3f;
+  color: var(--color-rojo);
   font-weight: bold;
 }
 
 .admin-edit {
   background: transparent;
   border: 1px solid #e4bcbc;
-  color: #9a1e3f;
+  color: var(--color-rojo);
   border-radius: 999px;
   padding: 0.4rem 1rem;
   font-size: 0.85rem;
@@ -1072,7 +1100,7 @@ Aquí estilizamos las tarjetas blancas y los botones de Login de nuestra tienda,
 .admin-delete {
   background: transparent;
   border: 1px solid #e4bcbc;
-  color: #9a1e3f;
+  color: var(--color-rojo);
   border-radius: 999px;
   padding: 0.4rem 1rem;
   font-size: 0.85rem;
@@ -1174,20 +1202,33 @@ Aquí estilizamos las tarjetas blancas y los botones de Login de nuestra tienda,
 
 /* ── Botones de navegación admin ── */
 .admin-nav-btn {
-  background: #fdf0f2;
-  color: #8B1A2E;
-  border: 1.5px solid #e8c4cb;
-  padding: 0.4rem 0.9rem;
-  border-radius: 20px;
+  background: white;
+  color: -rojo;
+  border: 1px solid rgba(166, 42, 75, 0.15);
+  padding: 0.6rem 1.4rem;
+  border-radius: 999px;
   text-decoration: none;
-  font-size: 0.9rem;
-  font-weight: 500;
-  transition: background 0.15s, border-color 0.15s;
+  font-size: 0.95rem;
+  font-weight: 600;
+  box-shadow: 0 4px 15px rgba(166, 42, 75, 0.05);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .admin-nav-btn:hover {
-  background: #f5d5db;
-  border-color: #8B1A2E;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(166, 42, 75, 0.15);
+  background: linear-gradient(135deg, #fff0f5, #fde2e9);
+  color: -rojo-hover;
+}
+
+.btn-danger-outline {
+  color: #c62828 !important;
+  border-color: rgba(198, 40, 40, 0.2) !important;
+}
+
+.btn-danger-outline:hover {
+  background: #fce4ec !important;
+  color: #c62828 !important;
 }
 
 /* ── Estado badges (pedidos) ── */
@@ -1227,40 +1268,93 @@ Aquí estilizamos las tarjetas blancas y los botones de Login de nuestra tienda,
 }
 
 /* ── Reporte ── */
-.reporte-resumen {
+.reporte-header {
   display: flex;
-  gap: 1.5rem;
-  margin: 1.5rem 0;
-  flex-wrap: wrap;
+  justify-content: space-between;
   align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.reporte-fecha {
+  display: flex;
+  flex-direction: column;
+}
+
+.reporte-fecha-label {
+  font-size: 0.85rem;
+  color: -texto-suave;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+.reporte-fecha-valor {
+  font-size: 1.5rem;
+  color: -rojo;
+  font-family: -title;
+  font-weight: bold;
+}
+
+.reporte-resumen {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+  margin: 1.5rem 0 3rem 0;
+  width: 100%;
 }
 
 .reporte-stat {
-  background: white;
-  border-radius: 10px;
-  padding: 1rem 2rem;
-  box-shadow: 0 2px 8px rgba(139, 26, 46, 0.1);
-  border: 1px solid #e8c4cb;
+  background: linear-gradient(145deg, #ffffff, #faf7f5);
+  border-radius: 1.5rem;
+  padding: 2rem 1.5rem;
+  box-shadow: 0 15px 35px rgba(166, 42, 75, 0.06);
+  border: 1px solid rgba(166, 42, 75, 0.08);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.3rem;
-  min-width: 140px;
+  gap: 0.8rem;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s;
+}
+
+.reporte-stat:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px rgba(166, 42, 75, 0.12);
+}
+
+.reporte-stat::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, -rojo, #d85c5c);
 }
 
 .reporte-stat-label {
-  font-size: 0.82rem;
-  color: #888;
+  font-size: 0.85rem;
+  color: -texto-suave;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  align-items: center;
+  letter-spacing: 0.1em;
+  font-weight: bold;
 }
 
 .reporte-stat-valor {
-  font-size: 1.8rem;
+  font-size: 2.2rem;
   font-weight: 800;
-  color: #8B1A2E;
-  align-items: center;
+  color: -texto-oscuro;
+}
+
+.reporte-stat.texto-exito .reporte-stat-valor {
+  color: #2e7d32;
+}
+
+.reporte-stat.texto-peligro .reporte-stat-valor {
+  color: #c62828;
 }
 
 /* CARRITO Y LO DE CHECK  */
@@ -1268,12 +1362,12 @@ Aquí estilizamos las tarjetas blancas y los botones de Login de nuestra tienda,
 .carrito-table,
 .checkout,
 .input {
-  font-family: "Lora", serif;
+  font-family: var(--font-primary);
 }
 
 .carrito-title {
-  color: #9a1e3f;
-  font-family: "Cormorant Garamond", serif;
+  color: var(--color-rojo);
+  font-family: var(--font-title);
   font-weight: 600;
   font-size: 2.5rem;
   text-align: center;
@@ -1288,7 +1382,7 @@ Aquí estilizamos las tarjetas blancas y los botones de Login de nuestra tienda,
   content: "";
   flex: 1;
   height: 2px;
-  background-color: #9a1e3f;
+  background-color: var(--color-rojo);
 }
 
 .carrito-title::before {
@@ -1310,7 +1404,7 @@ Aquí estilizamos las tarjetas blancas y los botones de Login de nuestra tienda,
 }
 
 .carrito-table thead {
-  background: #9a1e3f;
+  background: var(--color-rojo);
 }
 
 .carrito-table th {
@@ -1339,14 +1433,14 @@ Aquí estilizamos las tarjetas blancas y los botones de Login de nuestra tienda,
 }
 
 .carrito-subtotal {
-  color: #9a1e3f;
+  color: var(--color-rojo);
   font-weight: bold;
 }
 
 .btn-remove {
   background: transparent;
   border: 1px solid #e4bcbc;
-  color: #9a1e3f;
+  color: var(--color-rojo);
   border-radius: 999px;
   padding: 0.4rem 1rem;
   font-size: 0.85rem;
@@ -1371,7 +1465,7 @@ Aquí estilizamos las tarjetas blancas y los botones de Login de nuestra tienda,
 }
 
 .total strong {
-  color: #9a1e3f;
+  color: var(--color-rojo);
   font-size: 1.8rem;
 }
 
@@ -1393,7 +1487,7 @@ Aquí estilizamos las tarjetas blancas y los botones de Login de nuestra tienda,
 }
 
 .input:focus {
-  border-color: #9a1e3f;
+  border-color: var(--color-rojo);
   outline: none;
 }
 
@@ -1402,7 +1496,7 @@ Aquí estilizamos las tarjetas blancas y los botones de Login de nuestra tienda,
   display: flex;
   justify-content: center;
   margin-top: 3rem;
-  font-family: "Lora", serif;
+  font-family: var(--font-primary);
 }
 
 .confirmacion-card {
@@ -1424,33 +1518,32 @@ Aquí estilizamos las tarjetas blancas y los botones de Login de nuestra tienda,
   transform: translateX(-50%);
   width: 60%;
   height: 4px;
-  background: linear-gradient(90deg, transparent, #9a1e3f, transparent);
+  background: linear-gradient(90deg, transparent, var(--color-rojo), transparent);
   border-radius: 10px;
 }
 
 .brand {
   font-weight: 700;
-  font-family: "Cormorant Garamond", serif;
+  font-family: var(--font-title);
   font-size: 1.6rem;
-  color: #9a1e3f;
+  color: var(--color-rojo);
   text-decoration: none;
   letter-spacing: 0.02rem;
 }
 
 .confirmacion-title {
   font-size: 2.2rem;
-  color: #9a1e3f;
+  color: var(--color-rojo);
   margin-bottom: 1rem;
   letter-spacing: 0.04rem;
-  font-family: "Cormorant Garamond", serif;
+  font-family: var(--font-title);
 }
 
 /*
 ==============================================
  REGLAS DE IMPRESIÓN (ADMIN REPORTE)
 ==============================================
-Oculta elementos innecesarios al presionar Imprimir.
-*/
+Oculta elementos innecesarios al presionar Imprimir.*/
 @media print {
   .no-print {
     display: none !important;
@@ -1467,12 +1560,12 @@ Oculta elementos innecesarios al presionar Imprimir.
 }
 .confirmacion-texto {
   font-size: 1.1rem;
-  color: #6b5a5d;
+  color: var(--color-texto-suave);
   margin-bottom: 2rem;
 }
 
 .confirmacion-id {
-  color: #9a1e3f;
+  color: var(--color-rojo);
   font-weight: bold;
   font-size: 1.3rem;
 }
@@ -1480,7 +1573,7 @@ Oculta elementos innecesarios al presionar Imprimir.
 .confirmacion-btn {
   display: inline-block;
   text-decoration: none;
-  background: #9a1e3f;
+  background: var(--color-rojo);
   color: white;
   padding: 0.7rem 1.6rem;
   border-radius: 999px;
@@ -1489,7 +1582,7 @@ Oculta elementos innecesarios al presionar Imprimir.
 }
 
 .confirmacion-btn:hover {
-  background: #7b1832;
+  background: var(--color-rojo-hover);
   transform: translateY(-2px);
   box-shadow: 0 8px 20px rgba(186, 47, 47, 0.25);
 }
@@ -1498,8 +1591,7 @@ Oculta elementos innecesarios al presionar Imprimir.
 ==============================================
  APARTADO EXTENSO: CLASES DE UTILIDAD (UTILITIES)
 ==============================================
-Utilidades para no usar estilos inline en el HTML.
-*/
+Utilidades para no usar estilos inline en el HTML.*/
 .text-right {
   text-align: right;
 }
@@ -1532,8 +1624,8 @@ Utilidades para no usar estilos inline en el HTML.
 
 /* PIE DE PAGINA (PREMIUM) */
 .footer {
-  background-color: #9a1e3f;
-  color: #ffffff;
+  background-color: var(--color-rojo);
+  color: var(--color-blanco);
   padding: 3rem 1.5rem 1.5rem;
   margin-top: 4rem;
   text-align: center;
@@ -1549,7 +1641,7 @@ Utilidades para no usar estilos inline en el HTML.
 }
 
 .footer-brand {
-  font-family: "Great Vibes", cursive;
+  font-family: var(--font-handwritten);
   font-size: 2.5rem;
   color: rgba(255, 255, 255, 0.9);
   letter-spacing: 0.05rem;
@@ -1574,11 +1666,11 @@ Utilidades para no usar estilos inline en el HTML.
   font-size: 0.85rem;
   letter-spacing: 0.05rem;
   text-transform: uppercase;
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transition: var(--transition-smooth);
 }
 
 .footer-links a:hover {
-  color: #ffffff;
+  color: var(--color-blanco);
 }
 
 .footer-bottom {
@@ -1586,4 +1678,499 @@ Utilidades para no usar estilos inline en el HTML.
   padding-top: 1.5rem;
   font-size: 0.8rem;
   color: rgba(255, 255, 255, 0.7);
+}
+
+/* ==============================================
+   APARTADO 8: CONFIRMACIÓN DE COMPRA
+============================================== */
+.confirmacion-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 50vh;
+  padding: 3rem 1rem;
+  animation: fadeIn 0.8s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.confirmacion-card {
+  background: white;
+  border-radius: 2rem;
+  padding: 3.5rem 3rem;
+  max-width: 480px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 20px 50px rgba(166, 42, 75, 0.08);
+  position: relative;
+  border: 1px solid rgba(166, 42, 75, 0.1);
+}
+
+.confirmacion-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #fff0f5, #fde2e9);
+  color: var(--color-rojo);
+  margin-bottom: 1.5rem;
+  box-shadow: 0 10px 25px rgba(166, 42, 75, 0.15);
+  animation: bounceSpin 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes bounceSpin {
+  0% {
+    transform: scale(0) rotate(-45deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1) rotate(10deg);
+  }
+  100% {
+    transform: scale(1) rotate(0);
+    opacity: 1;
+  }
+}
+.confirmacion-title {
+  color: var(--color-rojo);
+  font-size: 2.2rem;
+  margin-bottom: 0.8rem;
+  font-family: var(--font-title);
+  font-weight: bold;
+}
+
+.confirmacion-texto {
+  color: var(--color-texto-suave);
+  font-size: 1.05rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+.confirmacion-subtexto {
+  color: var(--color-texto-suave);
+  font-size: 0.95rem;
+  margin-bottom: 2rem;
+  font-style: italic;
+}
+
+.confirmacion-id-box {
+  background: #faf7f5;
+  border: 1px dashed var(--color-rojo);
+  border-radius: 12px;
+  padding: 1rem;
+  margin: 1.5rem 0;
+  display: inline-block;
+}
+
+.confirmacion-id {
+  font-size: 1.8rem;
+  color: var(--color-rojo);
+  font-weight: bold;
+  font-family: var(--font-title);
+  letter-spacing: 2px;
+}
+
+.confirmacion-btn {
+  display: inline-block;
+  background: linear-gradient(135deg, var(--color-rojo), var(--color-rojo-hover));
+  color: white;
+  padding: 1rem 2.5rem;
+  border-radius: 999px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: 0 8px 20px rgba(166, 42, 75, 0.25);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.confirmacion-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 30px rgba(166, 42, 75, 0.35);
+  color: white;
+}
+
+/* ==============================================
+   BANNER CON FLOR 3D 
+============================================== */
+.page-title-banner {
+  background: linear-gradient(135deg, var(--color-rojo) 0%, var(--color-rojo-hover) 50%, var(--color-rojo-dark) 100%);
+  color: white;
+  padding: 30px 20px 45px;
+  text-align: center;
+  margin-bottom: 25px;
+  border-radius: 0 0 40px 40px;
+  box-shadow: 0 15px 35px rgba(74, 13, 26, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.page-title-banner::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(ellipse at 50% 0%, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.bloom-wrapper {
+  position: relative;
+  z-index: 2;
+  margin-bottom: 5px;
+  perspective: 1000px;
+}
+
+.page-title-flower-3d {
+  width: 75px;
+  height: 75px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  background: #fdfafb;
+  animation: bloom3D 1.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  transform-style: preserve-3d;
+  box-shadow: 0 15px 25px rgba(0, 0, 0, 0.5), inset 0 0 10px rgba(255, 255, 255, 0.2);
+}
+
+@keyframes bloom3D {
+  0% {
+    transform: scale(0) rotateX(60deg) rotateY(30deg) translateY(30px);
+    opacity: 0;
+    filter: drop-shadow(0 0 0 rgba(0, 0, 0, 0));
+  }
+  100% {
+    transform: scale(1) rotateX(0deg) rotateY(0deg) translateY(0);
+    opacity: 1;
+    filter: drop-shadow(0 15px 10px rgba(20, 0, 0, 0.4));
+  }
+}
+.page-title-ornament {
+  font-family: "Great Vibes", cursive;
+  color: #fce4ec;
+  font-size: 2.2rem;
+  position: relative;
+  z-index: 2;
+  margin-bottom: -15px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  animation: fadeIn 1.5s ease-out 0.3s forwards;
+  opacity: 0;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+.page-title-text {
+  margin: 0;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 2.7rem;
+  font-weight: 300;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  position: relative;
+  z-index: 1;
+  display: inline-block;
+}
+
+.page-title-line {
+  width: 60px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.4);
+  margin: 15px auto 0;
+  border-radius: 2px;
+}
+
+.reporte-icon {
+  font-size: 2.2rem;
+  color: #cca4ab;
+  margin-bottom: 0.5rem;
+  opacity: 0.8;
+}
+
+.reporte-gasto-form {
+  display: flex;
+  align-items: center;
+  background: white;
+  border: 1px solid rgba(232, 196, 203, 0.5);
+  border-radius: 50px;
+  padding: 5px 5px 5px 20px;
+  box-shadow: 0 5px 15px rgba(74, 13, 26, 0.05);
+  max-width: 500px;
+  margin: 1rem 0;
+}
+
+.reporte-gasto-form input {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-family: inherit;
+  font-size: 1rem;
+  color: #4a0d1a;
+  flex: 1;
+}
+
+.reporte-gasto-form button {
+  background: var(--color-rojo, #9a1e3f);
+  color: white;
+  border: none;
+  padding: 0.7rem 1.5rem;
+  border-radius: 50px;
+  font-family: "Lora", serif;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.reporte-gasto-form button:hover {
+  background: var(--color-rojo-hover, #7b1832);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(139, 26, 46, 0.2);
+}
+
+/* ==============================================
+   ESTILOS REFACTORIZADOS REPORTE VENTAS
+============================================== */
+.reporte-resumen.grid-layout {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.reporte-stat.stat-highlight {
+  background: #fff0f3;
+}
+
+.reporte-stat-valor.valor-large {
+  font-size: 1.3rem;
+  margin-top: 5px;
+}
+
+.reporte-acciones.edit-container {
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  flex-direction: column;
+}
+
+.edit-title {
+  font-family: "Cormorant Garamond", serif;
+  color: var(--color-rojo-dark);
+  margin-bottom: 0px;
+}
+
+.edit-subtitle {
+  font-size: 0.9rem;
+  color: #6b5a5d;
+  margin-bottom: 10px;
+}
+
+.reporte-gasto-form.form-full {
+  width: 100%;
+}
+
+.gasto-icon {
+  font-size: 1.5rem;
+  opacity: 0.5;
+}
+
+/* # Oculta los botones de radio en el index de login */
+.login-role-radio {
+  display: none;
+}
+
+/* # Efecto visual de deshabilitación temporal mientras se agrega al carrito */
+.btn-agregando {
+  opacity: 0.7;
+  pointer-events: none;
+  transition: none !important;
+}
+
+/* # Estilo que resalte tras ser agregado con éxito */
+.btn-agregado-exito {
+  background: #32b85e !important;
+  background-image: none !important;
+  border-color: #32b85e !important;
+  color: #ffffff !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  transition: none !important;
+}
+
+/* # Propiedades básicas estáticas de la burbuja que aparece en carrito_agregar */
+.globo-notificacion {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background-color: var(--color-rojo, #9a1e3f);
+  color: var(--color-blanco, #ffffff);
+  padding: 14px 24px;
+  border-radius: 50px;
+  box-shadow: 0 10px 30px rgba(154, 30, 63, 0.3);
+  font-family: var(--font-primary, "Lora", serif);
+  font-weight: bold;
+  font-size: 15px;
+  z-index: 9999;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* # Almacén de estado dinámico*/
+.globo-notificacion.mostrar {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* # Clases para Carrito Checkout */
+.carrito-checkout-form {
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  padding: 35px;
+  border-radius: 12px;
+  border: 1px solid #f0e6e8;
+  margin-top: 20px;
+  box-shadow: 0 10px 30px rgba(154, 30, 63, 0.05);
+  width: 100%;
+  max-width: 500px;
+}
+
+.carrito-checkout-title {
+  margin-top: 0;
+  margin-bottom: 8px;
+  color: var(--color-texto-oscuro, #2b2123);
+  font-family: var(--font-primary, "Lora", serif);
+  font-size: 1.4rem;
+}
+
+.carrito-checkout-subtitle {
+  font-size: 0.95rem;
+  color: #8a7c7e;
+  margin-bottom: 25px;
+  font-weight: 300;
+}
+
+.carrito-metodo-title {
+  font-size: 1rem;
+  color: #5a4b4e;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #e0d5d7;
+  padding-bottom: 5px;
+}
+
+.carrito-metodo-opcion {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: #5a4b4e;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.carrito-input-group {
+  margin-bottom: 18px;
+}
+
+.carrito-input-label {
+  display: block;
+  font-size: 0.85rem;
+  color: #5a4b4e;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.carrito-input-field {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 6px;
+  border: 1px solid #e0d5d7;
+  background-color: #faf7f8;
+  transition: border-color 0.3s;
+}
+
+.carrito-input-field:focus {
+  border-color: var(--color-rojo, #9a1e3f);
+  outline: none;
+}
+
+.carrito-input-field-center {
+  text-align: center;
+}
+
+.carrito-input-field-spaced {
+  text-align: center;
+  letter-spacing: 2px;
+}
+
+.carrito-flex-row {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.carrito-flex-col {
+  flex: 1;
+}
+
+.carrito-btn-pago {
+  width: 100%;
+  padding: 16px;
+  font-size: 1.1rem;
+  border-radius: 8px;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-top: 10px;
+}
+
+.carrito-info-entrega-box {
+  background-color: #faf7f8;
+  border: 1px solid #e0d5d7;
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 25px;
+  font-size: 0.85rem;
+  color: #6e5f61;
+}
+
+#opciones-punto-medio {
+  display: none;
+  margin-bottom: 20px;
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #faf7f8;
+  border: 1px solid #e0d5d7;
+}
+
+#info-click, #info-medio {
+  display: none;
+}
+
+.carrito-checkout-form:has(#radio-click:checked) #info-click {
+  display: block;
+}
+
+.carrito-checkout-form:has(#radio-medio:checked) #opciones-punto-medio {
+  display: block;
+}
+
+.carrito-checkout-form:has(#radio-medio:checked) #info-medio {
+  display: block;
 }

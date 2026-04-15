@@ -15,11 +15,9 @@
   <!-- 
   =======================================================================
   EXPLICACIÓN DEL BUCLE FOR-LOOP EN JINJA: 
-  En lugar de haber programado 10 tarjetas HTML con fotos estáticas, usamos el bucle iterador de Jinja2:'{ for p in productos }'
-      
-  Lo que hace es ir a la tabla de sqlite3, contar cuántos productos hay y dibujar de forma totalmente automatizada la tarjeta completa por cada uno que exista. Así, si tu tienda sube a 1,000 flores, este mismo bloquecito dibuja los 1,000 en microsegundos sin tocar el HTML.=======================================================================-->
+  En lugar de haber programado 10 tarjetas HTML con fotos estáticas, usamos el bucle iterador de Jinja2:'{ for p in productos }' Lo que hace es ir a la tabla de sqlite3, contar cuántos productos hay y de forma totalmente automatizada la tarjeta completa por cada uno que exista. =======================================================================-->
   {% for p in productos %}
-    <div class="card">
+    <div class="card" id="producto-{{ p['id'] }}">
       <a href="{{ url_for('producto', producto_id=p['id']) }}">
         <img src="{{ url_for('static', filename='imagenes/' + (p['imagen'] or 'default.jpg')) }}"
              alt="{{ p['nombre'] }}" class="card-img">
@@ -28,11 +26,15 @@
         <h3 class="card-nombre">{{ p["nombre"] }}</h3>
         <strong class="card-precio">${{ "%.2f"|format(p["precio"]) }}</strong>
         <div class="row">
+          {% if p['stock'] > 0 %}
           <form method="post" action="{{ url_for('carrito_agregar') }}">
             <input type="hidden" name="producto_id" value="{{ p['id'] }}">
             <input class="qty" type="number" name="cantidad" min="1" max="{{ p['stock'] }}" value="1">
             <button class="btn primary" type="submit">Agregar</button>
           </form>
+          {% else %}
+          <span class="badge-agotado">🚫 Agotado</span>
+          {% endif %}
         </div>
       </div>
     </div>

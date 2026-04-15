@@ -1,5 +1,5 @@
-# app.py
 import os
+from datetime import datetime, timedelta
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
@@ -97,7 +97,33 @@ def carrito():
         subtotal = float(p["precio"]) * int(qty)
         total += subtotal
         items.append({"p": p, "qty": int(qty), "subtotal": subtotal})
-    return render_template("carrito.html", items=items, total=total)
+        
+    # Lógica de Fechas (Backend)
+    # Aquí calculamos las fechas de entrega directamente en Python (Servidor).
+    
+    MESES = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"]
+    DIAS = ["lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"]
+    
+    hoy = datetime.now()
+    fecha_c = hoy
+    agregados = 0
+    
+    # Bucle para Calcular "3 Días Hábiles" (Click & Collect)
+    # Se suma un día al reloj, y si el valor devuelto por weekday() es menor a 5 
+    # (es decir, de Lunes [0] a Viernes [4]), entonces sí cuenta como día válido.
+    while agregados < 3:
+        fecha_c += timedelta(days=1)
+        if fecha_c.weekday() < 5:  
+            agregados += 1
+            
+    # Calcular "2 Días Naturales" simples (Punto Medio)
+    fecha_m = hoy + timedelta(days=2)
+    
+    # Formateo manual equivalente a toLocaleDateString() en español para inyectarlo directo a Jinja2
+    fecha_click_str = f"{DIAS[fecha_c.weekday()]}, {fecha_c.day} de {MESES[fecha_c.month - 1]}"
+    fecha_medio_str = f"{DIAS[fecha_m.weekday()]}, {fecha_m.day} de {MESES[fecha_m.month - 1]}"
+
+    return render_template("carrito.html", items=items, total=total, fecha_click=fecha_click_str, fecha_medio=fecha_medio_str)
     # Muestra los productos guardados en memoria (sesión).
     # Para cambiar: Si queremos que el carrito no se borre al cerrar navegador, debes guardarlo en la Base de Datos.
     # Si se rompe (no carga nada): Verificar que carrito_session() retorne un dict válido.
@@ -118,12 +144,12 @@ def carrito_agregar():
 
     if current_qty + requested_qty > p["stock"]:
         flash(f"No hay suficiente stock. Solamente quedan {p['stock']} disponibles de este producto.")
-        return redirect(request.referrer or url_for("index"))
+        return redirect(request.referrer.split('#')[0] + f'#producto-{pid}' if request.referrer else url_for("index") + f'#producto-{pid}')
 
     cart[str(pid)] = current_qty + requested_qty
     session["carrito"] = cart
     flash("Agregado al carrito.")
-    return redirect(request.referrer or url_for("index"))
+    return redirect(request.referrer.split('#')[0] + f'#producto-{pid}' if request.referrer else url_for("index") + f'#producto-{pid}')
 
 @app.route("/carrito/quitar", methods=["POST"])
 @login_required
@@ -195,23 +221,24 @@ def logout():
 def checkout():
     nombre = request.form.get("nombre", "").strip()
     email  = request.form.get("email", "").strip() or None
+    
     if not nombre:
-        flash("Escribe tu nombre para continuar.")
+        flash("Requerimos el nombre del titular de la tarjeta simulada.")
         return redirect(url_for("carrito"))
+        
     cart = carrito_session()
     if not cart:
         flash("Tu carrito está vacío.")
         return redirect(url_for("index"))
+        
     items = [{"producto_id": int(pid), "cantidad": int(qty)} for pid, qty in cart.items()]
     pedido_id = db.crear_pedido(nombre, email, items)
     if not pedido_id:
-        flash("No se pudo procesar el pedido (¿stock insuficiente?).")
+        flash("No se pudo procesar el pago (¿stock insuficiente?).")
         return redirect(url_for("carrito"))
+        
     session["carrito"] = {}
     return render_template("checkout_ok.html", pedido_id=pedido_id)
-    # Ruta maestra que baja los productos del carrito a la base de datos como una Compra definitiva.
-    # Aquí se ejecuta db.crear_pedido() que desencadena la baja de stock.
-    # Si se rompe (no resta stock): Revisar que el form del html se envíe correctamente vía POST.
 
 
 # ─── Admin: logout ────────────────────────────────────────────────────────────
@@ -344,14 +371,20 @@ def admin_producto_borrar(producto_id):
 @app.route("/admin/producto/<int:producto_id>/stock", methods=["POST"])
 @requires_admin
 def admin_producto_stock(producto_id):
-    """Actualizar stock de un producto directamente desde el panel."""
+    # RUTA ADMIN DE STOCK:
+    # Recibe el nuevo valor introducido en la tabla dinámica del Administrador.
     nuevo_stock = request.form.get("stock", type=int)
     if nuevo_stock is None or nuevo_stock < 0:
         flash("Stock inválido.")
-        return redirect(url_for("admin_productos"))
+        # obligamos al navegador a que el redireccionamiento haga un auto-scroll hasta las coordenadas de la fila (tr id="item-5") recién modificada.
+        return redirect(url_for("admin_productos") + f"#item-{producto_id}")
+        
+    # Ejecuta el UPDATE a la base de datos SQL
     success = db.actualizar_stock(producto_id, nuevo_stock)
-    flash("Stock actualizado." if success else "Error actualizando stock.")
-    return redirect(url_for("admin_productos"))
+    flash("Stock actualizado." if success else "Error al actualizar stock.")
+    
+    # Redireccionamiento con anclaje para experiencia de usuario fluida
+    return redirect(url_for("admin_productos") + f"#item-{producto_id}")
 
 
 # ─── Admin: pedidos ───────────────────────────────────────────────────────────
@@ -422,11 +455,52 @@ def admin_aviso_borrar(aviso_id):
 @app.route("/admin/reporte")
 @requires_admin
 def admin_reporte():
-    # RUTA DE REPORTE DIARIO (/admin/reporte): Descarga la suma total económica generada por SQLite con los ingresos totales del día actual y se la pasa a un archivo estático de gráfica.
-    pedidos, total_dia = db.reporte_ventas_hoy()
+    """
+    ====================EXPLICACIÓN ====================
+    Ruta: /admin/reporte
+    Propósito: Controlador de la Vista de Reporte Financiero.
+    Explicación:
+    1. Llama a la Base de Datos para pedir múltiples variables mediante desempaquetado de tuplas (pedidos, total_dia, gastos, producto_estrella).
+    2. Realiza operaciones lógico-matemáticas en el Servidor (Cálculo de Ganancia Neta y Ticket Promedio) antes de mandarlo a la vista HTML. Esto evita sobrecargar la Base de Datos con matemáticas que el CPU puede hacer más rápido.
+    ====================================================================
+    """
+    pedidos, total_dia, gastos, producto_estrella = db.reporte_ventas_hoy()
+    
+    # Cálculos financieros (Business Logic)
+    ganancia = total_dia - gastos
+    ticket_promedio = total_dia / len(pedidos) if pedidos and len(pedidos) > 0 else 0.0
+    
     from datetime import date
     hoy = date.today().strftime("%d/%m/%Y")
-    return render_template("admin_reporte.html", pedidos=pedidos, total_dia=total_dia, hoy=hoy)
+    
+    # Renderizamos la plantilla inyectando nuestros KPIs
+    return render_template("admin_reporte.html", 
+                           pedidos=pedidos, 
+                           total_dia=total_dia, 
+                           gastos=gastos, 
+                           ganancia=ganancia, 
+                           producto_estrella=producto_estrella,
+                           ticket_promedio=ticket_promedio,
+                           hoy=hoy)
+
+@app.route("/admin/reporte/gastos", methods=["POST"])
+@requires_admin
+def admin_reporte_gastos():
+    """
+    ==================== EXPLICACIÓN ====================
+    Ruta: /admin/reporte/gastos (POST)
+    Propósito: Procesar la EDICIÓN del formulario de gastos operativos.
+    Explicación: Captura lo que el usuario escribió por POST y lo manda a
+    la base de datos para sobrescribir (editar) el gasto actual.
+    ====================================================================
+    """
+    monto = request.form.get("gastos", type=float)
+    if monto is not None and monto >= 0:
+        db.guardar_gastos_hoy(monto)
+        flash("Gastos actualizados/modificados exitosamente.")
+    else:
+        flash("Monto de gastos inválido.")
+    return redirect(url_for("admin_reporte"))
 
 
 if __name__ == "__main__":

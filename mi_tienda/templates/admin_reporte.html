@@ -2,23 +2,58 @@
 {% block content %}
 <div class="admin-list-container">
   <div class="reporte-header">
-    <h1 class="admin-list-title">Reporte de ventas — {{ hoy }}</h1>
+    <div class="reporte-fecha">
+      <span class="reporte-fecha-label">Mostrando resumen operativo del día:</span>
+      <span class="reporte-fecha-valor">{{ hoy }}</span>
+    </div>
     <div class="admin-list-actions no-print">
       <a href="{{ url_for('admin_pedidos') }}" class="btn admin-nav-btn">← Pedidos</a>
-      <button onclick="window.print()" class="btn admin-btn">Imprimir reporte</button>
-      <a href="{{ url_for('admin_logout') }}" class="admin-logout">Cerrar sesión</a>
+      <button onclick="window.print()" class="btn admin-nav-btn">🖨️ Imprimir</button>
+      <a href="{{ url_for('admin_logout') }}" class="btn admin-nav-btn btn-danger-outline">Cerrar sesión</a>
     </div>
   </div>
 
-  <div class="reporte-resumen">
+  <div class="reporte-resumen grid-layout">
     <div class="reporte-stat">
+      <div class="reporte-icon">📦</div>
       <span class="reporte-stat-label">Pedidos hoy</span>
       <span class="reporte-stat-valor">{{ pedidos|length }}</span>
     </div>
     <div class="reporte-stat">
-      <span class="reporte-stat-label">Total del día</span>
+      <div class="reporte-icon">💵</div>
+      <span class="reporte-stat-label">Ventas (Ingresos)</span>
       <span class="reporte-stat-valor">${{ "%.2f"|format(total_dia) }}</span>
     </div>
+    <div class="reporte-stat">
+      <div class="reporte-icon">📉</div>
+      <span class="reporte-stat-label">Gastos Operativos</span>
+      <span class="reporte-stat-valor">${{ "%.2f"|format(gastos) }}</span>
+    </div>
+    <div class="reporte-stat {% if ganancia >= 0 %}texto-exito{% else %}texto-peligro{% endif %}">
+      <div class="reporte-icon">⚖️</div>
+      <span class="reporte-stat-label">Ganancia Neta</span>
+      <span class="reporte-stat-valor">${{ "%.2f"|format(ganancia) }}</span>
+    </div>
+    <div class="reporte-stat stat-highlight">
+      <div class="reporte-icon">🏷️</div>
+      <span class="reporte-stat-label">Ticket Promedio</span>
+      <span class="reporte-stat-valor">${{ "%.2f"|format(ticket_promedio) }}</span>
+    </div>
+    <div class="reporte-stat stat-highlight">
+      <div class="reporte-icon">🌟</div>
+      <span class="reporte-stat-label">Producto Estrella</span>
+      <span class="reporte-stat-valor valor-large">{{ producto_estrella }}</span>
+    </div>
+  </div>
+
+  <div class="reporte-acciones no-print edit-container">
+    <h3 class="edit-title">Modificar Gastos del Día</h3>
+    <p class="edit-subtitle">Reescribe el número para actualizar el gasto actual registrado.</p>
+    <form method="post" action="{{ url_for('admin_reporte_gastos') }}" class="reporte-gasto-form form-full">
+      <span class="gasto-icon">💸</span>
+      <input type="number" step="0.01" name="gastos" value="{{ '%.2f'|format(gastos) }}" placeholder="Ej. 150.00" required>
+      <button type="submit">Actualizar Gastos</button>
+    </form>
   </div>
 
   {% if not pedidos %}

@@ -1,8 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="admin-list-container">
-  <h1 class="admin-list-title">Productos</h1>
-
   <div class="admin-list-actions">
     <a href="{{ url_for('admin_producto_nuevo') }}" class="btn admin-add">+ Agregar producto</a>
     <a href="{{ url_for('admin_pedidos') }}" class="btn admin-nav-btn">📦 Pedidos</a>
@@ -25,7 +23,7 @@
       </thead>
       <tbody>
         {% for p in productos %}
-        <tr class="admin-row {% if p.stock == 0 %}stock-agotado{% elif p.stock <= 3 %}stock-bajo{% endif %}">
+        <tr id="item-{{ p.id }}" class="admin-row {% if p.stock == 0 %}stock-agotado{% elif p.stock <= 3 %}stock-bajo{% endif %}">
           <td>{{ p.id }}</td>
           <td>
             <img src="{{ url_for('static', filename='imagenes/' + (p.imagen or 'default.jpg')) }}"

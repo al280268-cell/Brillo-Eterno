@@ -105,6 +105,14 @@ class BaseDatosTienda:
                 );
             """)
 
+            # Tabla de gastos diarios
+            self.cursor.execute("""
+                CREATE TABLE IF NOT EXISTS gastos_diarios(
+                    fecha DATE PRIMARY KEY,
+                    monto REAL NOT NULL DEFAULT 0.0
+                );
+            """)
+
             self.con.commit()
         except Error as e:
             print(f"[DB] Error creando tablas: {e}")
@@ -255,11 +263,6 @@ class BaseDatosTienda:
                     "UPDATE productos SET stock = stock - ? WHERE id=?;",
                     (qty, pid)
                 )
-                # Auto-restablecimiento si llegó a 0
-                self.cursor.execute(
-                    "UPDATE productos SET stock = ? WHERE id=? AND stock = 0;",
-                    (10, pid)
-                )
 
             self.con.commit()
             return pedido_id
@@ -269,8 +272,7 @@ class BaseDatosTienda:
             return None
 
     def listar_pedidos(self):
-        # Consulta (READ) Avanzada con JOIN: SQL no solo te trae las compras de la tabla 'pedidos',
-        # sino que simultáneamente las fusiona (LEFT JOIN) con la tabla de 'productos' y 'pedido_items'
+        # Consulta (READ) Avanzada con JOIN: SQL no solo te trae las compras de la tabla 'pedidos',sino que simultáneamente las fusiona (LEFT JOIN) con la tabla de 'productos' y 'pedido_items'
         # para que en la interfaz visual puedas ver exactamente qué nombres de flores se compró (productos_nombres).
         try:
             self.cursor.execute("""
@@ -321,8 +323,18 @@ class BaseDatosTienda:
             return False
 
     def reporte_ventas_hoy(self):
-        """Devuelve pedidos y totales del día actual."""
+        """
+        ==================== EXPLICACIÓN ====================
+        MÉTODO: reporte_ventas_hoy
+        Operación: Realiza 4 consultas SQL independientes para reunir KPIs:
+        1. Lista de Pedidos del día y el desglose de productos (Usando LEFT JOIN).
+        2. Total de Ingresos (SUM).
+        3. Producto Estrella (El más vendido del día usando MAX/SUM y GROUP BY).
+        4. Gastos Diarios operacionales de la sucursal.
+        ====================================================================
+        """
         try:
+            # 1. Extraemos los pedidos completos que coincidan con la fecha de 'hoy'
             self.cursor.execute("""
                 SELECT p.id, p.cliente_nombre, p.cliente_email, p.total,
                        p.estado, p.creado_en,
@@ -330,21 +342,71 @@ class BaseDatosTienda:
                 FROM pedidos p
                 LEFT JOIN pedido_items pi ON pi.pedido_id = p.id
                 LEFT JOIN productos pr ON pr.id = pi.producto_id
-                WHERE DATE(p.creado_en) = DATE('now')
+                WHERE DATE(p.creado_en) = DATE('now', 'localtime')
                 GROUP BY p.id
                 ORDER BY p.id DESC;
             """)
             pedidos = self.cursor.fetchall()
+            
+            # 2. Calculamos los Ingresos Brutos del día
             self.cursor.execute("""
                 SELECT COALESCE(SUM(total), 0) as total_dia
                 FROM pedidos
-                WHERE DATE(creado_en) = DATE('now');
+                WHERE DATE(creado_en) = DATE('now', 'localtime');
             """)
             total_dia = self.cursor.fetchone()["total_dia"]
-            return pedidos, total_dia
+
+            # 3. EXTRA: Buscamos el "Producto Estrella" (El que más unidades vendió hoy)
+            # ordenación ascendente/descendente (DESC).
+            self.cursor.execute("""
+                SELECT pr.nombre, SUM(pi.cantidad) as total_vendido
+                FROM pedido_items pi
+                JOIN pedidos p ON p.id = pi.pedido_id
+                JOIN productos pr ON pr.id = pi.producto_id
+                WHERE DATE(p.creado_en) = DATE('now', 'localtime')
+                GROUP BY pr.id
+                ORDER BY total_vendido DESC
+                LIMIT 1;
+            """)
+            estrella_row = self.cursor.fetchone()
+            producto_estrella = estrella_row["nombre"] if estrella_row else "Sin ventas hoy"
+
+            # 4. Extraemos la cantidad de gastos registrados.
+            self.cursor.execute("""
+                SELECT monto FROM gastos_diarios
+                WHERE fecha = DATE('now', 'localtime');
+            """)
+            row = self.cursor.fetchone()
+            gastos = row["monto"] if row else 0.0
+
+            return pedidos, total_dia, gastos, producto_estrella
         except Error as e:
             print(f"[DB] Error reporte ventas: {e}")
-            return [], 0.0
+            return [], 0.0, 0.0, "N/A"
+
+    def guardar_gastos_hoy(self, monto):
+        """
+        ==================== EXPLICACIÓN ====================
+        MÉTODO: guardar_gastos_hoy (Modificador o Editor de Gastos)
+        Propósito: Permite al administrador insertar o EDITAR (modificar)
+                   los gastos operacionales del día.
+        Explicación SQL: Se usa "ON CONFLICT(fecha) DO UPDATE". Esto significa
+        que si ya existe una fila para HOY, SQLite no falla, sino que
+        sobrescribe (UPDATE) el monto, logrando así actualizar/editar 
+        los datos de la misma fila, cumpliendo con la capacidad de edición iterativa.
+        ====================================================================
+        """
+        try:
+            self.cursor.execute("""
+                INSERT INTO gastos_diarios(fecha, monto)
+                VALUES(DATE('now', 'localtime'), ?)
+                ON CONFLICT(fecha) DO UPDATE SET monto=?;
+            """, (float(monto), float(monto)))
+            self.con.commit()
+            return True
+        except Error as e:
+            print(f"[DB] Error guardando gastos: {e}")
+            return False
 
     # ─────────── AVISOS ───────────
     def crear_aviso(self, titulo, mensaje):
