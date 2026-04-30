@@ -1,0 +1,459 @@
+========================================================
+ 📘 DOCUMENTACIÓN COMPLETA DE tienda_db.py
+ Florería Brillo Eterno - Base de Datos SQLite3
+========================================================
+
+
+========================================================
+ SECCIÓN 1: IMPORTACIONES Y CONSTANTES (Líneas 1-6)
+========================================================
+
+import os
+→ Para construir rutas de archivos (os.path.join).
+
+import sqlite3
+→ Módulo nativo de Python para manejar bases de datos SQLite.
+  No necesita instalación externa (ya viene con Python).
+
+from sqlite3 import Error
+→ Importa la clase de error específica para capturar
+  fallos de la base de datos.
+
+STOCK_INICIAL = 10
+→ Constante. Valor predeterminado de stock al crear productos.
+  ¿Cómo cambiar? Solo cambia el número (ej: 20, 50, 100).
+
+
+========================================================
+ SECCIÓN 2: CLASE BaseDatosTienda (Línea 7)
+========================================================
+
+class BaseDatosTienda:
+→ Toda la lógica de base de datos está encapsulada en esta clase.
+  Esto significa que app.py NO escribe SQL directamente,
+  sino que llama a métodos de esta clase.
+  Ventaja: Si cambias de SQLite a MySQL o PostgreSQL,
+  solo modificas ESTE archivo, no app.py.
+
+
+========================================================
+ SECCIÓN 3: CONSTRUCTOR __init__ (Líneas 8-13)
+========================================================
+
+def __init__(self, ruta="./", bd="tienda.sqlite3"):
+  self.bd_path = os.path.join(ruta, bd)
+  self.con = None
+  self.cursor = None
+  self.conectar()
+  self.crear_tablas()
+
+Qué hace: Se ejecuta automáticamente al crear el objeto.
+Paso a paso:
+  1. Construye la ruta del archivo de BD: "./tienda.sqlite3"
+  2. Inicializa conexión y cursor en None
+  3. Llama a conectar() para abrir la BD
+  4. Llama a crear_tablas() para crear las tablas si no existen
+
+Parámetros:
+  - ruta: carpeta donde está la BD (por defecto: carpeta actual)
+  - bd: nombre del archivo (por defecto: "tienda.sqlite3")
+
+¿Cómo cambiar?
+  - Otra BD: BaseDatosTienda(bd="otra_base.sqlite3")
+  - Otra carpeta: BaseDatosTienda(ruta="/datos/", bd="tienda.sqlite3")
+
+
+========================================================
+ SECCIÓN 4: CONEXIÓN (Líneas 15-25)
+========================================================
+
+--- conectar() ---
+Qué hace: Abre la conexión con la base de datos.
+Línea por línea:
+
+  self.con = sqlite3.connect(self.bd_path, check_same_thread=False)
+  → Abre el archivo .sqlite3 y crea la conexión.
+    check_same_thread=False: permite que Flask use la BD
+    desde cualquier hilo (necesario para desarrollo).
+
+  self.con.row_factory = sqlite3.Row
+  → IMPORTANTE: Hace que los resultados se puedan leer
+    como diccionarios. Sin esto:
+      producto[0], producto[1]  ← por índice
+    Con esto:
+      producto["nombre"], producto["precio"]  ← por nombre
+
+  self.cursor = self.con.cursor()
+  → Crea un cursor, que es el "dedo" que ejecuta las consultas SQL.
+
+  self.cursor.execute("PRAGMA foreign_keys = ON;")
+  → Activa las llaves foráneas (relaciones entre tablas).
+    Sin esto, SQLite3 NO verifica que un pedido_item
+    apunte a un producto real.
+
+Si falla: Imprime el error pero NO detiene la aplicación.
+¿Cómo cambiar? Para usar MySQL, cambiar sqlite3.connect()
+por mysql.connector.connect() con host, user, password.
+
+
+========================================================
+ SECCIÓN 5: CERRAR CONEXIÓN (Líneas 27-34)
+========================================================
+
+--- cerrar() ---
+Qué hace: Cierra la conexión de forma segura.
+Importante para:
+  - No dejar la memoria ocupada
+  - No dañar el archivo .sqlite3
+Cuándo se usa: Al apagar la aplicación.
+
+
+========================================================
+ SECCIÓN 6: CREAR TABLAS (Líneas 36-118)
+========================================================
+
+--- crear_tablas() ---
+Qué hace: Crea TODAS las tablas si no existen.
+Usa "CREATE TABLE IF NOT EXISTS" que NO borra datos existentes.
+
+TABLA: productos (líneas 40-48)
+  - id: número auto-incrementable (clave primaria)
+  - nombre: texto obligatorio (NOT NULL)
+  - descripcion: texto opcional
+  - precio: número decimal, NO puede ser negativo (CHECK >= 0)
+  - stock: número entero, por defecto 0, NO negativo
+  - imagen: texto, por defecto "default.jpg"
+
+TABLA: usuarios (líneas 57-63)
+  - id: auto-incrementable
+  - username: texto único (UNIQUE = no se repite)
+  - password_hash: contraseña encriptada
+
+TABLA: pedidos (líneas 65-73)
+  - id: auto-incrementable
+  - cliente_nombre: nombre del comprador
+  - cliente_email: correo (opcional)
+  - total: monto total del pedido
+  - estado: "pendiente" o "entregado"
+  - creado_en: fecha/hora automática
+
+TABLA: pedido_items (líneas 83-95)
+  - id: auto-incrementable
+  - pedido_id: referencia al pedido (FOREIGN KEY)
+  - producto_id: referencia al producto (FOREIGN KEY)
+  - cantidad: cuántas unidades (CHECK > 0)
+  - precio_unit: precio al momento de la compra
+  Llaves foráneas:
+    ON DELETE CASCADE: si borras un pedido, se borran sus items
+    ON DELETE RESTRICT: NO puedes borrar un producto si tiene pedidos
+
+TABLA: avisos (líneas 98-106)
+  - id: auto-incrementable
+  - titulo: texto del título
+  - mensaje: contenido del aviso
+  - activo: 1=visible, 0=oculto
+  - creado_en: fecha automática
+
+TABLA: gastos_diarios (líneas 109-114)
+  - fecha: fecha como clave primaria (solo 1 registro por día)
+  - monto: cantidad de gastos del día
+
+ALTER TABLE (líneas 51-55, 77-81):
+  → Intentan agregar columnas a tablas existentes.
+    Si la columna ya existe, el except: pass ignora el error.
+    Esto es para compatibilidad con versiones antiguas de la BD.
+
+
+========================================================
+ SECCIÓN 7: CRUD DE PRODUCTOS (Líneas 120-195)
+========================================================
+
+--- crear_producto(nombre, descripcion, precio, stock, imagen) ---
+Líneas 121-133
+Operación SQL: INSERT INTO productos
+Qué hace: Crea un nuevo producto en la BD.
+Retorna: El ID del producto creado, o None si falla.
+Ejemplo: db.crear_producto("Rosa", "Linda rosa", 150.0, 10, "rosa.jpg")
+¿Cómo cambiar?
+  - Agregar categoría: añadir campo a la tabla y al INSERT.
+  - Agregar descuento: crear columna "descuento REAL DEFAULT 0".
+
+--- listar_productos() ---
+Líneas 135-142
+Operación SQL: SELECT * FROM productos ORDER BY id DESC
+Qué hace: Trae TODOS los productos, los más nuevos primero.
+Retorna: Lista de diccionarios (todos los productos).
+¿Cómo cambiar?
+  - Ordenar por precio: ORDER BY precio ASC
+  - Filtrar por stock: WHERE stock > 0
+  - Limitar cantidad: agregar LIMIT 10
+  - Buscar por nombre: WHERE nombre LIKE '%rosa%'
+
+--- obtener_producto(producto_id) ---
+Líneas 144-151
+Operación SQL: SELECT * FROM productos WHERE id=?
+Qué hace: Busca UN producto específico por su ID.
+Retorna: Un diccionario con los datos, o None si no existe.
+El signo ? es un PLACEHOLDER que previene SQL Injection.
+  ¿Qué es SQL Injection? Un ataque donde el usuario mete
+  código SQL malicioso en los campos de texto.
+  El ? evita esto porque SQLite3 lo trata como dato, NO como código.
+
+--- actualizar_producto(producto_id, nombre, descripcion, precio, stock, imagen) ---
+Líneas 153-172
+Operación SQL: UPDATE productos SET ... WHERE id=?
+Qué hace: Modifica los datos de un producto existente.
+Lógica especial:
+  - Si imagen es None → NO modifica la foto (conserva la actual)
+  - Si imagen tiene valor → SÍ actualiza la foto
+Retorna: True si se modificó, False si no.
+self.cursor.rowcount > 0 → cuenta cuántas filas se modificaron.
+
+--- actualizar_stock(producto_id, nuevo_stock) ---
+Líneas 174-185
+Operación SQL: UPDATE productos SET stock=? WHERE id=?
+Qué hace: Cambia SOLO el stock de un producto.
+Más ligero que actualizar_producto() porque no toca los demás campos.
+
+--- borrar_producto(producto_id) ---
+Líneas 187-195
+Operación SQL: DELETE FROM productos WHERE id=?
+Qué hace: ELIMINA permanentemente un producto.
+⚠️ CUIDADO: Es irreversible. No hay papelera de reciclaje.
+¿Cómo cambiar? Para "borrado suave":
+  En vez de DELETE, hacer UPDATE productos SET activo=0 WHERE id=?
+  Y en listar_productos agregar WHERE activo=1.
+
+
+========================================================
+ SECCIÓN 8: CRUD DE USUARIOS (Líneas 197-224)
+========================================================
+
+--- crear_usuario(username, password_hash) ---
+Líneas 198-215
+Operación SQL: INSERT INTO usuarios
+Qué hace: Registra un nuevo usuario.
+Proceso:
+  1. Limpia espacios del username
+  2. Valida que username y password_hash no estén vacíos
+  3. Verifica si el username ya existe (SELECT)
+  4. Si ya existe → retorna None (no duplicados)
+  5. Si no existe → lo inserta
+Retorna: ID del usuario creado, o None.
+¿Cómo cambiar?
+  - Agregar email: añadir campo a la tabla y al INSERT
+  - Agregar roles: crear columna "rol TEXT DEFAULT 'cliente'"
+
+--- obtener_usuario_por_username(username) ---
+Líneas 217-224
+Operación SQL: SELECT * FROM usuarios WHERE username=?
+Qué hace: Busca un usuario por su nombre para el login.
+Retorna: Diccionario con id, username, password_hash.
+
+
+========================================================
+ SECCIÓN 9: SISTEMA DE PEDIDOS (Líneas 226-323)
+========================================================
+
+--- crear_pedido(cliente_nombre, cliente_email, items) ---
+Líneas 227-272
+⭐ MÉTODO MÁS COMPLEJO DEL SISTEMA
+Operaciones SQL: BEGIN, SELECT, INSERT (x2), UPDATE, COMMIT/ROLLBACK
+
+Qué hace: Procesa una compra completa.
+Proceso paso a paso:
+  1. BEGIN → Inicia una TRANSACCIÓN (todo o nada)
+  2. Para CADA producto en el carrito:
+     a. Busca el precio actual en la BD
+     b. Verifica que el producto exista
+     c. Verifica que haya stock suficiente
+     d. Calcula subtotal y lo suma al total
+  3. INSERT en pedidos → Crea el registro de la compra
+  4. Para CADA producto:
+     a. INSERT en pedido_items → Guarda el detalle
+     b. UPDATE productos → DESCUENTA el stock
+  5. COMMIT → Confirma todo
+
+Si ALGO falla (producto no existe, stock insuficiente):
+  → ROLLBACK → Deshace TODO. Nada se guarda.
+  Esto se llama TRANSACCIÓN ATÓMICA (todo o nada).
+
+¿Cómo cambiar?
+  - No descontar stock automático: comentar las líneas 262-264
+  - Agregar envío de email: después del commit (línea 267)
+  - Agregar método de pago: agregar campo al INSERT de pedidos
+
+--- listar_pedidos() ---
+Líneas 274-289
+Operación SQL: SELECT con LEFT JOIN y GROUP_CONCAT
+Qué hace: Lista TODOS los pedidos con los nombres de los productos.
+SQL explicado:
+  - LEFT JOIN pedido_items → une pedidos con sus items
+  - LEFT JOIN productos → une items con nombres de productos
+  - GROUP_CONCAT(nombre, ', ') → junta los nombres separados por coma
+    Ejemplo resultado: "Rosa Individual, Girasol Eterno"
+  - GROUP BY p.id → agrupa por pedido
+  - ORDER BY p.id DESC → los más recientes primero
+
+--- obtener_pedido(pedido_id) ---
+Líneas 291-310
+Qué hace: Muestra el detalle de UN pedido específico.
+Hace 2 consultas:
+  1. Datos generales del pedido (quién, cuánto, cuándo)
+  2. Lista de productos comprados (qué flores se llevó)
+Retorna: tupla (pedido, items) o (None, [])
+
+--- actualizar_estado_pedido(pedido_id, estado) ---
+Líneas 312-323
+Operación SQL: UPDATE pedidos SET estado=?
+Qué hace: Cambia el estado de un pedido.
+Valores posibles: "pendiente" o "entregado"
+¿Cómo cambiar? Agregar más estados como "en_preparación",
+"en_camino", "cancelado".
+
+
+========================================================
+ SECCIÓN 10: REPORTE DE VENTAS (Líneas 325-409)
+========================================================
+
+--- reporte_ventas_hoy() ---
+Líneas 325-385
+⭐ MÉTODO CON MÁS CONSULTAS SQL (4 consultas)
+Qué hace: Genera el reporte financiero del día.
+
+Consulta 1 (líneas 338-349): PEDIDOS DEL DÍA
+  SQL: SELECT con LEFT JOIN y GROUP_CONCAT
+  Filtro: WHERE DATE(creado_en) = DATE('now', 'localtime')
+  → Solo trae pedidos de HOY
+  GROUP_CONCAT genera: "Rosa x2 | Girasol x1"
+
+Consulta 2 (líneas 352-357): INGRESOS BRUTOS
+  SQL: SELECT COALESCE(SUM(total), 0)
+  → Suma todos los totales del día
+  COALESCE: Si no hay ventas, retorna 0 en vez de NULL
+
+Consulta 3 (líneas 361-372): PRODUCTO ESTRELLA
+  SQL: SELECT pr.nombre, SUM(pi.cantidad) as total_vendido
+  → Busca el producto con más unidades vendidas hoy
+  ORDER BY total_vendido DESC LIMIT 1 → solo el primero
+  Si no hay ventas → "Sin ventas hoy"
+
+Consulta 4 (líneas 375-380): GASTOS DEL DÍA
+  SQL: SELECT monto FROM gastos_diarios WHERE fecha = HOY
+  → Lee cuánto gastó la sucursal hoy
+  Si no hay registro → 0.0
+
+Retorna: tupla (pedidos, total_dia, gastos, producto_estrella)
+Si falla: retorna ([], 0.0, 0.0, "N/A")
+
+--- guardar_gastos_hoy(monto) ---
+Líneas 387-409
+Operación SQL: INSERT ... ON CONFLICT ... DO UPDATE
+Qué hace: Guarda o EDITA los gastos del día.
+Lógica especial:
+  - Si NO hay registro de hoy → INSERT (crea nuevo)
+  - Si YA hay registro de hoy → UPDATE (sobrescribe)
+  Esto se llama UPSERT (UPDATE + INSERT combinados)
+  Es posible gracias a ON CONFLICT(fecha) DO UPDATE.
+¿Cómo cambiar?
+  - Guardar histórico: quitar ON CONFLICT y agregar siempre INSERT
+  - Agregar categoría: crear columna "tipo TEXT" (renta, luz, agua)
+
+
+========================================================
+ SECCIÓN 11: SISTEMA DE AVISOS (Líneas 411-461)
+========================================================
+
+--- crear_aviso(titulo, mensaje) ---
+Líneas 412-423
+Operación SQL: INSERT INTO avisos
+Qué hace: Crea un nuevo aviso/banner.
+El aviso nace con activo=1 (visible) por defecto.
+
+--- listar_avisos(solo_activos=False) ---
+Líneas 425-436
+Operación SQL: SELECT * FROM avisos
+Qué hace: Lista avisos.
+  - solo_activos=True → WHERE activo=1 (solo visibles para tienda)
+  - solo_activos=False → todos (para panel admin)
+¿Cómo cambiar?
+  - Limitar cantidad: agregar LIMIT 5
+  - Ordenar por fecha: ORDER BY creado_en DESC (ya lo hace)
+
+--- togglear_aviso(aviso_id) ---
+Líneas 438-451
+Operación SQL: UPDATE avisos SET activo = 1 - activo
+Qué hace: Enciende/apaga un aviso sin borrarlo.
+Truco matemático:
+  - Si activo = 1 → 1 - 1 = 0 (se apaga)
+  - Si activo = 0 → 1 - 0 = 1 (se enciende)
+Muy elegante y en una sola línea de SQL.
+
+--- borrar_aviso(aviso_id) ---
+Líneas 453-461
+Operación SQL: DELETE FROM avisos WHERE id=?
+Qué hace: Elimina permanentemente un aviso.
+
+
+========================================================
+ SECCIÓN 12: DATOS SEMILLA (Líneas 463-484)
+========================================================
+
+--- semilla_productos() ---
+Líneas 464-484
+Qué hace: Si la BD está VACÍA, inserta 10 productos de ejemplo.
+Proceso:
+  1. Cuenta cuántos productos hay (SELECT COUNT(*))
+  2. Si hay más de 0 → no hace nada (return)
+  3. Si hay 0 → inserta los 10 productos predefinidos
+
+Los 10 productos son:
+  1. Girasol Eterno - $199
+  2. Ramo de Dalias - $350
+  3. Flores Amarillas - $500
+  4. Caja Corazón - $500
+  5. Ramo Rosas Eternas (21) - $650
+  6. Ramo Clásico - $400
+  7. Rosa Individual - $120
+  8. Caja Floral con Peluche - $720
+  9. Ramo Rosas Eternas (22) - $750
+  10. Ramo de Flor de Loto - $420
+
+¿Cómo cambiar?
+  - Agregar más productos: añadir tuplas a la lista
+  - Cambiar precios: modificar el número en cada tupla
+  - Cambiar stock inicial: modificar el 10 en cada tupla
+  - Quitar semilla: borrar el llamado db.semilla_productos() en app.py
+
+
+========================================================
+ RESUMEN: OPERACIONES CRUD POR TABLA
+========================================================
+
+PRODUCTOS:
+  CREATE → crear_producto()
+  READ   → listar_productos(), obtener_producto()
+  UPDATE → actualizar_producto(), actualizar_stock()
+  DELETE → borrar_producto()
+
+USUARIOS:
+  CREATE → crear_usuario()
+  READ   → obtener_usuario_por_username()
+  UPDATE → (no implementado)
+  DELETE → (no implementado)
+
+PEDIDOS:
+  CREATE → crear_pedido()
+  READ   → listar_pedidos(), obtener_pedido()
+  UPDATE → actualizar_estado_pedido()
+  DELETE → (no implementado)
+
+AVISOS:
+  CREATE → crear_aviso()
+  READ   → listar_avisos()
+  UPDATE → togglear_aviso()
+  DELETE → borrar_aviso()
+
+GASTOS:
+  CREATE/UPDATE → guardar_gastos_hoy() (UPSERT)
+  READ → dentro de reporte_ventas_hoy()

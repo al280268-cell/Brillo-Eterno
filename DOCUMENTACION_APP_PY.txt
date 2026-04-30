@@ -1,0 +1,393 @@
+========================================================
+ 📘 DOCUMENTACIÓN COMPLETA DE app.py
+ Florería Brillo Eterno - Flask
+========================================================
+
+
+========================================================
+ SECCIÓN 1: IMPORTACIONES (Líneas 1-7)
+========================================================
+
+import os
+→ Módulo del sistema operativo. Lo usamos para:
+  - Crear carpetas (os.makedirs)
+  - Unir rutas de archivos (os.path.join)
+  - Verificar si un archivo ya existe (os.path.exists)
+
+from datetime import datetime, timedelta
+→ Manejo de fechas. Lo usamos para calcular
+  las fechas de entrega en el carrito (3 días hábiles,
+  2 días naturales).
+
+from flask import Flask, render_template, request, redirect, url_for, session, flash
+→ Flask es nuestro framework web. Cada cosa que importamos:
+  - Flask: crea la aplicación web
+  - render_template: carga los archivos HTML
+  - request: lee los datos que envía el usuario (formularios)
+  - redirect: redirige a otra página
+  - url_for: genera URLs automáticamente (ej: url_for("index") = "/")
+  - session: memoria temporal del navegador (carrito, login)
+  - flash: muestra mensajes temporales al usuario
+
+from werkzeug.security import generate_password_hash, check_password_hash
+→ Encripta contraseñas para que no se guarden en texto plano.
+  - generate_password_hash("123") → "pbkdf2:sha256:260000$..."
+  - check_password_hash(hash, "123") → True/False
+
+from werkzeug.utils import secure_filename
+→ Limpia nombres de archivos peligrosos.
+  Ejemplo: "../hack.jpg" se convierte en "hack.jpg"
+
+from tienda_db import BaseDatosTienda
+→ Importa nuestra clase de base de datos (el otro archivo).
+
+from functools import wraps
+→ Necesario para crear decoradores (@requires_admin, @login_required).
+
+
+========================================================
+ SECCIÓN 2: CONFIGURACIÓN (Líneas 9-28)
+========================================================
+
+app = Flask(__name__)
+→ Crea la aplicación Flask.
+  ¿Cómo cambiar? El nombre "__name__" es automático, no tocar.
+
+app.secret_key = "cambia-esto-por-algo-seguro"
+→ Clave secreta para firmar las cookies de sesión.
+  ⚠️ En producción DEBE cambiarse por algo largo y aleatorio.
+  Si la cambias, todas las sesiones activas se borran.
+
+UPLOAD_FOLDER = os.path.join(app.root_path, 'static', 'imagenes')
+→ Define la carpeta donde se guardan las fotos subidas.
+  Resultado: "mi_tienda/static/imagenes"
+
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+→ Crea la carpeta si no existe. exist_ok=True evita error si ya existe.
+
+ALLOWED_IMAGE_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp'}
+→ Formatos de imagen permitidos.
+  ¿Cómo cambiar? Agregar más formatos al set, ej: agregar 'svg'
+
+db = BaseDatosTienda(ruta="./", bd="tienda.sqlite3")
+→ Crea la conexión a la base de datos SQLite3.
+  ¿Cómo cambiar? Cambiar el nombre del archivo .sqlite3
+
+db.semilla_productos()
+→ Si la BD está vacía, mete los productos de ejemplo (10 flores).
+
+
+========================================================
+ SECCIÓN 3: FUNCIONES AUXILIARES (Líneas 20-64)
+========================================================
+
+--- allowed_image_file(filename) ---
+Línea 20-21
+Qué hace: Verifica si un archivo es imagen válida.
+Cómo funciona:
+  1. Revisa que tenga un punto (.) en el nombre
+  2. Toma la extensión después del último punto
+  3. La compara contra ALLOWED_IMAGE_EXTENSIONS
+Ejemplo: "rosa.jpg" → True, "virus.exe" → False
+¿Cómo cambiar? Agregar formatos al set ALLOWED_IMAGE_EXTENSIONS.
+
+--- is_admin() ---
+Línea 32-33
+Qué hace: Verifica si el usuario actual es administrador.
+Cómo funciona: Busca la llave "admin" en la sesión del navegador.
+Retorna: True si es admin, False si no.
+Si se rompe: Verificar que en login se ponga session["admin"] = True.
+
+--- requires_admin(f) ---
+Líneas 37-44
+Qué hace: DECORADOR. Protege rutas solo para administradores.
+Cómo funciona:
+  1. Antes de ejecutar la ruta, pregunta is_admin()
+  2. Si NO es admin → redirige al login con mensaje
+  3. Si SÍ es admin → ejecuta la ruta normalmente
+Uso: Poner @requires_admin arriba de cualquier ruta que quieras proteger.
+¿Cómo cambiar? Si quieres agregar más roles (ej: "editor"),
+crear otra función similar pero verificando session.get("editor").
+
+--- current_user() ---
+Línea 48-49
+Qué hace: Retorna los datos del usuario logueado (id, username).
+Si no hay nadie logueado, retorna None.
+
+--- login_required(f) ---
+Líneas 52-59
+Qué hace: DECORADOR. Protege rutas solo para usuarios logueados.
+Similar a requires_admin pero para clientes normales.
+Uso: @login_required arriba de rutas que necesiten login.
+
+--- carrito_session() ---
+Líneas 61-64
+Qué hace: Crea o retorna el carrito de compras de la sesión.
+El carrito es un diccionario: {"1": 2, "5": 1}
+  Clave = ID del producto (como texto)
+  Valor = Cantidad
+¿Cómo cambiar? Si quieres carrito persistente (que no se borre
+al cerrar navegador), hay que guardarlo en la base de datos.
+
+
+========================================================
+ SECCIÓN 4: RUTAS PÚBLICAS - CATÁLOGO (Líneas 67-83)
+========================================================
+
+--- GET / (index) ---
+Líneas 68-72
+Qué hace: Página principal de la tienda.
+Cómo funciona:
+  1. Pide todos los productos a la BD
+  2. Pide los avisos activos
+  3. Manda todo al template index.html
+¿Cómo cambiar?
+  - Para paginación: db.listar_productos(limite=10, pagina=1)
+  - Para filtrar: db.listar_productos(categoria="ramos")
+
+--- GET /producto/<id> (producto) ---
+Líneas 76-81
+Qué hace: Muestra los detalles de UNA flor específica.
+Cómo funciona:
+  1. Recibe el ID del producto desde la URL
+  2. Lo busca en la BD
+  3. Si no existe → error 404
+  4. Si existe → muestra producto.html
+¿Cómo cambiar? Para agregar "productos relacionados",
+hacer otra consulta a la BD y pasarla al template.
+
+
+========================================================
+ SECCIÓN 5: RUTAS DEL CARRITO (Líneas 86-162)
+========================================================
+
+--- GET /carrito ---
+Líneas 87-129
+Qué hace: Muestra el carrito de compras con totales y fechas de entrega.
+Cómo funciona:
+  1. Lee el carrito de la sesión
+  2. Para cada producto, busca su precio en la BD
+  3. Calcula subtotales y total
+  4. Calcula fechas de entrega:
+     - Click & Collect: 3 días HÁBILES (salta sáb/dom)
+     - Punto Medio: 2 días NATURALES (cuenta todo)
+  5. Formatea las fechas en español
+PROTEGIDA: Requiere @login_required
+¿Cómo cambiar?
+  - Cambiar días hábiles: modificar "while agregados < 3" (cambiar el 3)
+  - Cambiar días naturales: modificar "timedelta(days=2)" (cambiar el 2)
+  - Agregar descuentos: calcular antes de pasar "total" al template
+
+--- POST /carrito/agregar ---
+Líneas 131-152
+Qué hace: Agrega un producto al carrito.
+Cómo funciona:
+  1. Lee producto_id y cantidad del formulario
+  2. Verifica que el producto exista
+  3. Verifica que haya stock suficiente
+  4. Lo agrega al diccionario de sesión
+  5. Redirige de vuelta con scroll al producto (#producto-X)
+¿Cómo cambiar?
+  - Quitar verificación de stock: eliminar el if de stock
+  - Limitar cantidad máxima: agregar "if qty > 5: flash('Máximo 5')"
+
+--- POST /carrito/quitar ---
+Líneas 154-162
+Qué hace: Elimina un producto del carrito.
+Cómo funciona: cart.pop() borra la clave del diccionario.
+Muy simple, no puede fallar a menos que el ID no exista.
+
+
+========================================================
+ SECCIÓN 6: AUTENTICACIÓN (Líneas 165-215)
+========================================================
+
+--- GET/POST /registro ---
+Líneas 166-182
+Qué hace: Registra nuevos clientes.
+Cómo funciona:
+  GET → Muestra el formulario de registro
+  POST →
+    1. Lee username y password del formulario
+    2. Valida que no estén vacíos
+    3. Encripta la contraseña con generate_password_hash()
+    4. Intenta crear el usuario en la BD
+    5. Si el username ya existe → error
+    6. Si todo bien → loguea automáticamente y redirige
+¿Cómo cambiar?
+  - Agregar email: añadir campo en el form y en db.crear_usuario()
+  - Mínimo de contraseña: if len(password) < 6: flash("Muy corta")
+
+--- GET/POST /login ---
+Líneas 186-208
+Qué hace: Inicia sesión para clientes y administrador.
+Cómo funciona:
+  GET → Muestra formulario de login
+  POST →
+    1. Lee username y password
+    2. PRIMERO verifica si es admin (credenciales fijas):
+       usuario: "admin", contraseña: "BrilloEterno123"
+       Si sí → session["admin"] = True → panel admin
+    3. Si no es admin, busca en la BD de usuarios
+    4. Compara contraseña encriptada con check_password_hash()
+    5. Si coincide → session["user"] = {id, username}
+⚠️ IMPORTANTE: Las credenciales del admin están en texto plano
+en el código (línea 196). Para mayor seguridad, guardarlas en
+variables de entorno o en la BD.
+¿Cómo cambiar credenciales admin?
+  Modificar: username == "admin" and password == "BrilloEterno123"
+
+--- GET /logout ---
+Líneas 210-215
+Qué hace: Cierra sesión del cliente.
+session.pop("user", None) → borra los datos del usuario.
+El carrito NO se borra (queda en sesión).
+
+
+========================================================
+ SECCIÓN 7: CHECKOUT (Líneas 218-241)
+========================================================
+
+--- POST /checkout ---
+Líneas 219-241
+Qué hace: Procesa el "pago" y crea el pedido.
+PROTEGIDA: @login_required
+Cómo funciona:
+  1. Lee nombre y email del formulario
+  2. Valida que haya nombre
+  3. Verifica que el carrito no esté vacío
+  4. Convierte el carrito a lista de items
+  5. Llama a db.crear_pedido() que:
+     - Calcula el total
+     - Descuenta el stock
+     - Crea el pedido en la BD
+  6. Si todo bien → vacía el carrito y muestra checkout_ok.html
+  7. Si falla (ej: stock insuficiente) → redirige al carrito
+¿Cómo cambiar?
+  - Integrar pagos reales: usar Stripe API antes de crear_pedido()
+  - Enviar email: agregar envío de correo después del commit
+
+
+========================================================
+ SECCIÓN 8: ADMIN - PRODUCTOS (Líneas 252-387)
+========================================================
+
+--- GET /admin/productos ---
+Líneas 253-257
+Qué hace: Muestra la lista/tabla de todos los productos al admin.
+PROTEGIDA: @requires_admin
+
+--- GET/POST /admin/producto/nuevo ---
+Líneas 260-307
+Qué hace: Formulario para crear nuevos productos.
+Cómo funciona:
+  GET → Muestra formulario vacío
+  POST →
+    1. Lee nombre, descripción, precio, stock
+    2. Valida campos obligatorios
+    3. IMAGEN: Si subieron foto →
+       a. Verifica extensión válida
+       b. Limpia el nombre (secure_filename)
+       c. Si ya existe "rosa.jpg", la renombra a "rosa_1.jpg"
+       d. Guarda el archivo en static/imagenes/
+    4. Si NO subieron foto → usa "default.jpg"
+    5. Crea el producto en la BD
+¿Cómo cambiar?
+  - Limitar tamaño de imagen: if imagen_file.content_length > 5*1024*1024
+  - Agregar categorías: añadir campo al formulario y a la BD
+
+--- GET/POST /admin/producto/<id>/editar ---
+Líneas 309-361
+Qué hace: Formulario para editar un producto existente.
+Casi idéntico a "nuevo" pero:
+  - Carga los datos actuales del producto
+  - Si NO suben nueva foto → conserva la anterior (imagen=None)
+
+--- POST /admin/producto/<id>/borrar ---
+Líneas 363-369
+Qué hace: Elimina un producto permanentemente.
+Ejecuta DELETE FROM productos en la BD.
+
+--- POST /admin/producto/<id>/stock ---
+Líneas 371-387
+Qué hace: Actualiza solo el stock de un producto.
+Extra: Redirige con ancla (#item-X) para hacer scroll
+automático al producto modificado.
+
+
+========================================================
+ SECCIÓN 9: ADMIN - PEDIDOS (Líneas 390-408)
+========================================================
+
+--- GET /admin/pedidos ---
+Líneas 391-395
+Qué hace: Muestra todos los pedidos con sus productos.
+
+--- POST /admin/pedidos/actualizar ---
+Líneas 397-408
+Qué hace: Actualiza estados de pedidos (pendiente/entregado).
+Cómo funciona:
+  1. Lee qué checkboxes marcó el admin como "entregado"
+  2. Recorre TODOS los pedidos
+  3. Si el ID está en los marcados → estado = "entregado"
+  4. Si NO está → estado = "pendiente"
+¿Cómo cambiar?
+  - Agregar más estados: "en_preparacion", "en_camino", "entregado"
+
+
+========================================================
+ SECCIÓN 10: ADMIN - AVISOS (Líneas 411-451)
+========================================================
+
+--- GET /admin/avisos ---
+Líneas 412-418
+Qué hace: Muestra todos los avisos (activos e inactivos).
+
+--- POST /admin/aviso/nuevo ---
+Líneas 420-435
+Qué hace: Crea un nuevo aviso/banner para la tienda.
+Valida que título y mensaje no estén vacíos.
+
+--- POST /admin/aviso/<id>/toggle ---
+Líneas 437-443
+Qué hace: Enciende/apaga un aviso sin borrarlo.
+El aviso sigue en la BD pero no se muestra al público.
+
+--- POST /admin/aviso/<id>/borrar ---
+Líneas 445-451
+Qué hace: Elimina un aviso permanentemente.
+
+
+========================================================
+ SECCIÓN 11: ADMIN - REPORTE DE VENTAS (Líneas 454-503)
+========================================================
+
+--- GET /admin/reporte ---
+Líneas 455-484
+Qué hace: Panel de reporte financiero del día.
+Cómo funciona:
+  1. Pide a la BD: pedidos del día, total, gastos, producto estrella
+  2. Calcula en Python (NO en SQL):
+     - Ganancia = total_dia - gastos
+     - Ticket promedio = total_dia / número de pedidos
+  3. Manda todo al template admin_reporte.html
+¿Cómo cambiar?
+  - Agregar reportes semanales/mensuales: cambiar el filtro de fecha
+  - Agregar gráficas: usar Chart.js en el template
+
+--- POST /admin/reporte/gastos ---
+Líneas 486-503
+Qué hace: Permite editar los gastos operativos del día.
+Valida que el monto sea >= 0.
+
+
+========================================================
+ SECCIÓN 12: ARRANQUE (Líneas 506-511)
+========================================================
+
+if __name__ == "__main__":
+    app.run(debug=True)
+→ Arranca Flask en modo desarrollo (puerto 5000).
+  - debug=True: recarga automáticamente al guardar cambios
+  - Para producción: cambiar a debug=False y usar Gunicorn/Nginx
+  - Para cambiar puerto: app.run(debug=True, port=8080)

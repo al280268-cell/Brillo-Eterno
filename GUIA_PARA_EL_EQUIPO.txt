@@ -1,0 +1,100 @@
+========================================
+ 🌹 GUÍA PARA DESCARGAR Y EJECUTAR 
+    EL PROYECTO (BRILLO ETERNO)
+========================================
+
+1. ACCESO AL REPOSITORIO
+   - Inicia sesión en tu cuenta de Git
+   - Ingresa al repositorio: al280268-cell/Brillo-Eterno
+
+2. DESCARGAR EL PROYECTO
+   ⚠️ NO usar "Download ZIP" desde GitHub.
+   El ZIP solo descarga los archivos pero NO incluye
+   la carpeta .git, entonces NO van a poder hacer
+   commit ni push. SIEMPRE usar git clone.
+
+   - Abre la terminal (PowerShell) con Ctrl + Ñ
+   - Copia y pega este comando:
+     git clone https://github.com/al280268-cell/Brillo-Eterno.git
+   - Entra a la carpeta:
+     cd Brillo-Eterno
+
+3. SELECCIONAR LA RAMA CORRECTA
+   - Escribe este comando:
+     git checkout prueba_estudiar
+
+4. INSTALAR Y EJECUTAR
+   - Entra al proyecto:
+     cd mi_tienda
+   - Instala las dependencias de Sass:
+     npm install
+   - Compila los estilos:
+     npx gulp styles
+   - Ejecuta la aplicación:
+     py app.py
+   - Abre en el navegador:
+     http://127.0.0.1:5000
+
+
+========================================
+ CADA VEZ QUE VAN A TRABAJAR
+========================================
+
+Paso 1: Abrir terminal en la carpeta mi_tienda
+
+Paso 2: Jalar los últimos cambios del equipo:
+git pull origin prueba_estudiar
+
+Paso 3: Hacer sus cambios en los archivos
+
+Paso 4: Si editaron el SCSS, compilar:
+npx gulp styles
+
+Paso 5: Probar que funcione:
+py app.py
+
+
+========================================
+ CUANDO TERMINAN DE HACER CAMBIOS
+========================================
+
+Paso 1: Agregar todos los archivos:
+git add .
+
+Paso 2: Hacer commit (poner lo que hicieron):
+git commit -m "Aquí escriban lo que cambiaron"
+
+Paso 3: Subir los cambios:
+git push origin prueba_estudiar
+
+
+========================================
+ ⚠️ REGLAS IMPORTANTES
+========================================
+
+1. NUNCA descargar como ZIP, siempre usar git clone
+
+2. NUNCA editar el archivo static/css/styles.css
+   (ese se genera solito con gulp)
+
+3. SIEMPRE editar los estilos en: static/scss/styles.scss
+
+4. SIEMPRE hacer git pull ANTES de empezar a trabajar
+   (para traerse los cambios de los demás)
+
+5. Si hay error de conflicto, avisar al equipo
+
+
+========================================
+ COMO EDITAR ESTILOS CON SASS
+========================================
+
+1. Abrir: mi_tienda/static/scss/styles.scss
+2. Hacer los cambios que quieran
+3. Compilar: npx gulp styles
+4. Refrescar el navegador con Ctrl + F5
+
+TIP: Si van a estar editando mucho rato,
+corran "npx gulp watch" y se compila solito
+cada vez que guardan con Ctrl+S.
+Para apagarlo: Ctrl+C
