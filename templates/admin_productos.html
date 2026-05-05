@@ -31,6 +31,7 @@
           <td class="admin-precio">${{ "%.2f"|format(p.precio) }}</td>
           <td>{{ p.stock }}</td>
           <td>
+            <a href="{{ url_for('admin_producto_editar', producto_id=p.id) }}" class="btn admin-edit">Editar</a>
             <form method="post" action="{{ url_for('admin_producto_borrar', producto_id=p.id) }}" class="admin-delete-form">
               <button type="submit" class="btn admin-delete" onclick="return confirm('¿Borrar producto?');">
                 Borrar

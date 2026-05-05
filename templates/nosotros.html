@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="nosotros-container">
+  <h1 class="nosotros-title">Nosotros</h1>
+
+  <div class="nosotros-card">
+    <div class="nosotros-img-box">
+      <img src="{{ url_for('static', filename='imagenes/BE.jpg') }}" alt="Brillo Eterno" class="nosotros-img">
+    </div>
+    <div class="nosotros-info">
+      <h2 class="nosotros-subtitle">Florería Brillo Eterno</h2>
+      <p class="nosotros-text">
+        Somos una florería artesanal dedicada a crear arreglos de flores eternas hechas a mano con
+        listón. Cada pieza es elaborada con dedicación y amor, pensada para durar para siempre.
+      </p>
+      <p class="nosotros-text">
+        Nuestras flores no se marchitan, no necesitan agua ni luz solar. Son el regalo perfecto
+        para cualquier ocasión: cumpleaños, aniversarios, decoración del hogar, o simplemente
+        para alegrar el día de alguien especial.
+      </p>
+      <p class="nosotros-text">
+        En Brillo Eterno creemos que la belleza puede ser eterna. Cada flor que creamos es única
+        y está hecha con materiales de alta calidad para garantizar su durabilidad y hermosura.
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}
