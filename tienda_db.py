@@ -126,6 +126,24 @@ class BaseDatosTienda:
             print(f"[DB] Error actualizando stock: {e}")
             return False
 
+    def actualizar_producto(self, producto_id, nombre, descripcion, precio, stock, imagen=None):
+        try:
+            if imagen:
+                self.cursor.execute("""
+                    UPDATE productos SET nombre=?, descripcion=?, precio=?, stock=?, imagen=?
+                    WHERE id=?;
+                """, (nombre.strip(), descripcion, float(precio), int(stock), imagen, producto_id))
+            else:
+                self.cursor.execute("""
+                    UPDATE productos SET nombre=?, descripcion=?, precio=?, stock=?
+                    WHERE id=?;
+                """, (nombre.strip(), descripcion, float(precio), int(stock), producto_id))
+            self.con.commit()
+            return self.cursor.rowcount > 0
+        except Error as e:
+            print(f"[DB] Error actualizando producto: {e}")
+            return False
+
     def borrar_producto(self, producto_id):
         try:
             self.cursor.execute("DELETE FROM productos WHERE id=?;", (producto_id,))

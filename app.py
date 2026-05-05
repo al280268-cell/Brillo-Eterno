@@ -61,6 +61,10 @@ def index():
     productos = db.listar_productos()
     return render_template("index.html", productos=productos, carrito=carrito_session())
 
+@app.route("/nosotros")
+def nosotros():
+    return render_template("nosotros.html")
+
 @app.route("/producto/<int:producto_id>")
 def producto(producto_id):
     p = db.obtener_producto(producto_id)
@@ -236,6 +240,55 @@ def admin_producto_nuevo():
         return redirect(url_for("admin_producto_nuevo"))
 
     return render_template("admin_producto_nuevo.html")
+
+
+@app.route("/admin/producto/<int:producto_id>/editar", methods=["GET", "POST"])
+@requires_admin
+def admin_producto_editar(producto_id):
+    p = db.obtener_producto(producto_id)
+    if not p:
+        flash("Producto no encontrado")
+        return redirect(url_for("admin_productos"))
+
+    if request.method == "POST":
+        nombre = request.form.get("nombre", "").strip()
+        descripcion = request.form.get("descripcion", "").strip()
+        precio = request.form.get("precio", type=float)
+        stock = request.form.get("stock", type=int)
+
+        if not nombre or precio is None or stock is None:
+            flash("Completa todos los campos")
+            return redirect(url_for("admin_producto_editar", producto_id=producto_id))
+
+        imagen = None
+        imagen_file = request.files.get("imagen")
+
+        if imagen_file and imagen_file.filename:
+            if allowed_image_file(imagen_file.filename):
+                filename = secure_filename(imagen_file.filename)
+                nombre_archivo, extension = os.path.splitext(filename)
+                destino = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                contador = 0
+
+                while os.path.exists(destino):
+                    contador += 1
+                    filename = f"{nombre_archivo}_{contador}{extension}"
+                    destino = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+
+                imagen_file.save(destino)
+                imagen = filename
+            else:
+                flash("Formato de imagen no soportado.")
+
+        success = db.actualizar_producto(producto_id, nombre, descripcion, precio, stock, imagen)
+        if success:
+            flash("Producto actualizado")
+            return redirect(url_for("admin_productos"))
+
+        flash("Error actualizando producto")
+        return redirect(url_for("admin_producto_editar", producto_id=producto_id))
+
+    return render_template("admin_producto_editar.html", p=p)
 
 
 @app.route("/admin/producto/<int:producto_id>/borrar", methods=["POST"])

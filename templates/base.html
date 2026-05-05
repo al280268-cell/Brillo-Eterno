@@ -14,7 +14,8 @@
     <img src="{{ url_for('static', filename='imagenes/minifoto.png') }}" alt="flor" class="brand-logo">
     Florería Brillo Eterno
     </a>
-    <a class="cartlink" href="{{ url_for('carrito') }}"> Carrito</a>
+    <a class="cartlink" href="{{ url_for('nosotros') }}">Nosotros</a>
+    <a class="cartlink" href="{{ url_for('carrito') }}">Carrito</a>
     {% if session.get('user') %}
       <span class="cartlink">Hola {{ session.get('user')['username'] }}</span>
       <a class="cartlink" href="{{ url_for('logout') }}">Cerrar sesión</a>
@@ -39,6 +40,9 @@
     {% block content %}{% endblock %}
   </main>
 
-  <footer class="footer">Hecho con Flask + SQLite</footer>
+  <footer class="footer">
+    <p class="footer-brand">Florería Brillo Eterno</p>
+    <p class="footer-text">Flores eternas hechas a mano con amor</p>
+  </footer>
 </body>
 </html>
