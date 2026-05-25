@@ -1,6 +1,10 @@
 # tienda_db.py
-import os
-import sqlite3
+# ==========================================
+# IMPORTACIÓN DE LIBRERÍAS
+# ==========================================
+import os       # Para construir rutas de archivos
+import sqlite3  # Para conectar con la base de datos SQLite
+import hashlib  # Para encriptar contraseñas con SHA256
 from sqlite3 import Error
 
 STOCK_INICIAL = 10  # Stock al que se restablece un producto cuando llega a 0
@@ -195,15 +199,27 @@ class BaseDatosTienda:
             return False
 
     # ─────────── USUARIOS ───────────
-    def crear_usuario(self, username, password_hash):
-        # Registra usuarios con contraseña encriptada.
+
+    def encriptar_password(self, password):
+        # Convierte la contraseña en un hash SHA256 (cadena de 64 caracteres hexadecimales).
+        # SHA256 es un algoritmo de encriptación de una sola vía: no se puede revertir.
+        # Esto protege las contraseñas en caso de que alguien acceda a la base de datos.
+        return hashlib.sha256(password.encode()).hexdigest()
+
+    def crear_usuario(self, username, password):
+        # Registra un nuevo usuario en la base de datos.
+        # La contraseña se encripta internamente con SHA256 antes de guardarla.
+        # Retorna el ID del nuevo usuario, o None si el username ya existe.
         try:
             username = username.strip()
-            if not username or not password_hash:
+            if not username or not password:
                 return None
+            # Verificar si el usuario ya existe
             self.cursor.execute("SELECT id FROM usuarios WHERE username=?;", (username,))
             if self.cursor.fetchone():
-                return None
+                return None  # El usuario ya existe
+            # Encriptar la contraseña antes de guardarla
+            password_hash = self.encriptar_password(password)
             self.cursor.execute(
                 "INSERT INTO usuarios(username, password_hash) VALUES(?, ?);",
                 (username, password_hash)
@@ -212,6 +228,21 @@ class BaseDatosTienda:
             return self.cursor.lastrowid
         except Error as e:
             print(f"[DB] No se pudo crear usuario: {e}")
+            return None
+
+    def verificar_usuario(self, username, password):
+        # Verifica si el usuario y contraseña son correctos.
+        # Encripta la contraseña recibida y la compara con el hash guardado en la DB.
+        # Retorna la fila del usuario si coincide, o None si no.
+        try:
+            password_hash = self.encriptar_password(password)
+            self.cursor.execute(
+                "SELECT * FROM usuarios WHERE username=? AND password_hash=?;",
+                (username.strip(), password_hash)
+            )
+            return self.cursor.fetchone()
+        except Error as e:
+            print(f"[DB] Error verificando usuario: {e}")
             return None
 
     def obtener_usuario_por_username(self, username):
