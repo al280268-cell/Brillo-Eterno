@@ -574,9 +574,12 @@ class VentanaCatalogo(tk.Frame):
 
     def _construir_barra_superior(self):
         """Barra superior elegante con logo, usuario y carrito."""
+        # Barra principal burdeos
         barra = tk.Frame(self, bg=ROJO, height=55)
         barra.pack(fill=tk.X)
         barra.pack_propagate(False)
+        # Línea dorada decorativa debajo de la barra (acento)
+        tk.Frame(self, bg='#d4a373', height=3).pack(fill=tk.X)
 
         # Logo y nombre
         frame_logo = tk.Frame(barra, bg=ROJO)
@@ -633,11 +636,17 @@ class VentanaCatalogo(tk.Frame):
 
     def _construir_catalogo(self):
         """Construye la cuadrícula scrollable de tarjetas de productos con imágenes."""
-        # Título
-        tk.Label(self, text='— Catálogo —', font=('Georgia', 20, 'bold'),
-                 fg=TEXTO, bg=FONDO).pack(pady=(15, 5))
-        tk.Label(self, text='Elige el arreglo perfecto para cada ocasión',
-                 font=('Helvetica', 10), fg=TEXTO_SUAVE, bg=FONDO).pack(pady=(0, 12))
+        # Título decorado
+        frame_titulo = tk.Frame(self, bg=FONDO)
+        frame_titulo.pack(pady=(15, 5))
+        tk.Label(frame_titulo, text='──  🌺  ──', font=('Helvetica', 10),
+                 fg=BORDE, bg=FONDO).pack()
+        tk.Label(frame_titulo, text='Catálogo', font=('Georgia', 22, 'bold'),
+                 fg=TEXTO, bg=FONDO).pack()
+        tk.Label(frame_titulo, text='Elige el arreglo perfecto para cada ocasión',
+                 font=('Helvetica', 10, 'italic'), fg=TEXTO_SUAVE, bg=FONDO).pack()
+        tk.Label(frame_titulo, text='───────────────────', font=('Helvetica', 8),
+                 fg=BORDE, bg=FONDO).pack(pady=(3, 8))
 
         # Canvas + Scrollbar
         contenedor = tk.Frame(self, bg=FONDO)
@@ -690,40 +699,48 @@ class VentanaCatalogo(tk.Frame):
         """Crea una tarjeta de producto con imagen, nombre, precio y botón."""
         # Frame sombra
         sombra = tk.Frame(self.frame_grid, bg=SOMBRA)
-        sombra.grid(row=fila, column=col, padx=10, pady=10, sticky='nsew')
-        self.frame_grid.columnconfigure(col, weight=1, minsize=280)
+        sombra.grid(row=fila, column=col, padx=12, pady=12, sticky='nsew')
+        self.frame_grid.columnconfigure(col, weight=1, minsize=290)
 
         # Tarjeta interior
         tarjeta = tk.Frame(sombra, bg=BLANCO, bd=0)
         tarjeta.pack(padx=(0, 3), pady=(0, 3), fill='both', expand=True)
 
-        # Hover effect en la tarjeta
+        # Línea de acento burdeos arriba de la tarjeta
+        tk.Frame(tarjeta, bg=ROJO, height=3).pack(fill=tk.X)
+
+        # Hover effect — sombra cambia a burdeos al pasar el mouse
         def on_enter(e):
-            sombra.config(bg=ROJO_HOVER)
+            sombra.config(bg=ROJO)
         def on_leave(e):
             sombra.config(bg=SOMBRA)
         tarjeta.bind('<Enter>', on_enter)
         tarjeta.bind('<Leave>', on_leave)
 
-        # ─── IMAGEN del producto ──────────────────────────────────────────
+        # ─── IMAGEN del producto con fondo rosado suave ───────────────────
+        frame_img = tk.Frame(tarjeta, bg='#faf0ef')   # Fondo rosado claro
+        frame_img.pack(fill=tk.X, padx=12, pady=(10, 5))
         imagen_nombre = prod['imagen'] if prod['imagen'] else 'default.jpg'
-        img = cargar_imagen(imagen_nombre, 180, 180)
+        img = cargar_imagen(imagen_nombre, 200, 200)
         if img:
             self._imgs.append(img)   # Evitar garbage collection
-            lbl_img = tk.Label(tarjeta, image=img, bg=BLANCO, cursor='hand2')
-            lbl_img.pack(padx=15, pady=(15, 5))
+            lbl_img = tk.Label(frame_img, image=img, bg='#faf0ef', cursor='hand2')
+            lbl_img.pack(padx=5, pady=5)
             pid = prod['id']
             lbl_img.bind('<Button-1>',
                          lambda e, p=pid: self.app.mostrar(VentanaProducto, producto_id=p))
         else:
-            tk.Label(tarjeta, text='🌸', font=('Helvetica', 50),
-                     bg=BLANCO).pack(padx=15, pady=(15, 5))
+            tk.Label(frame_img, text='🌸', font=('Helvetica', 50),
+                     bg='#faf0ef').pack(padx=5, pady=15)
+
+        # Separador fino
+        tk.Frame(tarjeta, bg=BORDE, height=1).pack(fill=tk.X, padx=15)
 
         # Nombre (clickeable)
         lbl_nombre = tk.Label(tarjeta, text=prod['nombre'],
                                font=('Georgia', 12, 'bold'), fg=TEXTO,
                                bg=BLANCO, cursor='hand2', wraplength=240)
-        lbl_nombre.pack(padx=10, pady=(5, 2))
+        lbl_nombre.pack(padx=12, pady=(8, 2))
         pid = prod['id']
         lbl_nombre.bind('<Button-1>',
                          lambda e, p=pid: self.app.mostrar(VentanaProducto, producto_id=p))
