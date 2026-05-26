@@ -152,15 +152,57 @@ def crear_tarjeta_con_sombra(parent, ancho=None, alto=None, **kwargs):
 
 
 def crear_footer(parent):
-    """Crea un pie de página elegante en la parte inferior de la ventana.
-    Se debe llamar ANTES de crear el contenido principal para que quede abajo."""
-    footer = tk.Frame(parent, bg=ROJO_DARK, height=32)
-    footer.pack(side=tk.BOTTOM, fill=tk.X)           # Se pega al fondo
-    footer.pack_propagate(False)                       # Mantiene su altura fija
+    """Crea un pie de página profesional estilo web con 3 columnas.
+    Replica el diseño del footer original del sitio HTML."""
+    # ─── Contenedor principal del footer (fondo burdeos oscuro) ───────
+    footer = tk.Frame(parent, bg=ROJO_DARK)
+    footer.pack(side=tk.BOTTOM, fill=tk.X)
+
+    # ─── Sección superior: 3 columnas ─────────────────────────────
+    frame_cols = tk.Frame(footer, bg=ROJO_DARK)
+    frame_cols.pack(fill=tk.X, padx=30, pady=(12, 8))
+    frame_cols.columnconfigure(0, weight=1)   # Columna izquierda
+    frame_cols.columnconfigure(1, weight=1)   # Columna centro
+    frame_cols.columnconfigure(2, weight=1)   # Columna derecha
+
+    # Columna 1: Sobre nosotros
+    col1 = tk.Frame(frame_cols, bg=ROJO_DARK)
+    col1.grid(row=0, column=0, sticky='nw', padx=10)
+    tk.Label(col1, text='🌹 Florería Brillo Eterno',
+             font=('Georgia', 10, 'bold'), fg=BLANCO, bg=ROJO_DARK
+             ).pack(anchor='w')
+    tk.Label(col1, text='Arreglos florales hechos con amor\npara cada ocasión especial.',
+             font=('Helvetica', 8), fg='#d4a0ab', bg=ROJO_DARK,
+             justify='left').pack(anchor='w', pady=(2, 0))
+
+    # Columna 2: Información
+    col2 = tk.Frame(frame_cols, bg=ROJO_DARK)
+    col2.grid(row=0, column=1, sticky='n', padx=10)
+    tk.Label(col2, text='Información',
+             font=('Helvetica', 9, 'bold'), fg=BLANCO, bg=ROJO_DARK
+             ).pack()
+    tk.Label(col2, text='📍 Durango, México\n🕒 Lun-Vie: 9:00 - 18:00\n📦 Envíos a domicilio',
+             font=('Helvetica', 8), fg='#d4a0ab', bg=ROJO_DARK,
+             justify='center').pack(pady=(2, 0))
+
+    # Columna 3: Contacto
+    col3 = tk.Frame(frame_cols, bg=ROJO_DARK)
+    col3.grid(row=0, column=2, sticky='ne', padx=10)
+    tk.Label(col3, text='Contacto',
+             font=('Helvetica', 9, 'bold'), fg=BLANCO, bg=ROJO_DARK
+             ).pack(anchor='e')
+    tk.Label(col3, text='📧 contacto@brilloeterno.com\n📱 (618) 123-4567\n🌐 www.brilloeterno.com',
+             font=('Helvetica', 8), fg='#d4a0ab', bg=ROJO_DARK,
+             justify='right').pack(anchor='e', pady=(2, 0))
+
+    # ─── Línea separadora ──────────────────────────────────────
+    tk.Frame(footer, bg='#7a1a35', height=1).pack(fill=tk.X, padx=20)
+
+    # ─── Barra inferior: copyright ───────────────────────────
     tk.Label(footer,
-             text='© 2026 Florería Brillo Eterno  ·  Hecho con 🌹 amor en Python  ·  Parcial 3',
-             font=('Helvetica', 8), fg='#d4a0ab', bg=ROJO_DARK
-             ).pack(expand=True)                       # Texto centrado
+             text='© 2026 Florería Brillo Eterno  ·  Todos los derechos reservados  ·  Parcial 3',
+             font=('Helvetica', 7), fg='#b07a88', bg=ROJO_DARK
+             ).pack(pady=(5, 8))
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -604,13 +646,22 @@ class VentanaCatalogo(tk.Frame):
         canvas = tk.Canvas(contenedor, bg=FONDO, highlightthickness=0)
         scrollbar = ttk.Scrollbar(contenedor, orient='vertical', command=canvas.yview,
                                    style='Custom.Vertical.TScrollbar')
-        self.frame_grid = tk.Frame(canvas, bg=FONDO)
-        self.frame_grid.bind('<Configure>',
-                              lambda e: canvas.configure(scrollregion=canvas.bbox('all')))
-        canvas.create_window((0, 0), window=self.frame_grid, anchor='nw')
+        self.frame_grid = tk.Frame(canvas, bg=FONDO)   # Crear ANTES de usarlo
+
+        # Insertar el frame en el canvas, centrado horizontalmente (anchor='n')
+        canvas.create_window((0, 0), window=self.frame_grid, anchor='n', tags='grid_win')
         canvas.configure(yscrollcommand=scrollbar.set)
         canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+        def _centrar_grid(event=None):
+            """Re-centra el grid horizontalmente cuando la ventana cambia de tamaño."""
+            ancho_canvas = canvas.winfo_width()
+            canvas.coords('grid_win', ancho_canvas // 2, 0)  # Centrar en X
+
+        canvas.bind('<Configure>', _centrar_grid)       # Al redimensionar ventana
+        self.frame_grid.bind('<Configure>',              # Al cambiar contenido
+                              lambda e: canvas.configure(scrollregion=canvas.bbox('all')))
 
         # Scroll con rueda del mouse
         def _on_mousewheel(event):
