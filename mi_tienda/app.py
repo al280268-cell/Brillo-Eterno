@@ -151,6 +151,18 @@ def crear_tarjeta_con_sombra(parent, ancho=None, alto=None, **kwargs):
     return sombra, tarjeta
 
 
+def crear_footer(parent):
+    """Crea un pie de página elegante en la parte inferior de la ventana.
+    Se debe llamar ANTES de crear el contenido principal para que quede abajo."""
+    footer = tk.Frame(parent, bg=ROJO_DARK, height=32)
+    footer.pack(side=tk.BOTTOM, fill=tk.X)           # Se pega al fondo
+    footer.pack_propagate(False)                       # Mantiene su altura fija
+    tk.Label(footer,
+             text='© 2026 Florería Brillo Eterno  ·  Hecho con 🌹 amor en Python  ·  Parcial 3',
+             font=('Helvetica', 8), fg='#d4a0ab', bg=ROJO_DARK
+             ).pack(expand=True)                       # Texto centrado
+
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # ESTILOS GLOBALES TTK
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -246,6 +258,7 @@ class VentanaLogin(tk.Frame):
         super().__init__(parent, bg=FONDO)
         self.app = app
         self._imgs = []   # Lista para evitar garbage collection de imágenes
+        crear_footer(self)  # Pie de página (se empaqueta abajo primero)
 
         # ─── Tarjeta con sombra centrada ──────────────────────────────────
         sombra, tarjeta = crear_tarjeta_con_sombra(self)
@@ -431,6 +444,7 @@ class VentanaRegistro(tk.Frame):
         super().__init__(parent, bg=FONDO)
         self.app = app
         self._imgs = []
+        crear_footer(self)  # Pie de página
 
         sombra, tarjeta = crear_tarjeta_con_sombra(self)
         sombra.place(relx=0.5, rely=0.5, anchor='center', width=440, height=480)
@@ -511,6 +525,7 @@ class VentanaCatalogo(tk.Frame):
         super().__init__(parent, bg=FONDO)
         self.app = app
         self._imgs = []       # Referencias a imágenes para evitar GC
+        crear_footer(self)  # Pie de página
         self._construir_barra_superior()
         self._mostrar_avisos()
         self._construir_catalogo()
@@ -715,6 +730,7 @@ class VentanaProducto(tk.Frame):
         super().__init__(parent, bg=FONDO)
         self.app = app
         self._imgs = []
+        crear_footer(self)  # Pie de página
 
         # Botón volver
         crear_boton(self, '← Volver al catálogo', ROJO, BLANCO,
@@ -822,6 +838,7 @@ class VentanaCarrito(tk.Frame):
         super().__init__(parent, bg=FONDO)
         self.app = app
         self._imgs = []
+        crear_footer(self)  # Pie de página
 
         # Barra superior
         barra = tk.Frame(self, bg=ROJO, height=55)
@@ -1036,6 +1053,7 @@ class VentanaConfirmacion(tk.Frame):
     def __init__(self, parent, app, pedido_id=None):
         super().__init__(parent, bg=FONDO)
         self.app = app
+        crear_footer(self)  # Pie de página
 
         sombra, tarjeta = crear_tarjeta_con_sombra(self)
         sombra.place(relx=0.5, rely=0.5, anchor='center', width=480, height=420)
@@ -1106,6 +1124,7 @@ class VentanaAdminProductos(tk.Frame):
     def __init__(self, parent, app):
         super().__init__(parent, bg=FONDO)
         self.app = app
+        crear_footer(self)  # Pie de página
         construir_barra_admin(self, app, '| Productos')
 
         frame_acciones = tk.Frame(self, bg=FONDO)
@@ -1235,6 +1254,7 @@ class VentanaAdminProductoForm(tk.Frame):
         self.app = app
         self.modo = modo
         self.producto_id = producto_id
+        crear_footer(self)  # Pie de página
 
         crear_boton(self, '← Volver', ROJO, BLANCO, ('Helvetica', 10),
                     lambda: self.app.mostrar(VentanaAdminProductos)
@@ -1333,6 +1353,7 @@ class VentanaAdminPedidos(tk.Frame):
     def __init__(self, parent, app):
         super().__init__(parent, bg=FONDO)
         self.app = app
+        crear_footer(self)  # Pie de página
         construir_barra_admin(self, app, '| Pedidos')
 
         tk.Label(self, text='Gestión de Pedidos', font=('Georgia', 16, 'bold'),
@@ -1416,6 +1437,7 @@ class VentanaAdminReporte(tk.Frame):
     def __init__(self, parent, app):
         super().__init__(parent, bg=FONDO)
         self.app = app
+        crear_footer(self)  # Pie de página
         construir_barra_admin(self, app, '| Reporte')
 
         # Canvas scrollable
@@ -1552,6 +1574,7 @@ class VentanaAdminAvisos(tk.Frame):
     def __init__(self, parent, app):
         super().__init__(parent, bg=FONDO)
         self.app = app
+        crear_footer(self)  # Pie de página
         construir_barra_admin(self, app, '| Avisos')
 
         # Canvas scrollable
