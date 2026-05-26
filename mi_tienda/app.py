@@ -304,16 +304,16 @@ class VentanaLogin(tk.Frame):
 
         # ─── Tarjeta con sombra centrada ──────────────────────────────────
         sombra, tarjeta = crear_tarjeta_con_sombra(self)
-        sombra.place(relx=0.5, rely=0.5, anchor='center', width=460, height=580)
+        sombra.place(relx=0.5, rely=0.44, anchor='center', width=460, height=520)
 
         # ─── Logo de la tienda ────────────────────────────────────────────
-        logo = cargar_imagen('minifoto.png', 80, 80)
+        logo = cargar_imagen('minifoto.png', 70, 70)
         if logo:
             self._imgs.append(logo)
-            tk.Label(tarjeta, image=logo, bg=BLANCO).pack(pady=(20, 5))
+            tk.Label(tarjeta, image=logo, bg=BLANCO).pack(pady=(12, 3))
         else:
-            tk.Label(tarjeta, text='🌹', font=('Helvetica', 40),
-                     bg=BLANCO).pack(pady=(20, 5))
+            tk.Label(tarjeta, text='🌹', font=('Helvetica', 30),
+                     bg=BLANCO).pack(pady=(12, 3))
 
         # ─── Título ──────────────────────────────────────────────────────
         tk.Label(tarjeta, text='Florería Brillo Eterno',
@@ -324,7 +324,7 @@ class VentanaLogin(tk.Frame):
                  ).pack(pady=(0, 5))
 
         # ─── Línea decorativa ─────────────────────────────────────────────
-        tk.Frame(tarjeta, bg=ROJO, height=2, width=60).pack(pady=(0, 12))
+        tk.Frame(tarjeta, bg=ROJO, height=2, width=60).pack(pady=(0, 8))
 
         # ─── Selector Cliente / Admin (botones estilizados) ───────────────
         self.tipo_var = tk.StringVar(value='cliente')
@@ -489,7 +489,7 @@ class VentanaRegistro(tk.Frame):
         crear_footer(self)  # Pie de página
 
         sombra, tarjeta = crear_tarjeta_con_sombra(self)
-        sombra.place(relx=0.5, rely=0.5, anchor='center', width=440, height=480)
+        sombra.place(relx=0.5, rely=0.44, anchor='center', width=440, height=440)
 
         # Logo
         logo = cargar_imagen('minifoto.png', 60, 60)
@@ -1107,7 +1107,7 @@ class VentanaConfirmacion(tk.Frame):
         crear_footer(self)  # Pie de página
 
         sombra, tarjeta = crear_tarjeta_con_sombra(self)
-        sombra.place(relx=0.5, rely=0.5, anchor='center', width=480, height=420)
+        sombra.place(relx=0.5, rely=0.44, anchor='center', width=480, height=380)
 
         # Decoración
         tk.Label(tarjeta, text='🌸✨🌹✨🌸', font=('Helvetica', 24),
