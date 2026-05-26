@@ -780,7 +780,6 @@ class VentanaCatalogo(tk.Frame):
                     self.app.carrito[p['id']] = actual + cantidad
                     messagebox.showinfo('✅ Agregado',
                         f'{p["nombre"]} x{cantidad} agregado al carrito.')
-                    self.app.mostrar(VentanaCatalogo)
                 except ValueError:
                     messagebox.showerror('Error', 'Cantidad inválida.')
 
