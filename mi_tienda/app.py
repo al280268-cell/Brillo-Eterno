@@ -1,4 +1,7 @@
 import os
+import json
+import urllib.request
+import urllib.parse
 from datetime import datetime, timedelta
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -26,6 +29,35 @@ def allowed_image_file(filename):
 
 db = BaseDatosTienda(ruta="./", bd="tienda.sqlite3")
 db.semilla_productos()
+
+
+# ─── API EXTERNA #1: Tipo de Cambio MXN → USD ────────────────────────────
+def obtener_tipo_cambio_usd():
+    """
+    Consulta el tipo de cambio MXN a USD en tiempo real.
+    Usa la API gratuita de open.er-api.com (no requiere API key).
+    Retorna el valor de 1 MXN en USD, o None si falla.
+    """
+    try:
+        url = 'https://open.er-api.com/v6/latest/MXN'
+        req = urllib.request.Request(url, headers={'User-Agent': 'BrilloEterno/1.0'})
+        with urllib.request.urlopen(req, timeout=5) as respuesta:
+            datos = json.loads(respuesta.read().decode())
+            return datos['rates']['USD']
+    except Exception as e:
+        print(f"[API] No se pudo obtener tipo de cambio: {e}")
+        return None
+
+
+# ─── API EXTERNA #2: Generador de Código QR ──────────────────────────────
+def generar_url_qr(texto, tamano=200):
+    """
+    Genera una URL de imagen QR usando la API de goqr.me/qrserver.
+    No requiere API key. El QR se genera en el servidor de la API.
+    """
+    texto_encoded = urllib.parse.quote(str(texto))
+    return f"https://api.qrserver.com/v1/create-qr-code/?size={tamano}x{tamano}&data={texto_encoded}"
+
 
 
 # ─── Helpers de sesión ────────────────────────────────────────────────────────
@@ -69,9 +101,10 @@ def carrito_session():
 def index():
     productos = db.listar_productos()
     avisos = db.listar_avisos(solo_activos=True)
-    return render_template("index.html", productos=productos, carrito=carrito_session(), avisos=avisos)
-    # Carga el catálogo de productos consultando la BD.
-    # Para paginación (ej. ver de 10 en 10), modificar db.listar_productos(limite=10)
+    # API #1: Obtener tipo de cambio para mostrar precios en USD
+    tipo_cambio = obtener_tipo_cambio_usd()
+    return render_template("index.html", productos=productos, carrito=carrito_session(),
+                           avisos=avisos, tipo_cambio=tipo_cambio)
 
 @app.route("/producto/<int:producto_id>")
 def producto(producto_id):
@@ -238,7 +271,10 @@ def checkout():
         return redirect(url_for("carrito"))
         
     session["carrito"] = {}
-    return render_template("checkout_ok.html", pedido_id=pedido_id)
+    # API #2: Generar código QR con los datos del pedido
+    qr_data = f"Pedido #{pedido_id} - Floreria Brillo Eterno - {nombre}"
+    qr_url = generar_url_qr(qr_data)
+    return render_template("checkout_ok.html", pedido_id=pedido_id, qr_url=qr_url)
 
 
 # ─── Admin: logout ────────────────────────────────────────────────────────────

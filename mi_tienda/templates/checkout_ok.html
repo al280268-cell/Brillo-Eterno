@@ -13,6 +13,17 @@
     <div class="confirmacion-id-box">
         <span class="confirmacion-id">#{{ pedido_id }}</span>
     </div>
+
+    <!-- API #2: Código QR generado con la API de goqr.me -->
+    {% if qr_url %}
+    <div style="margin: 15px 0; text-align: center;">
+        <p style="font-size: 0.85rem; color: #6b5a5d; margin-bottom: 8px;">📱 Escanea tu código QR de pedido:</p>
+        <img src="{{ qr_url }}" alt="QR del pedido #{{ pedido_id }}" 
+             style="border: 2px solid #e8dcdb; border-radius: 8px; padding: 5px; background: white;">
+        <p style="font-size: 0.7rem; color: #999; margin-top: 5px;">Generado por API externa: api.qrserver.com</p>
+    </div>
+    {% endif %}
+
     <p class="confirmacion-subtexto">Estamos preparando tu arreglo floral con amor y cuidado especial.</p>
     <a class="confirmacion-btn" href="{{ url_for('index') }}">Volver al catálogo</a>
   </div>

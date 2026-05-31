@@ -5,12 +5,38 @@ from sqlite3 import Error
 
 STOCK_INICIAL = 10  # Stock al que se restablece un producto cuando llega a 0
 class BaseDatosTienda:
+    """
+    Clase principal de la capa de datos (POO).
+    Encapsula TODA la lógica de acceso a la base de datos SQLite3.
+    Principios POO aplicados:
+    - Encapsulamiento: self.con, self.cursor son atributos privados del objeto.
+    - Abstracción: Los métodos ocultan la complejidad del SQL.
+    - Reutilización: Una sola instancia se usa en toda la aplicación.
+    """
     def __init__(self, ruta="./", bd="tienda.sqlite3"):
         self.bd_path = os.path.join(ruta, bd)
         self.con = None
         self.cursor = None
         self.conectar()
         self.crear_tablas()
+
+    def __repr__(self):
+        """Representación oficial del objeto para depuración (POO)."""
+        return f"BaseDatosTienda(bd_path='{self.bd_path}', conectada={self.con is not None})"
+
+    def __str__(self):
+        """Representación legible del objeto para impresión (POO)."""
+        estado = "conectada" if self.con else "desconectada"
+        return f"Base de datos Brillo Eterno ({estado}) en {self.bd_path}"
+
+    def verificar_conexion(self):
+        """Verifica si la conexión a la BD sigue activa y la reconecta si es necesario (POO)."""
+        try:
+            self.cursor.execute("SELECT 1;")
+            return True
+        except Exception:
+            self.conectar()
+            return self.con is not None
 
     def conectar(self):
         # Abre la conexión hacia nuestra base de datos local SQLite3 (tienda.sqlite3).

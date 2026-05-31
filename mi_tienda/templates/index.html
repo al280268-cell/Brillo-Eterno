@@ -24,7 +24,10 @@
       </a>
       <div class="card-info">
         <h3 class="card-nombre">{{ p["nombre"] }}</h3>
-        <strong class="card-precio">${{ "%.2f"|format(p["precio"]) }}</strong>
+        <strong class="card-precio">${{ "%.2f"|format(p["precio"]) }} MXN</strong>
+        {% if tipo_cambio %}
+        <small class="card-precio-usd">≈ ${{ "%.2f"|format(p["precio"] * tipo_cambio) }} USD</small>
+        {% endif %}
         <div class="row">
           {% if p['stock'] > 0 %}
           <form method="post" action="{{ url_for('carrito_agregar') }}">
