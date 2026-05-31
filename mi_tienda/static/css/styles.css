@@ -2148,6 +2148,19 @@ Utilidades para no usar estilos inline en el HTML.*/
   margin-top: 10px;
 }
 
+.stripe-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f0faf0;
+  border: 1px solid #c8e6c9;
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-top: 15px;
+  font-size: 0.82rem;
+  color: #2e7d32;
+}
+
 .carrito-info-entrega-box {
   background-color: #faf7f8;
   border: 1px solid #e0d5d7;

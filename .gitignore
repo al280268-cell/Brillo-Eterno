@@ -1,0 +1,6 @@
+# Archivos sensibles
+.env
+*.sqlite3
+__pycache__/
+node_modules/
+*.pyc

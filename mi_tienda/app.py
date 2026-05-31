@@ -2,6 +2,7 @@ import os
 import json
 import urllib.request
 import urllib.parse
+import stripe
 from datetime import datetime, timedelta
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -15,6 +16,17 @@ app.secret_key = "cambia-esto-por-algo-seguro"
 UPLOAD_FOLDER = os.path.join(app.root_path, 'static', 'imagenes')
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+# ─── API STRIPE: Configuración de pagos ────────────────────────────────
+# Las llaves de Stripe se cargan desde el archivo .env para seguridad
+# En producción NUNCA se ponen las llaves directo en el código
+import dotenv
+try:
+    dotenv.load_dotenv()   # Carga las variables del archivo .env
+except Exception:
+    pass
+stripe.api_key = os.environ.get('STRIPE_SECRET_KEY', '')
+STRIPE_PUBLIC_KEY = os.environ.get('STRIPE_PUBLIC_KEY', '')
 
 # ─── Helpers y configuración ───────────────────────────────────────
 # Aquí definimos tipos permitidos.
@@ -248,28 +260,87 @@ def logout():
     return redirect(url_for("index"))
 
 
-# ─── Checkout ─────────────────────────────────────────────────────────────────
+# ─── Checkout con Stripe API ────────────────────────────────────────
 @app.route("/checkout", methods=["POST"])
 @login_required
 def checkout():
+    """
+    API STRIPE: Crea una sesión de pago con Stripe Checkout.
+    El cliente es redirigido a la página segura de Stripe para ingresar
+    sus datos de tarjeta. Stripe maneja toda la seguridad PCI.
+    """
     nombre = request.form.get("nombre", "").strip()
     email  = request.form.get("email", "").strip() or None
-    
+
     if not nombre:
-        flash("Requerimos el nombre del titular de la tarjeta simulada.")
+        flash("Requerimos tu nombre completo.")
         return redirect(url_for("carrito"))
-        
+
     cart = carrito_session()
     if not cart:
         flash("Tu carrito está vacío.")
         return redirect(url_for("index"))
-        
+
+    # Guardar datos del cliente en sesión para después del pago
+    session["checkout_nombre"] = nombre
+    session["checkout_email"] = email
+
+    # Construir los line_items para Stripe (cada producto del carrito)
+    line_items = []
+    for pid_str, qty in cart.items():
+        p = db.obtener_producto(int(pid_str))
+        if not p:
+            continue
+        line_items.append({
+            'price_data': {
+                'currency': 'mxn',
+                'product_data': {
+                    'name': p['nombre'],
+                    'description': (p['descripcion'] or '')[:200],
+                },
+                'unit_amount': int(float(p['precio']) * 100),  # Stripe usa centavos
+            },
+            'quantity': int(qty),
+        })
+
+    try:
+        # Crear sesión de Stripe Checkout
+        checkout_session = stripe.checkout.Session.create(
+            payment_method_types=['card'],
+            line_items=line_items,
+            mode='payment',
+            success_url=url_for('checkout_exito', _external=True) + '?session_id={CHECKOUT_SESSION_ID}',
+            cancel_url=url_for('carrito', _external=True),
+            customer_email=email,
+        )
+        # Redirigir al cliente a la página de pago de Stripe
+        return redirect(checkout_session.url, code=303)
+    except stripe.error.StripeError as e:
+        flash(f"Error con Stripe: {str(e)}")
+        return redirect(url_for("carrito"))
+
+
+@app.route("/checkout/exito")
+@login_required
+def checkout_exito():
+    """
+    Callback de Stripe: Se ejecuta cuando el pago fue exitoso.
+    Crea el pedido en nuestra BD y muestra la confirmación.
+    """
+    nombre = session.pop("checkout_nombre", "Cliente")
+    email = session.pop("checkout_email", None)
+
+    cart = carrito_session()
+    if not cart:
+        flash("Pedido ya procesado o carrito vacío.")
+        return redirect(url_for("index"))
+
     items = [{"producto_id": int(pid), "cantidad": int(qty)} for pid, qty in cart.items()]
     pedido_id = db.crear_pedido(nombre, email, items)
     if not pedido_id:
-        flash("No se pudo procesar el pago (¿stock insuficiente?).")
+        flash("No se pudo registrar el pedido (¿stock insuficiente?).")
         return redirect(url_for("carrito"))
-        
+
     session["carrito"] = {}
     # API #2: Generar código QR con los datos del pedido
     qr_data = f"Pedido #{pedido_id} - Floreria Brillo Eterno - {nombre}"
