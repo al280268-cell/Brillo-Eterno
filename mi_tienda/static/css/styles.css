@@ -2943,6 +2943,525 @@ html {
   color: var(--color-rojo-dark);
 }
 
+/* ═══════════════════════════════════════════════════════════════════════
+   LANDING PAGE — INICIO (inicio.html)
+   Diseño premium de florería de lujo
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ── HERO SPLIT ─────────────────────────────────────────────────────── */
+.land-hero {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: center;
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 60px 40px 40px;
+  min-height: 520px;
+}
+
+.land-hero-content {
+  animation: fadeInUp 0.8s ease-out;
+}
+
+.land-hero-tag {
+  font-family: var(--font-primary);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--color-rojo);
+  margin-bottom: 20px;
+}
+
+.land-hero-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 3.6rem;
+  font-weight: 300;
+  color: var(--color-texto-oscuro);
+  line-height: 1.1;
+  margin-bottom: 24px;
+}
+
+.land-hero-title em {
+  font-style: italic;
+  color: var(--color-rojo);
+}
+
+.land-hero-desc {
+  font-family: var(--font-primary);
+  font-size: 1rem;
+  color: var(--color-texto-suave);
+  line-height: 1.75;
+  margin-bottom: 32px;
+  max-width: 440px;
+}
+
+.land-hero-actions {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.land-hero-visual {
+  animation: fadeInUp 0.8s ease-out 0.2s both;
+}
+
+.land-hero-img {
+  width: 100%;
+  height: 480px;
+  object-fit: cover;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+  transition: transform 0.6s ease, box-shadow 0.6s ease;
+}
+
+.land-hero-img:hover {
+  transform: scale(1.02) translateY(-4px);
+  box-shadow: 0 30px 80px rgba(154, 30, 63, 0.12);
+}
+
+/* ── BOTONES LANDING ────────────────────────────────────────────────── */
+.land-btn-fill {
+  display: inline-block;
+  padding: 15px 36px;
+  background: var(--color-rojo);
+  color: white;
+  text-decoration: none;
+  font-family: var(--font-primary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  border: none;
+  transition: all 0.35s ease;
+}
+
+.land-btn-fill:hover {
+  background: var(--color-rojo-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(154, 30, 63, 0.25);
+}
+
+.land-btn-ghost {
+  display: inline-block;
+  padding: 15px 36px;
+  background: transparent;
+  color: var(--color-texto-oscuro);
+  text-decoration: none;
+  font-family: var(--font-primary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  border: 1.5px solid var(--color-borde);
+  transition: all 0.35s ease;
+}
+
+.land-btn-ghost:hover {
+  border-color: var(--color-rojo);
+  color: var(--color-rojo);
+}
+
+.land-btn-lg {
+  padding: 18px 48px;
+  font-size: 0.85rem;
+}
+
+/* ── CINTA DE CONFIANZA ─────────────────────────────────────────────── */
+.land-trust {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 20px 40px;
+  background: var(--color-fondo-warm);
+  border-top: 1px solid var(--color-borde);
+  border-bottom: 1px solid var(--color-borde);
+  font-family: var(--font-primary);
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--color-texto-suave);
+  flex-wrap: wrap;
+}
+
+.land-trust-dot {
+  width: 4px;
+  height: 4px;
+  background: var(--color-rojo);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ── SECTION HEADS ──────────────────────────────────────────────────── */
+.land-section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 0 40px;
+  max-width: 1140px;
+  margin: 60px auto 30px;
+}
+
+.land-section-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2rem;
+  font-weight: 400;
+  color: var(--color-texto-oscuro);
+}
+
+.land-section-link {
+  font-family: var(--font-primary);
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--color-texto-oscuro);
+  text-decoration: none;
+  letter-spacing: 0.5px;
+  transition: color 0.3s ease;
+  border-bottom: 1px solid var(--color-borde);
+  padding-bottom: 2px;
+}
+
+.land-section-link:hover {
+  color: var(--color-rojo);
+  border-color: var(--color-rojo);
+}
+
+/* ── PRODUCTOS DESTACADOS ───────────────────────────────────────────── */
+.land-featured {
+  max-width: 1140px;
+  margin: 0 auto;
+}
+
+.land-featured-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  padding: 0 40px 50px;
+}
+
+.land-product-card {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+.land-product-card:hover {
+  transform: translateY(-6px);
+}
+
+.land-product-img-wrap {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #f5f0ee;
+  aspect-ratio: 3 / 4;
+}
+
+.land-product-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.land-product-card:hover .land-product-img {
+  transform: scale(1.06);
+}
+
+.land-product-sold {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: rgba(0,0,0,0.7);
+  color: white;
+  font-family: var(--font-primary);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  border-radius: 4px;
+}
+
+.land-product-info {
+  padding: 14px 4px 0;
+}
+
+.land-product-name {
+  font-family: var(--font-primary);
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--color-texto-oscuro);
+  margin-bottom: 4px;
+}
+
+.land-product-price {
+  font-family: var(--font-primary);
+  font-size: 0.85rem;
+  color: var(--color-texto-suave);
+}
+
+/* ── HISTORIA / STORY ───────────────────────────────────────────────── */
+.land-story {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 70px 40px;
+}
+
+.land-story-img-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.land-story-img {
+  width: 100%;
+  max-width: 400px;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+  transition: transform 0.5s ease;
+}
+
+.land-story-img:hover {
+  transform: scale(1.03);
+}
+
+.land-story-tag {
+  font-family: var(--font-primary);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--color-rojo);
+  margin-bottom: 16px;
+}
+
+.land-story-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.5rem;
+  font-weight: 400;
+  color: var(--color-texto-oscuro);
+  line-height: 1.15;
+  margin-bottom: 20px;
+}
+
+.land-story-desc {
+  font-family: var(--font-primary);
+  font-size: 0.92rem;
+  color: var(--color-texto-suave);
+  line-height: 1.8;
+  margin-bottom: 16px;
+}
+
+/* ── PERKS ───────────────────────────────────────────────────────────── */
+.land-perks {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--color-borde);
+  border-top: 1px solid var(--color-borde);
+  border-bottom: 1px solid var(--color-borde);
+}
+
+.land-perk {
+  background: white;
+  text-align: center;
+  padding: 48px 28px;
+  transition: background 0.3s ease;
+}
+
+.land-perk:hover {
+  background: var(--color-fondo-warm);
+}
+
+.land-perk-icon {
+  color: var(--color-rojo);
+  margin-bottom: 18px;
+  display: flex;
+  justify-content: center;
+}
+
+.land-perk-title {
+  font-family: var(--font-primary);
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--color-texto-oscuro);
+  margin-bottom: 8px;
+  letter-spacing: 0.3px;
+}
+
+.land-perk-desc {
+  font-family: var(--font-primary);
+  font-size: 0.8rem;
+  color: var(--color-texto-suave);
+  line-height: 1.6;
+}
+
+/* ── ODS ─────────────────────────────────────────────────────────────── */
+.land-ods {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 20px 40px 70px;
+}
+
+.land-ods-sub {
+  font-family: var(--font-primary);
+  font-size: 0.9rem;
+  color: var(--color-texto-suave);
+  text-align: center;
+  margin-top: -20px;
+  margin-bottom: 40px;
+}
+
+.land-ods-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.land-ods-item {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  padding: 28px;
+  border-radius: 14px;
+  border: 1px solid var(--color-borde);
+  background: white;
+  transition: all 0.35s ease;
+}
+
+.land-ods-item:hover {
+  border-color: var(--ods-color);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.05);
+  transform: translateY(-3px);
+}
+
+.land-ods-num {
+  flex-shrink: 0;
+  width: 52px;
+  height: 52px;
+  background: var(--ods-color);
+  color: white;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+}
+
+.land-ods-body h3 {
+  font-family: var(--font-primary);
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--color-texto-oscuro);
+  margin-bottom: 6px;
+}
+
+.land-ods-body p {
+  font-family: var(--font-primary);
+  font-size: 0.82rem;
+  color: var(--color-texto-suave);
+  line-height: 1.6;
+}
+
+/* ── CTA FINAL ──────────────────────────────────────────────────────── */
+.land-cta {
+  text-align: center;
+  padding: 80px 40px;
+  background: var(--color-fondo-warm);
+  border-top: 1px solid var(--color-borde);
+}
+
+.land-cta-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.4rem;
+  font-weight: 400;
+  color: var(--color-texto-oscuro);
+  margin-bottom: 12px;
+}
+
+.land-cta-desc {
+  font-family: var(--font-primary);
+  font-size: 0.95rem;
+  color: var(--color-texto-suave);
+  margin-bottom: 30px;
+}
+
+/* ── RESPONSIVE LANDING ─────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .land-hero {
+    grid-template-columns: 1fr;
+    gap: 30px;
+    padding: 40px 24px 30px;
+    min-height: auto;
+  }
+  .land-hero-img {
+    height: 320px;
+    border-radius: 16px;
+  }
+  .land-hero-title {
+    font-size: 2.6rem;
+  }
+  .land-featured-grid {
+    grid-template-columns: repeat(2, 1fr);
+    padding: 0 24px 40px;
+  }
+  .land-story {
+    grid-template-columns: 1fr;
+    gap: 30px;
+    padding: 50px 24px;
+  }
+  .land-perks {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .land-ods-grid {
+    grid-template-columns: 1fr;
+  }
+  .land-section-head {
+    padding: 0 24px;
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 600px) {
+  .land-hero-title {
+    font-size: 2rem;
+  }
+  .land-hero-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  .land-btn-fill, .land-btn-ghost {
+    width: 100%;
+    text-align: center;
+  }
+  .land-featured-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .land-perks {
+    grid-template-columns: 1fr;
+  }
+  .land-trust {
+    font-size: 0.7rem;
+    gap: 12px;
+  }
+  .land-story-title {
+    font-size: 1.8rem;
+  }
+}
+
 /* ─── Print styles ────────────────────────────────────────────────── */
 @media print {
   .topbar, .footer, .no-print { display: none !important; }

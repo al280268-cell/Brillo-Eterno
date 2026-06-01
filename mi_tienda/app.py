@@ -115,12 +115,20 @@ def inject_carrito_count():
     return dict(carrito_count=total_items)
 
 
-# ─── Catálogo (público) ───────────────────────────────────────────────────────
+
+# ─── Página de Inicio (landing page) ──────────────────────────────────────────
 @app.route("/")
+def inicio():
+    avisos = db.listar_avisos(solo_activos=True)
+    productos = db.listar_productos()
+    destacados = productos[:4] if productos else []
+    return render_template("inicio.html", avisos=avisos, destacados=destacados)
+
+# ─── Catálogo (público) ───────────────────────────────────────────────────────
+@app.route("/catalogo")
 def index():
     productos = db.listar_productos()
     avisos = db.listar_avisos(solo_activos=True)
-    # API #1: Obtener tipo de cambio para mostrar precios en USD
     tipo_cambio = obtener_tipo_cambio_usd()
     return render_template("index.html", productos=productos, carrito=carrito_session(),
                            avisos=avisos, tipo_cambio=tipo_cambio)

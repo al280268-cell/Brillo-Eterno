@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     LANDING PAGE — FLORERÍA BRILLO ETERNO
+     Diseño inspirado en florerías de lujo: limpio, elegante, minimalista
+     ═══════════════════════════════════════════════════════════════════════ -->
+
+<!-- ── HERO ──────────────────────────────────────────────────────────── -->
+<section class="land-hero">
+  <div class="land-hero-content">
+    <p class="land-hero-tag">Florería Artesanal · Aguascalientes</p>
+    <h1 class="land-hero-title">Flores que<br><em>duran para siempre</em></h1>
+    <p class="land-hero-desc">Creamos arreglos florales eternos hechos a mano con amor. Cada pieza es un símbolo de cariño diseñado para perdurar toda la vida.</p>
+    <div class="land-hero-actions">
+      <a href="{{ url_for('index') }}" class="land-btn-fill">Explorar catálogo</a>
+      <a href="#historia" class="land-btn-ghost">Nuestra historia</a>
+    </div>
+  </div>
+  <div class="land-hero-visual">
+    <img src="{{ url_for('static', filename='imagenes/principal1.jpg') }}" alt="Brillo Eterno" class="land-hero-img">
+  </div>
+</section>
+
+<!-- ── CINTA DE CONFIANZA ────────────────────────────────────────────── -->
+<div class="land-trust">
+  <span>Envíos en Aguascalientes</span>
+  <span class="land-trust-dot"></span>
+  <span>Pago seguro con Stripe</span>
+  <span class="land-trust-dot"></span>
+  <span>Hecho a mano</span>
+  <span class="land-trust-dot"></span>
+  <span>Flores que no se marchitan</span>
+</div>
+
+{% if avisos %}
+<div class="avisos-container">
+  {% for a in avisos %}
+  <div class="aviso-banner">
+    <strong>{{ a.titulo }}</strong> — {{ a.mensaje }}
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<!-- ── PRODUCTOS DESTACADOS ──────────────────────────────────────────── -->
+{% if destacados %}
+<section class="land-featured">
+  <div class="land-section-head">
+    <h2 class="land-section-title">Los más elegidos</h2>
+    <a href="{{ url_for('index') }}" class="land-section-link">Ver todo →</a>
+  </div>
+
+  <div class="land-featured-grid">
+    {% for p in destacados %}
+    <a href="{{ url_for('producto', producto_id=p['id']) }}" class="land-product-card">
+      <div class="land-product-img-wrap">
+        <img src="{{ url_for('static', filename='imagenes/' + (p['imagen'] or 'default.jpg')) }}" 
+             alt="{{ p['nombre'] }}" class="land-product-img" loading="lazy">
+        {% if p['stock'] == 0 %}
+        <span class="land-product-sold">Agotado</span>
+        {% endif %}
+      </div>
+      <div class="land-product-info">
+        <h3 class="land-product-name">{{ p['nombre'] }}</h3>
+        <p class="land-product-price">${{ "%.2f"|format(p['precio']) }} MXN</p>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<!-- ── NUESTRA HISTORIA ─────────────────────────────────────────────── -->
+<section class="land-story" id="historia">
+  <div class="land-story-img-wrap">
+    <img src="{{ url_for('static', filename='imagenes/minifoto.png') }}" alt="Brillo Eterno" class="land-story-img">
+  </div>
+  <div class="land-story-text">
+    <p class="land-story-tag">Nuestra historia</p>
+    <h2 class="land-story-title">Más que flores,<br>son recuerdos eternos</h2>
+    <p class="land-story-desc">Brillo Eterno nació en Aguascalientes con una misión simple: crear arreglos florales que no se marchiten jamás. Cada pieza es elaborada a mano con materiales de primera calidad, combinando técnicas artesanales con diseño contemporáneo.</p>
+    <p class="land-story-desc">Nuestros arreglos no necesitan agua, no necesitan sol, y nunca pierden su color. Son el regalo perfecto para quienes quieres de verdad.</p>
+    <a href="{{ url_for('index') }}" class="land-btn-fill">Descubrir colección</a>
+  </div>
+</section>
+
+<!-- ── BENEFICIOS ────────────────────────────────────────────────────── -->
+<section class="land-perks">
+  <div class="land-perk">
+    <div class="land-perk-icon">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    </div>
+    <h3 class="land-perk-title">Pago 100% Seguro</h3>
+    <p class="land-perk-desc">Procesado por Stripe con encriptación SSL de grado bancario.</p>
+  </div>
+  <div class="land-perk">
+    <div class="land-perk-icon">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+    </div>
+    <h3 class="land-perk-title">Entrega Local</h3>
+    <p class="land-perk-desc">Click & Collect o Punto Medio en Aguascalientes.</p>
+  </div>
+  <div class="land-perk">
+    <div class="land-perk-icon">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+    </div>
+    <h3 class="land-perk-title">Hecho con Amor</h3>
+    <p class="land-perk-desc">Cada arreglo es único, elaborado artesanalmente a mano.</p>
+  </div>
+  <div class="land-perk">
+    <div class="land-perk-icon">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    </div>
+    <h3 class="land-perk-title">Duran Para Siempre</h3>
+    <p class="land-perk-desc">Sin agua, sin sol. Tus flores se mantienen perfectas por años.</p>
+  </div>
+</section>
+
+<!-- ── SECCIÓN ODS ───────────────────────────────────────────────────── -->
+<section class="land-ods" id="ods">
+  <div class="land-section-head">
+    <h2 class="land-section-title">Nuestro compromiso sustentable</h2>
+    <p class="land-ods-sub">Contribuimos activamente a los Objetivos de Desarrollo Sostenible de la ONU</p>
+  </div>
+
+  <div class="land-ods-grid">
+    <div class="land-ods-item" style="--ods-color: #BF8B2E">
+      <div class="land-ods-num">12</div>
+      <div class="land-ods-body">
+        <h3>Producción y Consumo Responsables</h3>
+        <p>Nuestras flores eternas eliminan el desperdicio. Un arreglo dura años, no días.</p>
+      </div>
+    </div>
+    <div class="land-ods-item" style="--ods-color: #A21942">
+      <div class="land-ods-num">8</div>
+      <div class="land-ods-body">
+        <h3>Trabajo Decente</h3>
+        <p>Emprendimiento local que genera empleos dignos en Aguascalientes.</p>
+      </div>
+    </div>
+    <div class="land-ods-item" style="--ods-color: #FD9D24">
+      <div class="land-ods-num">11</div>
+      <div class="land-ods-body">
+        <h3>Comunidades Sostenibles</h3>
+        <p>Comercio local con entregas eficientes que reducen emisiones de transporte.</p>
+      </div>
+    </div>
+    <div class="land-ods-item" style="--ods-color: #3F7E44">
+      <div class="land-ods-num">13</div>
+      <div class="land-ods-body">
+        <h3>Acción por el Clima</h3>
+        <p>Sin cultivos, sin pesticidas, sin transporte refrigerado. Menos huella ecológica.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA FINAL ─────────────────────────────────────────────────────── -->
+<section class="land-cta">
+  <h2 class="land-cta-title">¿Lista para regalar algo eterno?</h2>
+  <p class="land-cta-desc">Explora nuestra colección y encuentra el arreglo perfecto.</p>
+  <a href="{{ url_for('index') }}" class="land-btn-fill land-btn-lg">Ver catálogo completo</a>
+</section>
+
+{% endblock %}

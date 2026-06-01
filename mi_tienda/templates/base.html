@@ -23,8 +23,8 @@
   <header class="topbar">
     <!-- Navegación izquierda -->
     <nav class="topbar-nav-left">
-      <a class="nav-link {% if request.endpoint == 'index' %}active{% endif %}" href="{{ url_for('index') }}">INICIO</a>
-      <a class="nav-link {% if request.endpoint == 'producto' %}active{% endif %}" href="{{ url_for('index') }}#catalogo">CATÁLOGO</a>
+      <a class="nav-link {% if request.endpoint == 'inicio' %}active{% endif %}" href="{{ url_for('inicio') }}">INICIO</a>
+      <a class="nav-link {% if request.endpoint == 'index' %}active{% endif %}" href="{{ url_for('index') }}">CATÁLOGO</a>
       {% if session.get('admin') %}
       <a class="nav-link {% if request.endpoint == 'admin_productos' %}active{% endif %}" href="{{ url_for('admin_productos') }}">PANEL ADMIN</a>
       {% endif %}
