@@ -3,21 +3,22 @@
 
 <!-- ═══════════════════════════════════════════════════════════════════════
      LANDING PAGE — FLORERÍA BRILLO ETERNO
+     Contenido dinámico editable desde /admin/inicio
      ═══════════════════════════════════════════════════════════════════════ -->
 
 <!-- ── HERO ──────────────────────────────────────────────────────────── -->
 <section class="land-hero">
   <div class="land-hero-content">
-    <p class="land-hero-tag">Florería Artesanal · Aguascalientes</p>
-    <h1 class="land-hero-title">Flores que<br><em>duran para siempre</em></h1>
-    <p class="land-hero-desc">Creamos arreglos florales eternos hechos a mano con amor. Cada pieza es un símbolo de cariño diseñado para perdurar toda la vida.</p>
+    <p class="land-hero-tag">{{ cfg.hero_tag }}</p>
+    <h1 class="land-hero-title">{{ cfg.hero_titulo.split('\n')[0] }}<br><em>{{ cfg.hero_titulo.split('\n')[1] if '\n' in cfg.hero_titulo else '' }}</em></h1>
+    <p class="land-hero-desc">{{ cfg.hero_desc }}</p>
     <div class="land-hero-actions">
       <a href="{{ url_for('index') }}" class="land-btn-fill">Explorar catálogo</a>
       <a href="#historia" class="land-btn-ghost">Nuestra historia</a>
     </div>
   </div>
   <div class="land-hero-visual">
-    <img src="{{ url_for('static', filename='imagenes/Ramorosasrojas.jpg') }}" alt="Ramo de rosas rojas" class="land-hero-img">
+    <img src="{{ url_for('static', filename='imagenes/' + cfg.hero_imagen) }}" alt="Brillo Eterno" class="land-hero-img">
   </div>
 </section>
 
@@ -42,45 +43,22 @@
 </div>
 {% endif %}
 
-<!-- ── GALERÍA DE FOTOS ─────────────────────────────────────────────── -->
+<!-- ── GALERÍA DE FOTOS (dinámica desde admin) ───────────────────────── -->
+{% if cfg.galeria %}
 <section class="land-gallery">
   <div class="land-section-head">
     <h2 class="land-section-title">Nuestras creaciones</h2>
     <a href="{{ url_for('index') }}" class="land-section-link">Ver catálogo →</a>
   </div>
   <div class="land-gallery-grid">
-    <div class="land-gallery-item land-gallery-tall">
-      <img src="{{ url_for('static', filename='imagenes/cajacorazon.png') }}" alt="Caja corazón" loading="lazy">
+    {% for img in cfg.galeria %}
+    <div class="land-gallery-item {% if loop.index in [1, 5] %}land-gallery-tall{% endif %}">
+      <img src="{{ url_for('static', filename='imagenes/' + img) }}" alt="{{ img }}" loading="lazy">
     </div>
-    <div class="land-gallery-item">
-      <img src="{{ url_for('static', filename='imagenes/Girasol.jpeg') }}" alt="Girasol" loading="lazy">
-    </div>
-    <div class="land-gallery-item">
-      <img src="{{ url_for('static', filename='imagenes/Amarillas.jpeg') }}" alt="Flores amarillas" loading="lazy">
-    </div>
-    <div class="land-gallery-item">
-      <img src="{{ url_for('static', filename='imagenes/flordeloto.jpeg') }}" alt="Flor de loto" loading="lazy">
-    </div>
-    <div class="land-gallery-item land-gallery-tall">
-      <img src="{{ url_for('static', filename='imagenes/Cajafloral_peluche.jpeg') }}" alt="Caja floral con peluche" loading="lazy">
-    </div>
-    <div class="land-gallery-item">
-      <img src="{{ url_for('static', filename='imagenes/Dalia.jpeg') }}" alt="Dalia" loading="lazy">
-    </div>
-    <div class="land-gallery-item">
-      <img src="{{ url_for('static', filename='imagenes/rosa_individual.jpeg') }}" alt="Rosa individual" loading="lazy">
-    </div>
-    <div class="land-gallery-item">
-      <img src="{{ url_for('static', filename='imagenes/ramo_clasico.jpeg') }}" alt="Ramo clásico" loading="lazy">
-    </div>
-    <div class="land-gallery-item">
-      <img src="{{ url_for('static', filename='imagenes/Dalias_rosas.jpeg') }}" alt="Dalias rosas" loading="lazy">
-    </div>
-    <div class="land-gallery-item">
-      <img src="{{ url_for('static', filename='imagenes/Ramitos.jpeg') }}" alt="Ramitos" loading="lazy">
-    </div>
+    {% endfor %}
   </div>
 </section>
+{% endif %}
 
 <!-- ── PRODUCTOS DESTACADOS ──────────────────────────────────────────── -->
 {% if destacados %}
@@ -110,16 +88,16 @@
 </section>
 {% endif %}
 
-<!-- ── NUESTRA HISTORIA ─────────────────────────────────────────────── -->
+<!-- ── NUESTRA HISTORIA (dinámica) ──────────────────────────────────── -->
 <section class="land-story" id="historia">
   <div class="land-story-img-wrap">
-    <img src="{{ url_for('static', filename='imagenes/Ramorosas.jpeg') }}" alt="Ramo de rosas" class="land-story-img">
+    <img src="{{ url_for('static', filename='imagenes/' + cfg.historia_imagen) }}" alt="Nuestra historia" class="land-story-img">
   </div>
   <div class="land-story-text">
     <p class="land-story-tag">Nuestra historia</p>
-    <h2 class="land-story-title">Más que flores,<br>son recuerdos eternos</h2>
-    <p class="land-story-desc">Brillo Eterno nació en Aguascalientes con una misión simple: crear arreglos florales que no se marchiten jamás. Cada pieza es elaborada a mano con materiales de primera calidad, combinando técnicas artesanales con diseño contemporáneo.</p>
-    <p class="land-story-desc">Nuestros arreglos no necesitan agua, no necesitan sol, y nunca pierden su color. Son el regalo perfecto para quienes quieres de verdad.</p>
+    <h2 class="land-story-title">{{ cfg.historia_titulo.replace('\n', '<br>')|safe }}</h2>
+    <p class="land-story-desc">{{ cfg.historia_p1 }}</p>
+    <p class="land-story-desc">{{ cfg.historia_p2 }}</p>
     <a href="{{ url_for('index') }}" class="land-btn-fill">Descubrir colección</a>
   </div>
 </section>
@@ -200,10 +178,10 @@
   </div>
 </section>
 
-<!-- ── CTA FINAL ─────────────────────────────────────────────────────── -->
+<!-- ── CTA FINAL (dinámico) ──────────────────────────────────────────── -->
 <section class="land-cta">
-  <h2 class="land-cta-title">¿Lista para regalar algo eterno?</h2>
-  <p class="land-cta-desc">Explora nuestra colección y encuentra el arreglo perfecto.</p>
+  <h2 class="land-cta-title">{{ cfg.cta_titulo }}</h2>
+  <p class="land-cta-desc">{{ cfg.cta_desc }}</p>
   <a href="{{ url_for('index') }}" class="land-btn-fill land-btn-lg">Ver catálogo completo</a>
 </section>
 

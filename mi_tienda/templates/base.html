@@ -27,6 +27,7 @@
       <a class="nav-link {% if request.endpoint == 'index' %}active{% endif %}" href="{{ url_for('index') }}">CATÁLOGO</a>
       {% if session.get('admin') %}
       <a class="nav-link {% if request.endpoint == 'admin_productos' %}active{% endif %}" href="{{ url_for('admin_productos') }}">PANEL ADMIN</a>
+      <a class="nav-link {% if request.endpoint == 'admin_inicio' %}active{% endif %}" href="{{ url_for('admin_inicio') }}">EDITAR INICIO</a>
       {% endif %}
     </nav>
 

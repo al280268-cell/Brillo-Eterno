@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="admin-editor">
+  <div class="admin-editor-header">
+    <h2 class="admin-editor-title">Editar Página de Inicio</h2>
+    <a href="{{ url_for('inicio') }}" target="_blank" class="admin-preview-btn">👁 Vista previa</a>
+  </div>
+
+  <form method="post" class="admin-editor-form">
+    
+    <!-- ── HERO ──────────────────────────────────────── -->
+    <fieldset class="admin-fieldset">
+      <legend>Hero (Sección principal)</legend>
+      
+      <label>Etiqueta superior</label>
+      <input type="text" name="hero_tag" value="{{ cfg.hero_tag }}" class="admin-input">
+      
+      <label>Título (usa \n para salto de línea)</label>
+      <input type="text" name="hero_titulo" value="{{ cfg.hero_titulo }}" class="admin-input">
+      
+      <label>Descripción</label>
+      <textarea name="hero_desc" rows="3" class="admin-input">{{ cfg.hero_desc }}</textarea>
+      
+      <label>Imagen del hero</label>
+      <div class="admin-img-selector">
+        {% for img in imagenes %}
+        <label class="admin-img-option">
+          <input type="radio" name="hero_imagen" value="{{ img }}" 
+                 {% if cfg.hero_imagen == img %}checked{% endif %}>
+          <img src="{{ url_for('static', filename='imagenes/' + img) }}" alt="{{ img }}">
+          <span>{{ img }}</span>
+        </label>
+        {% endfor %}
+      </div>
+    </fieldset>
+
+    <!-- ── GALERÍA ───────────────────────────────────── -->
+    <fieldset class="admin-fieldset">
+      <legend>Galería de fotos</legend>
+      <p class="admin-hint">Selecciona las imágenes que aparecerán en la galería de inicio:</p>
+      
+      <div class="admin-img-selector">
+        {% for img in imagenes %}
+        <label class="admin-img-option">
+          <input type="checkbox" name="galeria" value="{{ img }}"
+                 {% if img in cfg.galeria %}checked{% endif %}>
+          <img src="{{ url_for('static', filename='imagenes/' + img) }}" alt="{{ img }}">
+          <span>{{ img }}</span>
+        </label>
+        {% endfor %}
+      </div>
+    </fieldset>
+
+    <!-- ── HISTORIA ──────────────────────────────────── -->
+    <fieldset class="admin-fieldset">
+      <legend>Nuestra historia</legend>
+      
+      <label>Título</label>
+      <input type="text" name="historia_titulo" value="{{ cfg.historia_titulo }}" class="admin-input">
+      
+      <label>Párrafo 1</label>
+      <textarea name="historia_p1" rows="3" class="admin-input">{{ cfg.historia_p1 }}</textarea>
+      
+      <label>Párrafo 2</label>
+      <textarea name="historia_p2" rows="3" class="admin-input">{{ cfg.historia_p2 }}</textarea>
+      
+      <label>Imagen de la historia</label>
+      <div class="admin-img-selector">
+        {% for img in imagenes %}
+        <label class="admin-img-option">
+          <input type="radio" name="historia_imagen" value="{{ img }}"
+                 {% if cfg.historia_imagen == img %}checked{% endif %}>
+          <img src="{{ url_for('static', filename='imagenes/' + img) }}" alt="{{ img }}">
+          <span>{{ img }}</span>
+        </label>
+        {% endfor %}
+      </div>
+    </fieldset>
+
+    <!-- ── CTA FINAL ─────────────────────────────────── -->
+    <fieldset class="admin-fieldset">
+      <legend>Llamada a la acción final</legend>
+      
+      <label>Título</label>
+      <input type="text" name="cta_titulo" value="{{ cfg.cta_titulo }}" class="admin-input">
+      
+      <label>Descripción</label>
+      <input type="text" name="cta_desc" value="{{ cfg.cta_desc }}" class="admin-input">
+    </fieldset>
+
+    <div class="admin-editor-actions">
+      <button type="submit" class="btn primary admin-save-btn">💾 Guardar cambios</button>
+      <a href="{{ url_for('admin_productos') }}" class="btn secondary">← Volver a productos</a>
+    </div>
+  </form>
+</div>
+
+{% endblock %}

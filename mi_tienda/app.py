@@ -115,6 +115,44 @@ def inject_carrito_count():
     return dict(carrito_count=total_items)
 
 
+# ─── Sistema de configuración de la landing (JSON, sin tocar la BD del profe) ──
+CONFIG_FILE = os.path.join(app.root_path, 'config_inicio.json')
+
+CONFIG_DEFAULT = {
+    "hero_tag": "Florería Artesanal · Aguascalientes",
+    "hero_titulo": "Flores que\nduran para siempre",
+    "hero_desc": "Creamos arreglos florales eternos hechos a mano con amor. Cada pieza es un símbolo de cariño diseñado para perdurar toda la vida.",
+    "hero_imagen": "Ramorosasrojas.jpg",
+    "historia_titulo": "Más que flores,\nson recuerdos eternos",
+    "historia_p1": "Brillo Eterno nació en Aguascalientes con una misión simple: crear arreglos florales que no se marchiten jamás. Cada pieza es elaborada a mano con materiales de primera calidad, combinando técnicas artesanales con diseño contemporáneo.",
+    "historia_p2": "Nuestros arreglos no necesitan agua, no necesitan sol, y nunca pierden su color. Son el regalo perfecto para quienes quieres de verdad.",
+    "historia_imagen": "Ramorosas.jpeg",
+    "galeria": ["cajacorazon.png", "Girasol.jpeg", "Amarillas.jpeg", "flordeloto.jpeg",
+                "Cajafloral_peluche.jpeg", "Dalia.jpeg", "rosa_individual.jpeg",
+                "ramo_clasico.jpeg", "Dalias_rosas.jpeg", "Ramitos.jpeg"],
+    "cta_titulo": "¿Lista para regalar algo eterno?",
+    "cta_desc": "Explora nuestra colección y encuentra el arreglo perfecto."
+}
+
+def cargar_config():
+    """Carga la configuración de la landing desde el archivo JSON"""
+    try:
+        with open(CONFIG_FILE, 'r', encoding='utf-8') as f:
+            config = json.load(f)
+            # Merge con defaults para campos nuevos
+            for k, v in CONFIG_DEFAULT.items():
+                if k not in config:
+                    config[k] = v
+            return config
+    except (FileNotFoundError, json.JSONDecodeError):
+        guardar_config(CONFIG_DEFAULT)
+        return CONFIG_DEFAULT.copy()
+
+def guardar_config(config):
+    """Guarda la configuración en el archivo JSON"""
+    with open(CONFIG_FILE, 'w', encoding='utf-8') as f:
+        json.dump(config, f, ensure_ascii=False, indent=2)
+
 
 # ─── Página de Inicio (landing page) ──────────────────────────────────────────
 @app.route("/")
@@ -122,7 +160,8 @@ def inicio():
     avisos = db.listar_avisos(solo_activos=True)
     productos = db.listar_productos()
     destacados = productos[:4] if productos else []
-    return render_template("inicio.html", avisos=avisos, destacados=destacados)
+    config = cargar_config()
+    return render_template("inicio.html", avisos=avisos, destacados=destacados, cfg=config)
 
 # ─── Catálogo (público) ───────────────────────────────────────────────────────
 @app.route("/catalogo")
@@ -370,6 +409,43 @@ def admin_logout():
     flash("Panel de administrador cerrado.")
     return redirect(url_for("index"))
 
+
+# ─── Admin: Editar Inicio (landing page) ──────────────────────────────────────
+@app.route("/admin/inicio", methods=["GET", "POST"])
+@requires_admin
+def admin_inicio():
+    """Panel para editar textos e imágenes de la landing page"""
+    # Listar todas las imágenes disponibles en static/imagenes/
+    img_dir = os.path.join(app.root_path, 'static', 'imagenes')
+    todas_imgs = sorted([f for f in os.listdir(img_dir)
+                         if f.lower().endswith(('.jpg', '.jpeg', '.png', '.gif', '.webp'))])
+
+    if request.method == "POST":
+        config = cargar_config()
+        # Hero
+        config["hero_tag"] = request.form.get("hero_tag", config["hero_tag"]).strip()
+        config["hero_titulo"] = request.form.get("hero_titulo", config["hero_titulo"]).strip()
+        config["hero_desc"] = request.form.get("hero_desc", config["hero_desc"]).strip()
+        config["hero_imagen"] = request.form.get("hero_imagen", config["hero_imagen"])
+        # Historia
+        config["historia_titulo"] = request.form.get("historia_titulo", config["historia_titulo"]).strip()
+        config["historia_p1"] = request.form.get("historia_p1", config["historia_p1"]).strip()
+        config["historia_p2"] = request.form.get("historia_p2", config["historia_p2"]).strip()
+        config["historia_imagen"] = request.form.get("historia_imagen", config["historia_imagen"])
+        # Galería (checkboxes)
+        galeria_sel = request.form.getlist("galeria")
+        if galeria_sel:
+            config["galeria"] = galeria_sel
+        # CTA
+        config["cta_titulo"] = request.form.get("cta_titulo", config["cta_titulo"]).strip()
+        config["cta_desc"] = request.form.get("cta_desc", config["cta_desc"]).strip()
+
+        guardar_config(config)
+        flash("✅ Página de inicio actualizada correctamente")
+        return redirect(url_for("admin_inicio"))
+
+    config = cargar_config()
+    return render_template("admin_inicio.html", cfg=config, imagenes=todas_imgs)
 
 # ─── Admin: productos ─────────────────────────────────────────────────────────
 @app.route("/admin/productos")
