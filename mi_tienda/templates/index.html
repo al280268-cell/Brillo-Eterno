@@ -1,84 +1,15 @@
 {% extends "base.html" %}
 {% block content %}
 
-<!-- ═══ HERO LIMPIO ═════════════════════════════════════════════════════ -->
-<section class="hero-clean">
-  <span class="hero-badge">✨ Flores que duran para siempre</span>
-  <h1 class="hero-clean-title">Arreglos Florales<br>Eternos y Artesanales</h1>
-  <p class="hero-clean-sub">Creamos arreglos únicos hechos a mano en Aguascalientes.<br>Cada pieza está diseñada para perdurar toda la vida.</p>
-  <div class="hero-buttons">
-    <a href="#catalogo" class="hero-btn-primary">Ver Catálogo</a>
-    <a href="#nosotros" class="hero-btn-secondary">Conócenos ↓</a>
+<!-- Banner del catálogo -->
+<div class="cat-banner">
+  <img src="{{ url_for('static', filename='imagenes/Dalias_rosas.jpeg') }}" alt="Catálogo" class="cat-banner-img">
+  <div class="cat-banner-overlay">
+    <h1 class="cat-banner-title">Catálogo</h1>
+    <p class="cat-banner-sub">Entregas en Aguascalientes · Flores que duran para siempre</p>
   </div>
-</section>
+</div>
 
-<!-- Imagen del banner original -->
-<img src="{{ url_for('static', filename='imagenes/principal1.jpg') }}" alt="Brillo Eterno" class="hero-banner-img">
-
-<!-- ═══ BENEFICIOS ══════════════════════════════════════════════════════ -->
-<section class="benefits-section" id="nosotros">
-  <h2 class="section-title">¿Por qué elegir Brillo Eterno?</h2>
-  <div class="section-line"></div>
-  <p class="section-subtitle">Más que flores, son recuerdos que perduran</p>
-  
-  <div class="benefits-grid">
-    <div class="benefit-card">
-      <div class="benefit-icon">🌹</div>
-      <h3 class="benefit-title">Flores Eternas</h3>
-      <p class="benefit-text">Nuestros arreglos están diseñados para durar años sin perder su belleza. No necesitan agua ni sol.</p>
-    </div>
-    <div class="benefit-card">
-      <div class="benefit-icon">🎨</div>
-      <h3 class="benefit-title">Hechas a Mano</h3>
-      <p class="benefit-text">Cada arreglo es único, elaborado artesanalmente con materiales de primera calidad y mucho cariño.</p>
-    </div>
-    <div class="benefit-card">
-      <div class="benefit-icon">🚚</div>
-      <h3 class="benefit-title">Entrega Local</h3>
-      <p class="benefit-text">Entregamos en Aguascalientes con Click & Collect o Punto Medio. Tu pedido listo en 2-3 días.</p>
-    </div>
-    <div class="benefit-card">
-      <div class="benefit-icon">💳</div>
-      <h3 class="benefit-title">Pago Seguro</h3>
-      <p class="benefit-text">Pagos con tarjeta procesados por Stripe, la plataforma de pagos más segura del mundo.</p>
-    </div>
-  </div>
-</section>
-
-<!-- ═══ SECCIÓN ODS ═════════════════════════════════════════════════════ -->
-<section class="ods-section" id="ods">
-  <h2 class="section-title">Comprometidos con el Planeta 🌍</h2>
-  <div class="section-line"></div>
-  <p class="section-subtitle">Brillo Eterno contribuye a los Objetivos de Desarrollo Sostenible de la ONU</p>
-
-  <div class="ods-grid">
-    <div class="ods-card ods-12">
-      <div class="ods-number">ODS 12</div>
-      <h3 class="ods-card-title">♻️ Producción y Consumo Responsables</h3>
-      <p class="ods-card-text">Nuestras flores eternas eliminan el desperdicio de flores naturales que se marchitan en días. Un arreglo Brillo Eterno dura años, reduciendo la huella ecológica del consumidor.</p>
-    </div>
-
-    <div class="ods-card ods-8">
-      <div class="ods-number">ODS 8</div>
-      <h3 class="ods-card-title">💼 Trabajo Decente y Crecimiento Económico</h3>
-      <p class="ods-card-text">Somos un emprendimiento local de Aguascalientes que genera empleos dignos y fomenta el desarrollo económico a través del comercio justo y artesanal.</p>
-    </div>
-
-    <div class="ods-card ods-11">
-      <div class="ods-number">ODS 11</div>
-      <h3 class="ods-card-title">🏘️ Ciudades y Comunidades Sostenibles</h3>
-      <p class="ods-card-text">Apoyamos el comercio local con entregas en puntos estratégicos, reduciendo emisiones de transporte y fortaleciendo la economía de nuestra ciudad.</p>
-    </div>
-
-    <div class="ods-card ods-13">
-      <div class="ods-number">ODS 13</div>
-      <h3 class="ods-card-title">🌱 Acción por el Clima</h3>
-      <p class="ods-card-text">Al no depender de cultivos de flores frescas, evitamos el uso excesivo de agua, pesticidas y transporte refrigerado, reduciendo gases de efecto invernadero.</p>
-    </div>
-  </div>
-</section>
-
-<!-- ═══ AVISOS ═══════════════════════════════════════════════════════════ -->
 {% if avisos %}
 <div class="avisos-container">
   {% for a in avisos %}
@@ -89,40 +20,36 @@
 </div>
 {% endif %}
 
-<!-- ═══ CATÁLOGO DE PRODUCTOS ════════════════════════════════════════════ -->
-<section id="catalogo">
-  <h1 class="index_titulo">Catálogo</h1>
-  <p class="catalogo-subtitle">Entregas en Aguascalientes · Flores que duran para siempre</p>
+<div class="cat-count">{{ productos|length }} productos</div>
 
-  <div class="grid">
-    <!-- 
-    =======================================================================
-    EXPLICACIÓN DEL BUCLE FOR-LOOP EN JINJA: 
-    En lugar de haber programado 10 tarjetas HTML con fotos estáticas, usamos el bucle iterador de Jinja2:'{ for p in productos }' Lo que hace es ir a la tabla de sqlite3, contar cuántos productos hay y de forma totalmente automatizada la tarjeta completa por cada uno que exista. =======================================================================-->
-    {% for p in productos %}
-      <div class="card" id="producto-{{ p['id'] }}">
-        <a href="{{ url_for('producto', producto_id=p['id']) }}">
-          <img src="{{ url_for('static', filename='imagenes/' + (p['imagen'] or 'default.jpg')) }}"
-               alt="{{ p['nombre'] }}" class="card-img">
-        </a>
-        <div class="card-info">
-          <h3 class="card-nombre">{{ p["nombre"] }}</h3>
-          <strong class="card-precio">${{ "%.2f"|format(p["precio"]) }} MXN</strong>
-          <div class="row">
-            {% if p['stock'] > 0 %}
-            <form method="post" action="{{ url_for('carrito_agregar') }}">
-              <input type="hidden" name="producto_id" value="{{ p['id'] }}">
-              <input class="qty" type="number" name="cantidad" min="1" max="{{ p['stock'] }}" value="1">
-              <button class="btn primary" type="submit">Agregar</button>
-            </form>
-            {% else %}
-            <span class="badge-agotado">🚫 Agotado</span>
-            {% endif %}
-          </div>
+<div class="grid">
+  <!-- 
+  =======================================================================
+  EXPLICACIÓN DEL BUCLE FOR-LOOP EN JINJA: 
+  En lugar de haber programado 10 tarjetas HTML con fotos estáticas, usamos el bucle iterador de Jinja2:'{ for p in productos }' Lo que hace es ir a la tabla de sqlite3, contar cuántos productos hay y de forma totalmente automatizada la tarjeta completa por cada uno que exista. =======================================================================-->
+  {% for p in productos %}
+    <div class="card" id="producto-{{ p['id'] }}">
+      <a href="{{ url_for('producto', producto_id=p['id']) }}">
+        <img src="{{ url_for('static', filename='imagenes/' + (p['imagen'] or 'default.jpg')) }}"
+             alt="{{ p['nombre'] }}" class="card-img">
+      </a>
+      <div class="card-info">
+        <h3 class="card-nombre">{{ p["nombre"] }}</h3>
+        <strong class="card-precio">${{ "%.2f"|format(p["precio"]) }} MXN</strong>
+        <div class="row">
+          {% if p['stock'] > 0 %}
+          <form method="post" action="{{ url_for('carrito_agregar') }}">
+            <input type="hidden" name="producto_id" value="{{ p['id'] }}">
+            <input class="qty" type="number" name="cantidad" min="1" max="{{ p['stock'] }}" value="1">
+            <button class="btn primary" type="submit">Agregar</button>
+          </form>
+          {% else %}
+          <span class="badge-agotado">🚫 Agotado</span>
+          {% endif %}
         </div>
       </div>
-    {% endfor %}
-  </div>
-</section>
+    </div>
+  {% endfor %}
+</div>
 
 {% endblock %}

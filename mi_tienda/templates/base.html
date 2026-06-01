@@ -64,7 +64,7 @@
     </div>
   </header>
 
-  {% if request.endpoint in ['index', 'login', 'registro'] %}
+  {% if request.endpoint not in ['inicio', 'index', 'login', 'registro', 'producto', 'carrito', 'checkout_exito'] and not request.endpoint.startswith('admin') %}
   <img src="{{ url_for('static', filename='imagenes/principal1.jpg') }}" alt="flor" class="principal">
   {% elif request.endpoint not in ['producto'] %}
   <div class="page-title-banner no-print">

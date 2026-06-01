@@ -3,7 +3,6 @@
 
 <!-- ═══════════════════════════════════════════════════════════════════════
      LANDING PAGE — FLORERÍA BRILLO ETERNO
-     Diseño inspirado en florerías de lujo: limpio, elegante, minimalista
      ═══════════════════════════════════════════════════════════════════════ -->
 
 <!-- ── HERO ──────────────────────────────────────────────────────────── -->
@@ -18,7 +17,7 @@
     </div>
   </div>
   <div class="land-hero-visual">
-    <img src="{{ url_for('static', filename='imagenes/principal1.jpg') }}" alt="Brillo Eterno" class="land-hero-img">
+    <img src="{{ url_for('static', filename='imagenes/Ramorosasrojas.jpg') }}" alt="Ramo de rosas rojas" class="land-hero-img">
   </div>
 </section>
 
@@ -42,6 +41,34 @@
   {% endfor %}
 </div>
 {% endif %}
+
+<!-- ── GALERÍA DE FOTOS ─────────────────────────────────────────────── -->
+<section class="land-gallery">
+  <div class="land-section-head">
+    <h2 class="land-section-title">Nuestras creaciones</h2>
+    <a href="{{ url_for('index') }}" class="land-section-link">Ver catálogo →</a>
+  </div>
+  <div class="land-gallery-grid">
+    <div class="land-gallery-item land-gallery-tall">
+      <img src="{{ url_for('static', filename='imagenes/cajacorazon.png') }}" alt="Caja corazón" loading="lazy">
+    </div>
+    <div class="land-gallery-item">
+      <img src="{{ url_for('static', filename='imagenes/Girasol.jpeg') }}" alt="Girasol" loading="lazy">
+    </div>
+    <div class="land-gallery-item">
+      <img src="{{ url_for('static', filename='imagenes/Dalia.jpeg') }}" alt="Dalia" loading="lazy">
+    </div>
+    <div class="land-gallery-item land-gallery-tall">
+      <img src="{{ url_for('static', filename='imagenes/Cajafloral_peluche.jpeg') }}" alt="Caja floral con peluche" loading="lazy">
+    </div>
+    <div class="land-gallery-item">
+      <img src="{{ url_for('static', filename='imagenes/Amarillas.jpeg') }}" alt="Flores amarillas" loading="lazy">
+    </div>
+    <div class="land-gallery-item">
+      <img src="{{ url_for('static', filename='imagenes/ramo_clasico.jpeg') }}" alt="Ramo clásico" loading="lazy">
+    </div>
+  </div>
+</section>
 
 <!-- ── PRODUCTOS DESTACADOS ──────────────────────────────────────────── -->
 {% if destacados %}
@@ -74,7 +101,7 @@
 <!-- ── NUESTRA HISTORIA ─────────────────────────────────────────────── -->
 <section class="land-story" id="historia">
   <div class="land-story-img-wrap">
-    <img src="{{ url_for('static', filename='imagenes/minifoto.png') }}" alt="Brillo Eterno" class="land-story-img">
+    <img src="{{ url_for('static', filename='imagenes/Ramorosas.jpeg') }}" alt="Ramo de rosas" class="land-story-img">
   </div>
   <div class="land-story-text">
     <p class="land-story-tag">Nuestra historia</p>
@@ -84,6 +111,11 @@
     <a href="{{ url_for('index') }}" class="land-btn-fill">Descubrir colección</a>
   </div>
 </section>
+
+<!-- ── SEGUNDA IMAGEN GRANDE ─────────────────────────────────────────── -->
+<div class="land-full-img">
+  <img src="{{ url_for('static', filename='imagenes/principal1.jpg') }}" alt="Brillo Eterno" loading="lazy">
+</div>
 
 <!-- ── BENEFICIOS ────────────────────────────────────────────────────── -->
 <section class="land-perks">
@@ -121,15 +153,15 @@
 <section class="land-ods" id="ods">
   <div class="land-section-head">
     <h2 class="land-section-title">Nuestro compromiso sustentable</h2>
-    <p class="land-ods-sub">Contribuimos activamente a los Objetivos de Desarrollo Sostenible de la ONU</p>
+    <p class="land-ods-sub" style="margin:0">ODS — ONU</p>
   </div>
 
   <div class="land-ods-grid">
     <div class="land-ods-item" style="--ods-color: #BF8B2E">
       <div class="land-ods-num">12</div>
       <div class="land-ods-body">
-        <h3>Producción y Consumo Responsables</h3>
-        <p>Nuestras flores eternas eliminan el desperdicio. Un arreglo dura años, no días.</p>
+        <h3>Producción Responsable</h3>
+        <p>Flores eternas = cero desperdicio. Un arreglo dura años, no días.</p>
       </div>
     </div>
     <div class="land-ods-item" style="--ods-color: #A21942">
@@ -143,14 +175,14 @@
       <div class="land-ods-num">11</div>
       <div class="land-ods-body">
         <h3>Comunidades Sostenibles</h3>
-        <p>Comercio local con entregas eficientes que reducen emisiones de transporte.</p>
+        <p>Comercio local con entregas que reducen emisiones de transporte.</p>
       </div>
     </div>
     <div class="land-ods-item" style="--ods-color: #3F7E44">
       <div class="land-ods-num">13</div>
       <div class="land-ods-body">
         <h3>Acción por el Clima</h3>
-        <p>Sin cultivos, sin pesticidas, sin transporte refrigerado. Menos huella ecológica.</p>
+        <p>Sin cultivos, sin pesticidas, sin transporte refrigerado.</p>
       </div>
     </div>
   </div>
