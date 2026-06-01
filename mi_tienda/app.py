@@ -107,6 +107,13 @@ def carrito_session():
         session["carrito"] = {}
     return session["carrito"]
 
+@app.context_processor
+def inject_carrito_count():
+    """Inyecta la cantidad total de items del carrito en TODAS las plantillas."""
+    cart = session.get("carrito", {})
+    total_items = sum(int(v) for v in cart.values())
+    return dict(carrito_count=total_items)
+
 
 # ─── Catálogo (público) ───────────────────────────────────────────────────────
 @app.route("/")

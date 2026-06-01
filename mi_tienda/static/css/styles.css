@@ -80,48 +80,144 @@ h1, h2, h3, h4, h5, h6 {
  APARTADO 2: ESTRUCTURA GLOBAL Y BARRA SUPERIOR
 ==============================================
 Aquí están los estilos principales de la página (Navbars, contenedores, enlaces base).*/
+/* ─── NAVBAR ESTILO TERRACOTA ─────────────────────────────────────── */
 .topbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px 28px;
-  background-color: rgba(250, 247, 245, 0.85); /* Semi-transparent warm bg */
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--color-borde);
-  font-size: 17px;
-  font-weight: 500;
+  padding: 18px 40px;
+  background-color: rgba(255, 255, 255, 0.97);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
   position: sticky;
   top: 0;
   z-index: 100;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+}
+
+.topbar-nav-left {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  flex: 1;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: var(--color-texto-oscuro);
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  font-family: var(--font-primary);
+  position: relative;
+  padding: 4px 0;
+  transition: color 0.3s ease;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1.5px;
+  background: var(--color-texto-oscuro);
+  transition: width 0.3s ease;
+}
+
+.nav-link:hover::after,
+.nav-link.active::after {
+  width: 100%;
+}
+
+.nav-link.active {
+  font-weight: 600;
 }
 
 .brand {
-  font-weight: 800;
+  font-family: var(--font-title);
+  font-weight: 500;
   text-decoration: none;
-  color: var(--color-rojo); /* Now red text, not white var(--color-blanco) */
+  color: var(--color-texto-oscuro);
+  font-size: 1.15rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  text-align: center;
+  transition: opacity 0.3s ease;
+}
+
+.brand:hover {
+  opacity: 0.7;
+}
+
+.topbar-nav-right {
   display: flex;
   align-items: center;
-  gap: 12px;
-  font-size: 1.3rem;
+  gap: 18px;
+  flex: 1;
+  justify-content: flex-end;
 }
 
-.brand-logo {
-  width: 50px;
-  height: 50px;
+.nav-icon-link {
+  color: var(--color-texto-oscuro);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+}
+
+.nav-icon-link:hover {
+  color: var(--color-rojo);
+  transform: translateY(-1px);
+}
+
+/* Badge del carrito */
+.cart-icon-wrapper {
+  position: relative;
+}
+
+.cart-badge {
+  position: absolute;
+  top: -8px;
+  right: -10px;
+  background: var(--color-rojo);
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 700;
+  min-width: 18px;
+  height: 18px;
   border-radius: 50%;
-  border: 2px solid var(--color-rojo);
-  object-fit: cover;
-  background-color: transparent;
-  box-shadow: 0 4px 10px rgba(166, 42, 75, 0.15);
-  transition: var(--transition-smooth);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-primary);
+  animation: scaleIn 0.3s ease-out;
 }
 
-.brand:hover .brand-logo {
-  transform: rotate(-10deg) scale(1.05);
+/* WhatsApp flotante premium */
+.whatsapp-float {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: #25D366;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
+  z-index: 999;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
+.whatsapp-float:hover {
+  transform: scale(1.1) translateY(-3px);
+  box-shadow: 0 8px 25px rgba(37, 211, 102, 0.5);
+}
+
+/* Mantener .cartlink por compatibilidad con admin */
 .cartlink {
   text-decoration: none;
   color: var(--color-texto-oscuro);
@@ -141,7 +237,6 @@ Aquí están los estilos principales de la página (Navbars, contenedores, enlac
 .cartlink:hover {
   background: #fff0f5;
   color: var(--color-rojo);
-  box-shadow: 0 4px 10px rgba(166, 42, 75, 0.08);
 }
 
 body {
