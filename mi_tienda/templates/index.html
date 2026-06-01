@@ -1,13 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
 
-<!-- Banner del catálogo -->
-<div class="cat-banner">
-  <img src="{{ url_for('static', filename='imagenes/Dalias_rosas.jpeg') }}" alt="Catálogo" class="cat-banner-img">
-  <div class="cat-banner-overlay">
-    <h1 class="cat-banner-title">Catálogo</h1>
-    <p class="cat-banner-sub">Entregas en Aguascalientes · Flores que duran para siempre</p>
-  </div>
+<!-- Banner original sin texto encima -->
+<div class="cat-banner-clean">
+  <img src="{{ url_for('static', filename='imagenes/principal1.jpg') }}" alt="Brillo Eterno" class="cat-banner-clean-img">
 </div>
 
 {% if avisos %}
@@ -20,7 +16,10 @@
 </div>
 {% endif %}
 
-<div class="cat-count">{{ productos|length }} productos</div>
+<div class="cat-header">
+  <h1 class="cat-title">Catálogo</h1>
+  <span class="cat-count">{{ productos|length }} productos</span>
+</div>
 
 <div class="grid">
   <!-- 

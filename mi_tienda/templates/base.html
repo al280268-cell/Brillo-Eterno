@@ -64,15 +64,13 @@
     </div>
   </header>
 
-  {% if request.endpoint not in ['inicio', 'index', 'login', 'registro', 'producto', 'carrito', 'checkout_exito'] and not request.endpoint.startswith('admin') %}
-  <img src="{{ url_for('static', filename='imagenes/principal1.jpg') }}" alt="flor" class="principal">
-  {% elif request.endpoint not in ['producto'] %}
+  {% if request.endpoint and request.endpoint.startswith('admin') %}
   <div class="page-title-banner no-print">
     <div class="bloom-wrapper">
       <img src="{{ url_for('static', filename='imagenes/minifoto.png') }}" class="page-title-flower-3d" alt="Flor Naciendo">
     </div>
     <div class="page-title-ornament">Panel de Control</div>
-    <h2 class="page-title-text">{{ request.endpoint | replace('_', ' ') | title }}</h2>
+    <h2 class="page-title-text">{{ request.endpoint | replace('admin_', '') | replace('_', ' ') | title }}</h2>
     <div class="page-title-line"></div>
   </div>
   {% endif %}
