@@ -246,21 +246,89 @@ body {
   font-family: var(--font-primary);
 }
 
+/* La imagen principal ahora se oculta porque usamos hero-section en su lugar */
 .principal {
-  width: calc(100% - 40px);
-  max-width: 1100px;
-  height: 450px;
-  object-fit: cover;
-  display: block;
-  margin: 30px auto;
-  border-radius: 30px;
-  box-shadow: var(--shadow-soft);
-  transition: var(--transition-smooth);
+  display: none;
 }
 
-.principal:hover {
-  box-shadow: var(--shadow-hover);
-  transform: translateY(-4px);
+/* ─── HERO SECTION (INICIO) ──────────────────────────────────────── */
+.hero-section {
+  position: relative;
+  width: calc(100% - 40px);
+  max-width: 1100px;
+  height: 480px;
+  margin: 30px auto;
+  border-radius: 24px;
+  overflow: hidden;
+  background: url('/static/imagenes/principal1.jpg') center/cover no-repeat;
+  box-shadow: 0 10px 40px rgba(154, 30, 63, 0.12);
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(79, 15, 24, 0.55), rgba(154, 30, 63, 0.35));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px;
+}
+
+.hero-title {
+  font-family: var(--font-title);
+  color: white;
+  font-size: 3.8rem;
+  font-weight: 300;
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  text-shadow: 0 2px 20px rgba(0,0,0,0.3);
+  animation: fadeInUp 0.8s ease-out;
+}
+
+.hero-subtitle {
+  color: rgba(255, 255, 255, 0.9);
+  font-family: var(--font-primary);
+  font-size: 1.1rem;
+  font-weight: 400;
+  letter-spacing: 1px;
+  margin-bottom: 32px;
+  animation: fadeInUp 0.8s ease-out 0.15s both;
+}
+
+.hero-cta {
+  display: inline-block;
+  padding: 14px 40px;
+  background: white;
+  color: var(--color-rojo-dark);
+  text-decoration: none;
+  font-family: var(--font-primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  border-radius: 0;
+  transition: all 0.3s ease;
+  animation: fadeInUp 0.8s ease-out 0.3s both;
+}
+
+.hero-cta:hover {
+  background: var(--color-rojo);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(154, 30, 63, 0.4);
+}
+
+.catalogo-subtitle {
+  text-align: center;
+  color: var(--color-texto-suave);
+  font-family: var(--font-primary);
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+  margin-top: -25px;
+  margin-bottom: 30px;
 }
 
 .index_titulo {

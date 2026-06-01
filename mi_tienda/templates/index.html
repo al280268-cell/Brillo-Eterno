@@ -1,5 +1,16 @@
 {% extends "base.html" %}
 {% block content %}
+
+<!-- ═══ SECCIÓN HERO (INICIO) ═══════════════════════════════════════════ -->
+<section class="hero-section" id="inicio">
+  <div class="hero-overlay">
+    <h1 class="hero-title">Brillo Eterno</h1>
+    <p class="hero-subtitle">Arreglos florales artesanales que perduran para siempre</p>
+    <a href="#catalogo" class="hero-cta">Ver Catálogo →</a>
+  </div>
+</section>
+
+<!-- ═══ AVISOS ═══════════════════════════════════════════════════════════ -->
 {% if avisos %}
 <div class="avisos-container">
   {% for a in avisos %}
@@ -10,34 +21,40 @@
 </div>
 {% endif %}
 
-<h1 class="index_titulo">Catálogo</h1>
-<div class="grid">
-  <!-- 
-  =======================================================================
-  EXPLICACIÓN DEL BUCLE FOR-LOOP EN JINJA: 
-  En lugar de haber programado 10 tarjetas HTML con fotos estáticas, usamos el bucle iterador de Jinja2:'{ for p in productos }' Lo que hace es ir a la tabla de sqlite3, contar cuántos productos hay y de forma totalmente automatizada la tarjeta completa por cada uno que exista. =======================================================================-->
-  {% for p in productos %}
-    <div class="card" id="producto-{{ p['id'] }}">
-      <a href="{{ url_for('producto', producto_id=p['id']) }}">
-        <img src="{{ url_for('static', filename='imagenes/' + (p['imagen'] or 'default.jpg')) }}"
-             alt="{{ p['nombre'] }}" class="card-img">
-      </a>
-      <div class="card-info">
-        <h3 class="card-nombre">{{ p["nombre"] }}</h3>
-        <strong class="card-precio">${{ "%.2f"|format(p["precio"]) }} MXN</strong>
-        <div class="row">
-          {% if p['stock'] > 0 %}
-          <form method="post" action="{{ url_for('carrito_agregar') }}">
-            <input type="hidden" name="producto_id" value="{{ p['id'] }}">
-            <input class="qty" type="number" name="cantidad" min="1" max="{{ p['stock'] }}" value="1">
-            <button class="btn primary" type="submit">Agregar</button>
-          </form>
-          {% else %}
-          <span class="badge-agotado">🚫 Agotado</span>
-          {% endif %}
+<!-- ═══ CATÁLOGO DE PRODUCTOS ════════════════════════════════════════════ -->
+<section id="catalogo">
+  <h1 class="index_titulo">Catálogo</h1>
+  <p class="catalogo-subtitle">Entregas en Aguascalientes · Flores que duran para siempre</p>
+
+  <div class="grid">
+    <!-- 
+    =======================================================================
+    EXPLICACIÓN DEL BUCLE FOR-LOOP EN JINJA: 
+    En lugar de haber programado 10 tarjetas HTML con fotos estáticas, usamos el bucle iterador de Jinja2:'{ for p in productos }' Lo que hace es ir a la tabla de sqlite3, contar cuántos productos hay y de forma totalmente automatizada la tarjeta completa por cada uno que exista. =======================================================================-->
+    {% for p in productos %}
+      <div class="card" id="producto-{{ p['id'] }}">
+        <a href="{{ url_for('producto', producto_id=p['id']) }}">
+          <img src="{{ url_for('static', filename='imagenes/' + (p['imagen'] or 'default.jpg')) }}"
+               alt="{{ p['nombre'] }}" class="card-img">
+        </a>
+        <div class="card-info">
+          <h3 class="card-nombre">{{ p["nombre"] }}</h3>
+          <strong class="card-precio">${{ "%.2f"|format(p["precio"]) }} MXN</strong>
+          <div class="row">
+            {% if p['stock'] > 0 %}
+            <form method="post" action="{{ url_for('carrito_agregar') }}">
+              <input type="hidden" name="producto_id" value="{{ p['id'] }}">
+              <input class="qty" type="number" name="cantidad" min="1" max="{{ p['stock'] }}" value="1">
+              <button class="btn primary" type="submit">Agregar</button>
+            </form>
+            {% else %}
+            <span class="badge-agotado">🚫 Agotado</span>
+            {% endif %}
+          </div>
         </div>
       </div>
-    </div>
-  {% endfor %}
-</div>
+    {% endfor %}
+  </div>
+</section>
+
 {% endblock %}
