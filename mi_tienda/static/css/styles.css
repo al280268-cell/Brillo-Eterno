@@ -331,6 +331,259 @@ body {
   margin-bottom: 30px;
 }
 
+/* ─── HERO EXTRAS ────────────────────────────────────────────────── */
+.hero-badge {
+  display: inline-block;
+  background: rgba(255,255,255,0.18);
+  backdrop-filter: blur(10px);
+  color: white;
+  padding: 8px 24px;
+  border-radius: 50px;
+  font-size: 0.82rem;
+  font-family: var(--font-primary);
+  letter-spacing: 1px;
+  margin-bottom: 20px;
+  border: 1px solid rgba(255,255,255,0.25);
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.hero-cta-outline {
+  display: inline-block;
+  padding: 14px 40px;
+  background: transparent;
+  color: white;
+  text-decoration: none;
+  font-family: var(--font-primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  border: 2px solid rgba(255,255,255,0.6);
+  transition: all 0.3s ease;
+  animation: fadeInUp 0.8s ease-out 0.4s both;
+}
+
+.hero-cta-outline:hover {
+  background: white;
+  color: var(--color-rojo-dark);
+  border-color: white;
+}
+
+/* ─── SECCIÓN TÍTULOS GENÉRICOS ──────────────────────────────────── */
+.section-title {
+  font-family: var(--font-title);
+  font-size: 2.2rem;
+  font-weight: 500;
+  color: var(--color-texto-oscuro);
+  text-align: center;
+  margin-bottom: 8px;
+  letter-spacing: 1px;
+}
+
+.section-subtitle {
+  text-align: center;
+  color: var(--color-texto-suave);
+  font-family: var(--font-primary);
+  font-size: 0.95rem;
+  margin-bottom: 40px;
+}
+
+/* ─── BENEFICIOS ─────────────────────────────────────────────────── */
+.benefits-section {
+  padding: 60px 20px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.benefits-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+
+.benefit-card {
+  text-align: center;
+  padding: 36px 24px;
+  border-radius: 16px;
+  background: white;
+  border: 1px solid var(--color-borde);
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  animation: fadeInUp 0.6s ease-out both;
+}
+
+.benefit-card:nth-child(1) { animation-delay: 0.05s; }
+.benefit-card:nth-child(2) { animation-delay: 0.1s; }
+.benefit-card:nth-child(3) { animation-delay: 0.15s; }
+.benefit-card:nth-child(4) { animation-delay: 0.2s; }
+
+.benefit-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 50px rgba(154, 30, 63, 0.1);
+  border-color: rgba(154, 30, 63, 0.15);
+}
+
+.benefit-icon {
+  font-size: 2.5rem;
+  margin-bottom: 16px;
+}
+
+.benefit-title {
+  font-family: var(--font-title);
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--color-texto-oscuro);
+  margin-bottom: 10px;
+}
+
+.benefit-text {
+  font-family: var(--font-primary);
+  font-size: 0.85rem;
+  color: var(--color-texto-suave);
+  line-height: 1.6;
+}
+
+/* ─── SECCIÓN ODS ────────────────────────────────────────────────── */
+.ods-section {
+  padding: 60px 20px;
+  max-width: 1100px;
+  margin: 0 auto;
+  background: linear-gradient(180deg, var(--color-fondo-warm) 0%, white 100%);
+  border-radius: 24px;
+  margin-bottom: 40px;
+}
+
+.ods-header {
+  margin-bottom: 10px;
+}
+
+.ods-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  padding: 0 20px;
+}
+
+.ods-card {
+  padding: 32px 28px;
+  border-radius: 16px;
+  background: white;
+  border-left: 5px solid #ccc;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  animation: fadeInUp 0.6s ease-out both;
+  position: relative;
+  overflow: hidden;
+}
+
+.ods-card:nth-child(1) { animation-delay: 0.05s; }
+.ods-card:nth-child(2) { animation-delay: 0.1s; }
+.ods-card:nth-child(3) { animation-delay: 0.15s; }
+.ods-card:nth-child(4) { animation-delay: 0.2s; }
+
+.ods-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+}
+
+/* Colores oficiales de cada ODS */
+.ods-12 { border-left-color: #BF8B2E; }
+.ods-8  { border-left-color: #A21942; }
+.ods-11 { border-left-color: #FD9D24; }
+.ods-13 { border-left-color: #3F7E44; }
+
+.ods-12:hover { background: linear-gradient(135deg, white, #fdf5e6); }
+.ods-8:hover  { background: linear-gradient(135deg, white, #fdf0f5); }
+.ods-11:hover { background: linear-gradient(135deg, white, #fff8ee); }
+.ods-13:hover { background: linear-gradient(135deg, white, #f0f9f0); }
+
+.ods-number {
+  display: inline-block;
+  font-family: var(--font-primary);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--color-texto-suave);
+  margin-bottom: 8px;
+}
+
+.ods-card-icon {
+  font-size: 2rem;
+  margin-bottom: 12px;
+}
+
+.ods-card-title {
+  font-family: var(--font-title);
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--color-texto-oscuro);
+  margin-bottom: 10px;
+}
+
+.ods-card-text {
+  font-family: var(--font-primary);
+  font-size: 0.85rem;
+  color: var(--color-texto-suave);
+  line-height: 1.7;
+}
+
+.ods-banner {
+  text-align: center;
+  margin-top: 40px;
+  padding: 0 20px;
+}
+
+.ods-banner-img {
+  max-width: 700px;
+  width: 100%;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+}
+
+/* ─── RESPONSIVE: Beneficios y ODS ────────────────────────────────── */
+@media (max-width: 900px) {
+  .benefits-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .ods-grid {
+    grid-template-columns: 1fr;
+  }
+  .hero-title {
+    font-size: 2.5rem;
+  }
+  .topbar-nav-left {
+    display: none;
+  }
+  .brand {
+    font-size: 0.9rem;
+    letter-spacing: 1.5px;
+  }
+}
+
+@media (max-width: 600px) {
+  .benefits-grid {
+    grid-template-columns: 1fr;
+  }
+  .hero-section {
+    height: 380px;
+    border-radius: 16px;
+  }
+  .hero-title {
+    font-size: 2rem;
+  }
+  .hero-buttons {
+    flex-direction: column;
+  }
+}
+
 .index_titulo {
   color: var(--color-rojo);
   font-size: 2.5rem;
