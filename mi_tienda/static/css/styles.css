@@ -246,79 +246,128 @@ body {
   font-family: var(--font-primary);
 }
 
-/* La imagen principal ahora se oculta porque usamos hero-section en su lugar */
+/* La imagen principal ahora se oculta porque usamos hero-banner-img */
 .principal {
   display: none;
 }
 
-/* ─── HERO SECTION (INICIO) ──────────────────────────────────────── */
-.hero-section {
-  position: relative;
-  width: calc(100% - 40px);
-  max-width: 1100px;
-  height: 480px;
-  margin: 30px auto;
-  border-radius: 24px;
-  overflow: hidden;
-  background: url('/static/imagenes/principal1.jpg') center/cover no-repeat;
-  box-shadow: 0 10px 40px rgba(154, 30, 63, 0.12);
+/* ─── HERO LIMPIO (texto + imagen separados) ─────────────────────── */
+.hero-clean {
+  text-align: center;
+  padding: 70px 20px 40px;
+  max-width: 750px;
+  margin: 0 auto;
 }
 
-.hero-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, rgba(79, 15, 24, 0.55), rgba(154, 30, 63, 0.35));
+.hero-badge {
+  display: inline-block;
+  background: rgba(154, 30, 63, 0.08);
+  color: var(--color-rojo);
+  padding: 8px 24px;
+  border-radius: 50px;
+  font-size: 0.82rem;
+  font-family: var(--font-primary);
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  margin-bottom: 24px;
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.hero-clean-title {
+  font-family: var(--font-title);
+  font-size: 3.5rem;
+  font-weight: 400;
+  color: var(--color-texto-oscuro);
+  line-height: 1.15;
+  margin-bottom: 20px;
+  letter-spacing: 0.5px;
+  animation: fadeInUp 0.7s ease-out 0.1s both;
+}
+
+.hero-clean-sub {
+  font-family: var(--font-primary);
+  font-size: 1.05rem;
+  color: var(--color-texto-suave);
+  line-height: 1.7;
+  margin-bottom: 32px;
+  animation: fadeInUp 0.7s ease-out 0.2s both;
+}
+
+.hero-buttons {
   display: flex;
-  flex-direction: column;
+  gap: 14px;
   align-items: center;
   justify-content: center;
-  text-align: center;
-  padding: 40px;
+  flex-wrap: wrap;
+  animation: fadeInUp 0.7s ease-out 0.3s both;
 }
 
-.hero-title {
-  font-family: var(--font-title);
-  color: white;
-  font-size: 3.8rem;
-  font-weight: 300;
-  letter-spacing: 6px;
-  text-transform: uppercase;
-  margin-bottom: 16px;
-  text-shadow: 0 2px 20px rgba(0,0,0,0.3);
-  animation: fadeInUp 0.8s ease-out;
-}
-
-.hero-subtitle {
-  color: rgba(255, 255, 255, 0.9);
-  font-family: var(--font-primary);
-  font-size: 1.1rem;
-  font-weight: 400;
-  letter-spacing: 1px;
-  margin-bottom: 32px;
-  animation: fadeInUp 0.8s ease-out 0.15s both;
-}
-
-.hero-cta {
+.hero-btn-primary {
   display: inline-block;
-  padding: 14px 40px;
-  background: white;
-  color: var(--color-rojo-dark);
+  padding: 14px 36px;
+  background: var(--color-rojo);
+  color: white;
   text-decoration: none;
   font-family: var(--font-primary);
   font-size: 0.85rem;
   font-weight: 600;
-  letter-spacing: 2px;
+  letter-spacing: 1.5px;
   text-transform: uppercase;
-  border-radius: 0;
   transition: all 0.3s ease;
-  animation: fadeInUp 0.8s ease-out 0.3s both;
 }
 
-.hero-cta:hover {
-  background: var(--color-rojo);
-  color: white;
+.hero-btn-primary:hover {
+  background: var(--color-rojo-dark);
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(154, 30, 63, 0.4);
+  box-shadow: 0 8px 25px rgba(154, 30, 63, 0.3);
+}
+
+.hero-btn-secondary {
+  display: inline-block;
+  padding: 14px 36px;
+  background: transparent;
+  color: var(--color-texto-oscuro);
+  text-decoration: none;
+  font-family: var(--font-primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  border: 2px solid var(--color-borde);
+  transition: all 0.3s ease;
+}
+
+.hero-btn-secondary:hover {
+  border-color: var(--color-rojo);
+  color: var(--color-rojo);
+}
+
+/* Banner imagen debajo del hero */
+.hero-banner-img {
+  display: block;
+  width: calc(100% - 40px);
+  max-width: 1100px;
+  height: 420px;
+  object-fit: cover;
+  margin: 0 auto 50px;
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+  animation: fadeInUp 0.8s ease-out 0.4s both;
+  transition: transform 0.5s ease, box-shadow 0.5s ease;
+}
+
+.hero-banner-img:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 60px rgba(154, 30, 63, 0.12);
+}
+
+/* Línea decorativa bajo títulos de sección */
+.section-line {
+  width: 60px;
+  height: 3px;
+  background: var(--color-rojo);
+  margin: 12px auto 16px;
+  border-radius: 2px;
 }
 
 .catalogo-subtitle {
@@ -331,51 +380,8 @@ body {
   margin-bottom: 30px;
 }
 
-/* ─── HERO EXTRAS ────────────────────────────────────────────────── */
-.hero-badge {
-  display: inline-block;
-  background: rgba(255,255,255,0.18);
-  backdrop-filter: blur(10px);
-  color: white;
-  padding: 8px 24px;
-  border-radius: 50px;
-  font-size: 0.82rem;
-  font-family: var(--font-primary);
-  letter-spacing: 1px;
-  margin-bottom: 20px;
-  border: 1px solid rgba(255,255,255,0.25);
-  animation: fadeInUp 0.6s ease-out;
-}
 
-.hero-buttons {
-  display: flex;
-  gap: 16px;
-  align-items: center;
-  flex-wrap: wrap;
-  justify-content: center;
-}
 
-.hero-cta-outline {
-  display: inline-block;
-  padding: 14px 40px;
-  background: transparent;
-  color: white;
-  text-decoration: none;
-  font-family: var(--font-primary);
-  font-size: 0.85rem;
-  font-weight: 600;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  border: 2px solid rgba(255,255,255,0.6);
-  transition: all 0.3s ease;
-  animation: fadeInUp 0.8s ease-out 0.4s both;
-}
-
-.hero-cta-outline:hover {
-  background: white;
-  color: var(--color-rojo-dark);
-  border-color: white;
-}
 
 /* ─── SECCIÓN TÍTULOS GENÉRICOS ──────────────────────────────────── */
 .section-title {
