@@ -25,10 +25,6 @@
     <nav class="topbar-nav-left">
       <a class="nav-link {% if request.endpoint == 'inicio' %}active{% endif %}" href="{{ url_for('inicio') }}">INICIO</a>
       <a class="nav-link {% if request.endpoint == 'index' %}active{% endif %}" href="{{ url_for('index') }}">CATÁLOGO</a>
-      {% if session.get('admin') %}
-      <a class="nav-link {% if request.endpoint == 'admin_productos' %}active{% endif %}" href="{{ url_for('admin_productos') }}">PANEL ADMIN</a>
-      <a class="nav-link {% if request.endpoint == 'admin_inicio' %}active{% endif %}" href="{{ url_for('admin_inicio') }}">EDITAR INICIO</a>
-      {% endif %}
     </nav>
 
     <!-- Marca centrada -->
@@ -36,9 +32,11 @@
       FLORERÍA BRILLO ETERNO
     </a>
 
-    <!-- Íconos derecha -->
+    <!-- Íconos y menú derecha -->
     <div class="topbar-nav-right">
       {% if session.get('admin') %}
+        <a class="nav-link {% if request.endpoint == 'admin_productos' %}active{% endif %}" href="{{ url_for('admin_productos') }}">PANEL ADMIN</a>
+        <a class="nav-link {% if request.endpoint == 'admin_inicio' %}active{% endif %}" href="{{ url_for('admin_inicio') }}">EDITAR INICIO</a>
         <a class="nav-icon-link" href="{{ url_for('admin_logout') }}" title="Cerrar sesión admin">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
         </a>
